@@ -1,26 +1,29 @@
-import { images, imagesUrl } from "@/constants/image";
-import { Link } from "expo-router";
+
 import { Text, View, Image, TextInput, TouchableOpacity, FlatList } from "react-native";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from "react";
-import { fonts } from "@/constants/font";
+import { fonts, FONT_FAMILY } from "@/constants/font";
 import { FilmData } from "@/constants/film";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
+import { useRouter } from 'expo-router';
+import HomeHeader from "@/Components/Headers/HomeHeader";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Index() {
+
+  const router = useRouter();
 
   const find = () => {
     // alert('find'); 
   }
 
   const [loaded, error] = useFonts({
-    'thang': fonts.font,
+    [FONT_FAMILY]: require('@/assets/fonts/Oswald-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -40,19 +43,7 @@ export default function Index() {
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-col bg-white flex-1">
           {/* header */}
-          <View className="flex-row justify-between items-center border-b border-gray-300">
-            <View className="flex-row items-center p-2">
-              <Image source={images.avatar} style={{ width: 45, height: 45 }} className="mr-3" />
-              <View className="justify-center">
-                <Text>Chào <Text style={{ fontFamily: 'thang', fontWeight: 700 }}>Thắng Vũ</Text></Text>
-                <View className="flex-row items-center mt-2">
-                  <FontAwesome name="user-o" size={20} color="black" className="mr-2" />
-                  <Text style={{ fontFamily: 'thang', fontWeight: 700 }}>MEMBER</Text>
-                </View>
-              </View>
-            </View>
-            <Image source={images.beta} style={{ width: 150, height: 50 }} />
-          </View>
+          <HomeHeader />
           {/* body */}
           <View className="bg-white m-2 flex-1 flex-col" >
             <View className=" flex-row items-center ">
@@ -75,7 +66,9 @@ export default function Index() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
-                    <TouchableOpacity >
+                    <TouchableOpacity onPress={() => router.push(`/movie/${item.id}`, {
+                      
+                    })} >
                       <View className="flex-col m p-[6px]">
                         <Image source={{ uri: item.posterUrl }} style={styles.imageFilm} resizeMode="cover" />
                         <Text style={styles.title}>{item.releaseDate}</Text>
@@ -108,7 +101,7 @@ const styles = StyleSheet.create({
   title: {
     flexWrap: 'wrap',
     fontWeight: 800,
-    fontFamily: 'thang',
+    fontFamily: FONT_FAMILY,
     color: '#337ab7',
     justifyContent: 'center',
     textAlign: 'center',

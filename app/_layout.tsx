@@ -1,5 +1,7 @@
 import { Stack } from "expo-router";
 import './global.css';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FONT_FAMILY } from "@/constants/font";
 
 
 export default function RootLayout() {
@@ -17,6 +19,27 @@ export default function RootLayout() {
           title: "Movie Details",
           headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name="signIn"
+        options={
+          {
+            headerTransparent: true,
+            headerTitle: "Login",
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: "bold",
+              fontFamily: FONT_FAMILY
+            },
+            headerBackground: () => (
+              <LinearGradient
+                colors={["#1e6fa8", "#70c6e5"]}
+                style={{ flex: 1 }}
+              />
+            ),
+          }
+        }
       />
     </Stack>
   );

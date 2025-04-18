@@ -65,5 +65,6 @@ export const FilmData = [
         releaseDate: '1994-10-14',
         posterUrl: imagesUrl.img8
     },
+    
 
 ]

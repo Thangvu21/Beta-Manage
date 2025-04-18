@@ -2,7 +2,11 @@ import bg from "@/assets/images/bg.png";
 import highlight from "@/assets/images/highlight.png";
 import beta from "@/assets/images/beta.png";
 import avatar from "@/assets/images/thang.png";
-import img1 from 'https://files.betacorp.vn/media%2fimages%2f2025%2f03%2f31%2f400x633%2D24%2D165808%2D310325%2D29.jpg'
+import betaAVT from "@/assets/images/betaAVT.png";
+import beta2 from "@/assets/images/beta2.jpg";
+import background from "@/assets/images/background2.jpg";
+import coffee from "@/assets/images/coffee.jpg"
+import bong from "@/assets/images/food.jpg"
 
 export const imagesUrl = {
   // chưa decode
@@ -31,4 +35,13 @@ export const images = {
   highlight,
   beta,
   avatar,
+  betaAVT,
+  beta2,
+  background
 };
+
+
+export const foodImages = {
+  bong,
+  coffee
+}

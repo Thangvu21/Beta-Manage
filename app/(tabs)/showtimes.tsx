@@ -1,9 +1,10 @@
 import { View, Text } from "react-native";
+import { Link } from "expo-router";
 
 const ShowTime = () => {
     return (
-        <View className="flex-1 items-center justify-center bg-white dark:bg-black">
-            <Text className="text-5xl text-accent font-bold">Lich Chieu</Text>
+        <View className='flex-1 justify-center items-center'>
+            <Link href={'/signIn'}>Sign In </Link>
         </View>
     )
 }

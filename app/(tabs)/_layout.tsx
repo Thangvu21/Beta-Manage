@@ -5,6 +5,8 @@ import { images } from "@/constants/image";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { LinearGradient } from "expo-linear-gradient";
+import { FONT_FAMILY } from "@/constants/font";
 
 const _Layout = () => {
     return (
@@ -25,16 +27,21 @@ const _Layout = () => {
             <Tabs.Screen
                 name="food"
                 options={{
-                    title: "Food", headerShown: false,
+                    headerTransparent: true,
+                    headerTitle: "Food",
+                    headerTintColor: "#fff",
+                    headerTitleStyle: {
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        fontFamily: FONT_FAMILY
+                    },
+                    headerBackground: () => (
+                        <LinearGradient
+                            colors={["#1e6fa8", "#70c6e5"]}
+                            style={{ flex: 1 }}
+                        />
+                    ),
                     tabBarIcon: ({ color }) => <MaterialIcons name="fastfood" size={24} color={color} />
-                }}
-            />
-
-            <Tabs.Screen
-                name="statistics"
-                options={{
-                    title: "Analyst", headerShown: false,
-                    tabBarIcon: ({ color }) => <Ionicons name="analytics" size={25} color={color} />
                 }}
             />
 
@@ -43,6 +50,28 @@ const _Layout = () => {
                 options={{
                     title: "Time", headerShown: false,
                     tabBarIcon: ({ color }) => <Ionicons name="timer-outline" size={25} color={color} />
+                }}
+            />
+
+            <Tabs.Screen
+                name="statistics"
+                options={{
+                    title: "Analyst",
+                    headerTransparent: false,
+                    headerTitle: "Analyst",
+                    headerTintColor: "#fff",
+                    headerTitleStyle: {
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        fontFamily: FONT_FAMILY
+                    },
+                    headerBackground: () => (
+                        <LinearGradient
+                            colors={["#1e6fa8", "#70c6e5"]}
+                            style={{ flex: 1 }}
+                        />
+                    ),
+                    tabBarIcon: ({ color }) => <Ionicons name="analytics" size={25} color={color} />
                 }}
             />
 
