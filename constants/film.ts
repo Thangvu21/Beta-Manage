@@ -5,10 +5,10 @@ export interface Movie {
   id: string;
   title: string;
   releaseDate: string;
-  posterUrl: ImageURISource;
+  posterUrl: string;
 }
 
-export const FilmData = [
+export const FilmData: Movie[] = [
 
     {
         id: '1',

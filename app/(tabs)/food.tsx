@@ -1,8 +1,10 @@
 import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList } from "react-native";
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { foodData, FoodItem } from "@/constants/food";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 
 const Food = () => {
 
@@ -64,10 +66,36 @@ const Food = () => {
                     </View>
                 </View>
             </Modal>
+
+            {/* Modal thêm món */}
+            <TouchableOpacity onPress={() => {}}>
+                <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
+                    <Ionicons name="add" size={28} color="#fff" />
+                </LinearGradient>
+            </TouchableOpacity>
         </View>
 
 
     )
 }
+
+const styles = StyleSheet.create({
+
+    fabButton: {
+        position: 'absolute',
+        bottom: 60,
+        right: 20,
+        width: 50,
+        height: 50,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+    },
+});
 
 export default Food;

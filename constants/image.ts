@@ -7,6 +7,7 @@ import beta2 from "@/assets/images/beta2.jpg";
 import background from "@/assets/images/background2.jpg";
 import coffee from "@/assets/images/coffee.jpg"
 import bong from "@/assets/images/food.jpg"
+import update from "@/assets/images/update.png";
 
 export const imagesUrl = {
   // chưa decode
@@ -37,7 +38,8 @@ export const images = {
   avatar,
   betaAVT,
   beta2,
-  background
+  background,
+  update
 };
 
 

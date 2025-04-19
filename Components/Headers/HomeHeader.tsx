@@ -7,10 +7,10 @@ import NotLoginedStatus from "./NotLoginedStatus";
 
 const HomeHeader = () => {
 
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
 
     return (
-        <View className="flex-row justify-between items-center border-b border-gray-300">
+        <View className="flex-row justify-between items-center" style={{borderBottomColor: '#ccc', borderBottomWidth: 1,}}>
             {isLogin ? <LoginedStatus /> : <NotLoginedStatus />}
             <Image source={images.beta} style={{ width: 150, height: 50 }} />
         </View>

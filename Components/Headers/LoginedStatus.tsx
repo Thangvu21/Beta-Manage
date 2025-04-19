@@ -5,8 +5,8 @@ import { FONT_FAMILY } from "@/constants/font";
 
 const LoginedStatus = () => {
     return (
-        <View className="flex-row items-center p-2">
-            <Image source={images.avatar} style={{ width: 45, height: 45 }} className="mr-3" />
+        <View className="flex-row items-center p-2 justify-around">
+            <Image source={images.avatar} style={{ width: 45, height: 45, marginHorizontal: 7 }} />
             <View className="justify-center">
                 <Text>Chào <Text style={{ fontFamily: FONT_FAMILY, fontWeight: 700 }}>Thắng Vũ</Text></Text>
                 <View className="flex-row items-center mt-2">
