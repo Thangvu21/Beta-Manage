@@ -1,53 +1,65 @@
 import { FilmData } from "@/constants/film";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
-import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { FONT_FAMILY } from "@/constants/font";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { images } from "@/constants/image";
+import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
 
 
 
 const Details = () => {
 
+    const navigation = useNavigation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const film = FilmData.find((item) => item.id === id);
     const [editModalVisible, setEditModalVisible] = useState(false);
 
-    const handleUpdateMovie = () => {
+    useEffect(() => {
+        if (film?.title) {
+            navigation.setOptions({
+                headerTitle: film.title,
+            });
+        }
+    }, [film, navigation]);
 
+    const handleUpdateMovie = () => {
         setEditModalVisible(true);
     }
 
     return (
         // c1
-        <View style={styles.imageContainer}>
-            <ImageBackground
-                source={{ uri: film?.posterUrl }}
-                style={styles.background}
-                imageStyle={{}}
-                blurRadius={20}
-            >
-                <View className="absolute top-10 left-5 right-0 bottom-0 ">
-                    <Text style={styles.textTitle}>
-                        {film?.title}
-                    </Text>
-                    <Text style={styles.timeTitle}>
-                        {film?.releaseDate}
-                    </Text>
-                </View>
-                <View style={styles.overlay}>
-                    <Image source={{ uri: film?.posterUrl }} style={styles.posterImage} />
-                </View>
-            </ImageBackground>
-            <TouchableOpacity onPress={() => setEditModalVisible(true)}
-                style={styles.fabButton}>
+        <SafeAreaView>
+            <View style={styles.imageContainer}>
+                <ImageBackground
+                    source={{ uri: film?.posterUrl }}
+                    style={styles.background}
+                    imageStyle={{}}
+                    blurRadius={20}
+                >
+                    <View className="absolute top-10 left-5 right-0 bottom-0 ">
+                        <Text style={styles.textTitle}>
+                            {film?.title}
+                        </Text>
+                        <Text style={styles.timeTitle}>
+                            {film?.releaseDate}
+                        </Text>
+                    </View>
+                    <View style={styles.overlay}>
+                        <Image source={{ uri: film?.posterUrl }} style={styles.posterImage} />
+                    </View>
+                </ImageBackground>
+                <TouchableOpacity onPress={() => setEditModalVisible(true)}
+                    style={styles.fabButton}>
 
-                <Ionicons  name="refresh-circle-outline" size={36} color='black' />
+                    <Ionicons name="refresh-circle-outline" size={36} color='black' />
 
-            </TouchableOpacity>
-        </View>
+                </TouchableOpacity>
+                <UpdateModalMovie modalUpdateVisible={editModalVisible} setModalUpdateVisible={setEditModalVisible} movie={film}/>
+            </View>
+        </SafeAreaView>
     )
 }
 
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
     // modal button
     fabButton: {
         position: 'absolute',
-        bottom: 60,
+        bottom: 80,
         right: 20,
         backgroundColor: '#36D1DC',
         width: 50,

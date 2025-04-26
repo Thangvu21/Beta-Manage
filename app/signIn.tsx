@@ -1,19 +1,35 @@
 
 import { images } from '@/constants/image';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { SafeAreaView, View, Text, ScrollView, Image, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 
 const SignIn = () => {
 
+    const router = useRouter();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleLogin = () => {
+        
+        if (username && password) {
+            router.replace("/"); // Điều hướng đến tab chính sau khi đăng nhập
+        } else {
+            alert("Please enter valid credentials");
+        }
+    };
+
+
     return (
         <SafeAreaView className="h-full bg-white">
             <ScrollView contentContainerClassName='h-full'>
-                <ImageBackground source={images.background} className="flex-1" resizeMode="cover" style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.4)', flex: 1}}>
+                <ImageBackground source={images.background} className="flex-1" resizeMode="cover" style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.4)', flex: 1 }}>
                     <View className="flex-1 items-center justify-center px-6" style={{
                         backgroundColor: 'rgba(200,200,200,0.3)',
                         borderRadius: 12,
                         padding: 16,
                         backdropFilter: 'blur(10px)',
-                        
+
                     }}>
                         <Image source={images.betaAVT} className="rounded-full mb-3" style={{
                             width: 200, height: 200, shadowColor: '#000',
@@ -21,30 +37,34 @@ const SignIn = () => {
                             shadowOpacity: 0.3,
                             shadowRadius: 4,
                         }} />
-                        <Text style={{ fontSize: 24, fontWeight: 900, color: 'white'}}>Welcome Back!</Text>
+                        <Text style={{ fontSize: 24, fontWeight: 900, color: 'white' }}>Welcome Back!</Text>
                         <Text className="mb-6" style={{ color: "#fff", fontWeight: 700 }}>Sign in to your account</Text>
 
                         <TextInput
                             placeholder="Email"
                             placeholderTextColor={'#DDDDDD'}
                             className="border w-[250] py-2 px-4 rounded-full mb-4"
-                            style={{borderColor: '#FFF', borderWidth: 2}}    
+                            style={{ borderColor: '#FFF', borderWidth: 2 }}
+                            value={username}
+                            onChangeText={setUsername}
                         />
                         <TextInput
                             placeholder="Password"
                             placeholderTextColor={'#DDDDDD'}
                             secureTextEntry
                             className="border w-[250] py-2 px-4 rounded-full mb-4"
-                            style={{borderColor: '#FFF', borderWidth: 2}}
+                            style={{ borderColor: '#FFF', borderWidth: 2 }}
+                            value={password}
+                            onChangeText={setPassword}
                         />
 
                         <View className="flex-row justify-between w-full mb-4">
                             <View className="flex-row items-center">
 
-                                
+
                             </View>
                             <TouchableOpacity>
-                                
+
                             </TouchableOpacity>
                         </View>
 
@@ -59,8 +79,11 @@ const SignIn = () => {
                             shadowRadius: 5,
                             elevation: 5,
                             marginBottom: 16,
-
-                         }}>
+                            }
+                        }
+                            onPress={handleLogin}
+                            
+                        >
                             <Text className="text-white text-center font-semibold" >Sign In</Text>
                         </TouchableOpacity>
 
@@ -71,9 +94,9 @@ const SignIn = () => {
                         </View>
 
                         <View className="flex-row mt-14">
-                            <Text style={{color: '#fff', fontSize: 20, fontWeight: 900}}>Don't have an account?</Text>
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 900 }}>Don't have an account?</Text>
                             <TouchableOpacity>
-                                <Text className="ml-1" style={{color: 'white', fontSize: 20, fontWeight: 500}}>Sign up</Text>
+                                <Text className="ml-1" style={{ color: 'white', fontSize: 20, fontWeight: 500 }}>Sign up</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

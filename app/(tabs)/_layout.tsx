@@ -9,7 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FONT_FAMILY } from "@/constants/font";
 import { BottomTabBarProps } from "@/types/bottomTabBarProps";
 
-const CustomTabBarButton = ({ children, onPress } : BottomTabBarProps) => (
+const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => (
     <View style={styles.fabWrapper}>
         <TouchableOpacity
             style={styles.fabContainer}
@@ -35,47 +35,11 @@ const _Layout = () => {
                     right: 20,
                     backgroundColor: '#70c6e5',
                     //   borderRadius: 15,
-                    
-                    height: 50,
+
+                    height: 60,
                     ...styles.shadow,
                 }
             }}>
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: "Home", headerShown: false,
-                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name="movie-open-check-outline" size={25} color={color} />
-                }}
-            />
-            <Tabs.Screen
-                name="food"
-                options={{
-                    headerTransparent: true,
-                    headerTitle: "Food",
-                    headerTintColor: "#fff",
-                    headerTitleStyle: {
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        fontFamily: FONT_FAMILY
-                    },
-                    headerBackground: () => (
-                        <LinearGradient
-                            colors={["#1e6fa8", "#70c6e5"]}
-                            style={{ flex: 1 }}
-                        />
-                    ),
-                    tabBarIcon: ({ color }) => <MaterialIcons name="fastfood" size={24} color={color} />
-                }}
-            />
-
-            <Tabs.Screen
-                name="showtimes"
-                options={{
-                    title: "Time", headerShown: false,
-                    tabBarIcon: ({ color }) => <MaterialIcons name="control-camera" size={24} color={'white'} />,
-                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress} />,
-                }}
-            />
 
             <Tabs.Screen
                 name="statistics"
@@ -95,15 +59,57 @@ const _Layout = () => {
                             style={{ flex: 1 }}
                         />
                     ),
-                    tabBarIcon: ({ color }) => <Ionicons name="analytics" size={25} color={color} />
+                    tabBarIcon: ({ color }) => <Ionicons name="analytics" size={30} color={color} />
                 }}
             />
+
+            <Tabs.Screen
+                name="index"
+                options={{
+                    title: "Home", headerShown: false,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name="movie-open-check-outline" size={30} color={color} />
+                }}
+            />
+
+
+
+            <Tabs.Screen
+                name="scan"
+                
+                options={{
+                    title: "Time", headerShown: false,
+                    tabBarIcon: ({ color }) => <MaterialIcons name="control-camera" size={30} color={'white'} />,
+                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress} />,
+                }}
+            />
+
+            <Tabs.Screen
+                name="food"
+                options={{
+                    headerTransparent: true,
+                    headerTitle: "Food",
+                    headerTintColor: "#fff",
+                    headerTitleStyle: {
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        fontFamily: FONT_FAMILY
+                    },
+                    headerBackground: () => (
+                        <LinearGradient
+                            colors={["#1e6fa8", "#70c6e5"]}
+                            style={{ flex: 1 }}
+                        />
+                    ),
+                    tabBarIcon: ({ color }) => <MaterialIcons name="fastfood" size={30} color={color} />
+                }}
+            />
+
 
             <Tabs.Screen
                 name="profile"
                 options={{
                     title: "Profile", headerShown: false
-                    , tabBarIcon: ({ color }) => <AntDesign name="profile" size={25} color={color} />
+                    , tabBarIcon: ({ color }) => <AntDesign name="profile" size={30} color={color} />
                 }}
             />
         </Tabs>

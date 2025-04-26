@@ -1,79 +1,91 @@
 import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import React, { useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { foodData, FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
+import UpdateModalFood from "@/Components/Modals/Update.Modal.Food";
+import Feather from '@expo/vector-icons/Feather';
+import DeleteModalFood from "@/Components/Modals/Delete.Modal.Food";
 
 const Food = () => {
 
-    const [modalVisible, setModalVisible] = React.useState(false);
-    const [items, setItems] = useState<FoodItem[]>(foodData);
+    const [foodList, setFoodList] = useState(foodData);
+
+    const [food, setFood] = useState<FoodItem>();
+
+    const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
+
+    const [modalEditVisible, setModalEditVisible] = useState(false);
+
+    const [modalCreateVisible, setModalCreateVisible] = useState(false);
+
+    const handleUpdateMovie = (food: FoodItem) => {
+        setFood(food);
+        setModalEditVisible(true);
+    }
+
+    const handleDeleteMovie = (food: FoodItem) => {
+        setFood(food);
+        setModalDeleteVisible(true);
+    }
 
     return (
 
-        <View className="flex-1 bg-gray-100 px-4 pt-6">
-            {/* Header */}
-            <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-2xl font-bold text-gray-800">Món ăn</Text>
-                <TouchableOpacity
-                    className="bg-orange-500 p-2 rounded-full"
-                    onPress={() => setModalVisible(true)}
-                >
-                    <AntDesign name="pluscircleo" size={24} color="#FFF" />
+        <>
+            <View className="flex-1 bg-gray-100 px-4 pt-20">
+                {/* Header */}
+
+
+                {/* List món ăn */}
+                <FlatList
+                    data={foodList}
+                    numColumns={2}
+                    keyExtractor={(item) => item.id.toString()}
+                    columnWrapperStyle={{ justifyContent: 'space-between' }}
+                    renderItem={({ item }) => (
+                        <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
+                            <Image source={item.image} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
+                            <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
+                            <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
+                            <View className="flex-row justify-between">
+                                <TouchableOpacity
+                                    className="bg-yellow-400 p-2 rounded-lg"
+                                    onPress={() => {
+                                        handleUpdateMovie(item);
+                                    }}>
+
+                                    <AntDesign name="edit" size={24} color="black" />
+
+                                </TouchableOpacity>
+                                <TouchableOpacity className="bg-red-500 p-2 rounded-lg"
+                                    onPress={() => {
+                                        handleDeleteMovie(item);
+                                    }}>
+                                    <Feather name="x-circle" size={24} color="black"/>
+
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                />
+
+                <CreateModalFood setModalCreateVisible={setModalCreateVisible} modalCreateVisible={modalCreateVisible} />
+                <UpdateModalFood setModalUpdateVisible={setModalEditVisible} modalUpdateVisible={modalEditVisible} food={food} />
+                <DeleteModalFood setModalDeleteVisible={setModalDeleteVisible} modalDeleteVisible={modalDeleteVisible} food={food} />
+                {/* Modal thêm món */}
+                <TouchableOpacity onPress={() => {
+                    console.log("Create Food");
+                    setModalCreateVisible(true);
+                }}>
+                    <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
+                        <Ionicons name="add" size={28} color="#fff" />
+                    </LinearGradient>
                 </TouchableOpacity>
             </View>
-
-            {/* List món ăn */}
-            <FlatList
-                data={foodData}
-                numColumns={2}
-                keyExtractor={(item) => item.id.toString()}
-                columnWrapperStyle={{ justifyContent: 'space-between' }}
-                renderItem={({ item }) => (
-                    <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
-                        <Image source={item.image} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
-                        <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
-                        <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
-                        <View className="flex-row justify-between">
-                            <TouchableOpacity className="bg-yellow-400 px-2 py-1 rounded-lg">
-                                <AntDesign name="edit" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TouchableOpacity className="bg-red-500 px-2 py-1 rounded-lg">
-                                <AntDesign name="delete" size={24} color="black" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                )}
-            />
-
-            {/* Modal thêm món */}
-            <Modal transparent visible={modalVisible} animationType="slide">
-                <View className="flex-1 justify-center items-center bg-black/50 px-4">
-                    <View className="bg-white p-5 rounded-xl w-full">
-                        <Text className="text-lg font-bold mb-3">Thêm món ăn</Text>
-                        <TextInput placeholder="Tên món" className="border px-3 py-2 rounded-lg mb-2" />
-                        <TextInput placeholder="Giá" keyboardType="numeric" className="border px-3 py-2 rounded-lg mb-4" />
-                        <View className="flex-row justify-end space-x-3">
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text className="text-gray-600">Hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity className="bg-green-500 px-4 py-2 rounded-lg">
-                                <Text className="text-white">Lưu</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Modal thêm món */}
-            <TouchableOpacity onPress={() => {}}>
-                <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-                    <Ionicons name="add" size={28} color="#fff" />
-                </LinearGradient>
-            </TouchableOpacity>
-        </View>
+        </>
 
 
     )
@@ -83,7 +95,7 @@ const styles = StyleSheet.create({
 
     fabButton: {
         position: 'absolute',
-        bottom: 60,
+        bottom: 70,
         right: 20,
         width: 50,
         height: 50,

@@ -1,6 +1,6 @@
 
 import { Text, View, Image, TouchableOpacity, FlatList, Modal } from "react-native";
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+// import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from "react";
@@ -12,6 +12,8 @@ import { useRouter } from 'expo-router';
 import HomeHeader from "@/Components/Headers/HomeHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
+import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +26,8 @@ export default function Index() {
   const [movie, setMovie] = useState<Movie>();
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [modalCreateVisible, setModalCreateVisible] = useState(false);
 
   const handleOpenAddModal = (movieSelected: Movie) => {
     setMovie(movieSelected);
@@ -91,7 +95,7 @@ export default function Index() {
                         {/* Nội dung */}
                         <View className="flex-row justify-around items-center">
                           <View className="flex-col">
-                            <Text style={styles.title}>{item.releaseDate}</Text>
+                            {/* <Text style={styles.title}>{item.releaseDate}</Text> */}
                             <Text style={[styles.title, styles.titleMovie]}>{item.title}</Text>
                           </View>
                         </View>
@@ -104,7 +108,8 @@ export default function Index() {
 
             </View>
 
-            <Modal
+            <ConfirmDeleteModal />
+            {/* <Modal
               visible={modalVisible}
               transparent
               animationType="slide"
@@ -123,13 +128,17 @@ export default function Index() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </Modal>
-
-
-
+            </Modal> */}
           </View>
-
-          <TouchableOpacity onPress={() => router.push('/')}>
+          
+          <CreateModalMovie 
+              modalCreateVisible={modalCreateVisible}
+              setModalCreateVisible={setModalCreateVisible}
+            />
+          <TouchableOpacity onPress={() => {
+            console.log("Create Movie");
+            setModalCreateVisible(true);
+          }}>
             <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
               <Ionicons name="add" size={28} color="#fff" />
             </LinearGradient>
@@ -166,7 +175,7 @@ const styles = StyleSheet.create({
 
   fabButton: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 70,
     right: 20,
     backgroundColor: '#337ab7',
     width: 50,

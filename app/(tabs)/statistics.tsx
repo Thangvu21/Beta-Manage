@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Dimensions, ScrollView, SafeAreaView } from 'react-native';
 import { LineChart, PieChart, BarChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width;
@@ -29,105 +29,107 @@ const Statistics = () => {
         { title: 'Barbie', ticketsSold: 150 },
         { title: 'Oppenheimer', ticketsSold: 180 },
         { title: 'Mario', ticketsSold: 100 },
-      ];
-      
-      const labels = movieSales.map(item => item.title);
-      const dataValues = movieSales.map(item => item.ticketsSold);
-      
-      const chartData = {
+    ];
+
+    const labels = movieSales.map(item => item.title);
+    const dataValues = movieSales.map(item => item.ticketsSold);
+
+    const chartData = {
         labels,
         datasets: [{ data: dataValues }],
-      };
+    };
 
     return (
-        <ScrollView className="flex-1 bg-white p-4">
-            <Text className="text-2xl font-bold mb-4">📊 Báo cáo doanh thu</Text>
+        <SafeAreaView className='flex-1 bg-white'>
+            <ScrollView className="flex-1 bg-white p-4" contentContainerStyle={{ paddingBottom: 90 }} >
+                <Text className="text-2xl font-bold mb-4">📊 Báo cáo doanh thu</Text>
 
-            {/* Line Chart */}
-            <LineChart
-                data={revenueData}
-                width={screenWidth - 32}
-                height={220}
-                chartConfig={{
-                    backgroundGradientFrom: '#fff',
-                    backgroundGradientTo: '#fff',
-                    color: () => '#FF5722',
-                    labelColor: () => '#333',
-                    decimalPlaces: 0,
-                }}
-                bezier
-                style={{ borderRadius: 8, marginBottom: 16 }}
-            />
+                {/* Line Chart */}
+                <LineChart
+                    data={revenueData}
+                    width={screenWidth - 32}
+                    height={220}
+                    chartConfig={{
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        color: () => '#FF5722',
+                        labelColor: () => '#333',
+                        decimalPlaces: 0,
+                    }}
+                    bezier
+                    style={{ borderRadius: 8, marginBottom: 16 }}
+                />
 
-            {/* Summary Box */}
-            <View className="flex-row justify-between bg-gray-100 p-4 rounded-lg mb-4">
-                <View>
-                    <Text className="text-gray-500">Tổng doanh thu</Text>
-                    <Text className="text-xl font-bold text-green-700">15.500.000đ</Text>
+                {/* Summary Box */}
+                <View className="flex-row justify-between bg-gray-100 p-4 rounded-lg mb-4">
+                    <View>
+                        <Text className="text-gray-500">Tổng doanh thu</Text>
+                        <Text className="text-xl font-bold text-green-700">15.500.000đ</Text>
+                    </View>
+                    <View>
+                        <Text className="text-gray-500">Tổng đơn hàng</Text>
+                        <Text className="text-xl font-bold text-blue-700">320</Text>
+                    </View>
                 </View>
-                <View>
-                    <Text className="text-gray-500">Tổng đơn hàng</Text>
-                    <Text className="text-xl font-bold text-blue-700">320</Text>
-                </View>
-            </View>
 
-            {/* Pie Chart */}
-            <PieChart
-                data={pieData}
-                width={screenWidth - 32}
-                height={220}
-                accessor="population"
-                backgroundColor="transparent"
-                paddingLeft="15"
-                absolute
-                chartConfig={{
-                    color: () => '#000',
-                }}
-            />
+                {/* Pie Chart */}
+                <PieChart
+                    data={pieData}
+                    width={screenWidth - 32}
+                    height={220}
+                    accessor="population"
+                    backgroundColor="transparent"
+                    paddingLeft="15"
+                    absolute
+                    chartConfig={{
+                        color: () => '#000',
+                    }}
+                />
 
-            {/* Top Products */}
-            <Text className="text-lg font-semibold mt-6 mb-2">🔥 Top sản phẩm</Text>
-            <View className="space-y-2">
-                <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
-                    <Text>🥤 Trà đào</Text>
-                    <Text className="text-green-600 font-semibold">2.500.000đ</Text>
+                {/* Top Products */}
+                <Text className="text-lg font-semibold mt-6 mb-2">🔥 Top sản phẩm</Text>
+                <View className="space-y-2">
+                    <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
+                        <Text>🥤 Trà đào</Text>
+                        <Text className="text-green-600 font-semibold">2.500.000đ</Text>
+                    </View>
+                    <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
+                        <Text>🍟 Khoai tây chiên</Text>
+                        <Text className="text-green-600 font-semibold">1.800.000đ</Text>
+                    </View>
                 </View>
-                <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
-                    <Text>🍟 Khoai tây chiên</Text>
-                    <Text className="text-green-600 font-semibold">1.800.000đ</Text>
-                </View>
-            </View>
 
-            <BarChart
-                data={chartData}
-                width={Dimensions.get('window').width - 32} // padding horizontal
-                height={280}
-                fromZero
-                yAxisSuffix=" vé"
-                chartConfig={{
-                    backgroundColor: '#1cc910',
-                    backgroundGradientFrom: '#eff3ff',
-                    backgroundGradientTo: '#efefef',
-                    decimalPlaces: 0,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    style: {
+                <BarChart
+                    data={chartData}
+                    width={Dimensions.get('window').width - 32} // padding horizontal
+                    height={280}
+                    fromZero
+                    yAxisSuffix=" vé"
+                    chartConfig={{
+                        backgroundColor: '#1cc910',
+                        backgroundGradientFrom: '#eff3ff',
+                        backgroundGradientTo: '#efefef',
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16,
+                        },
+                        propsForDots: {
+                            r: '6',
+                            strokeWidth: '2',
+                            stroke: '#ffa726',
+                        },
+                    }}
+                    xAxisLabel=''
+                    yAxisLabel=''
+                    style={{
+                        marginVertical: 8,
                         borderRadius: 16,
-                    },
-                    propsForDots: {
-                        r: '6',
-                        strokeWidth: '2',
-                        stroke: '#ffa726',
-                    },
-                }}
-                xAxisLabel=''
-                yAxisLabel=''
-                style={{
-                    marginVertical: 8,
-                    borderRadius: 16,
-                }}
-            />
-        </ScrollView>
+                    }}
+                />
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 

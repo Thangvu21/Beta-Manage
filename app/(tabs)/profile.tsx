@@ -1,13 +1,45 @@
-import { View, Text } from "react-native";
+// SettingScreen.tsx
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const Profile = () => {
-    return (
-        <>
-            <View className="flex-1 items-center justify-center bg-white dark:bg-black">
-                <Text className="text-5xl text-accent font-bold">Profile</Text>  
-            </View>
-        </>
-    )
+export default function Profile() {
+  const navigation = useNavigation();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Cài đặt</Text>
+
+      <TouchableOpacity
+        style={styles.item}
+        // onPress={() => navigation.navigate('../setting/ChangeAvatar')}
+      >
+        <Text style={styles.itemText}>Thay đổi ảnh đại diện</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.item}
+        // onPress={() => navigation.navigate('./setting/ChangePassword')}
+      >
+        <Text style={styles.itemText}>Đổi mật khẩu</Text>
+      </TouchableOpacity>
+
+      {/* Các mục khác như Ngôn ngữ, Đăng xuất... có thể thêm tương tự */}
+      <TouchableOpacity
+        style={styles.item}
+        // onPress={() => navigation.navigate('./setting/ChangePassword')}
+      >
+        <Text style={styles.itemText}>Đăng xuất</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
-export default Profile;
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
+  item: {
+    paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#ccc'
+  },
+  itemText: { fontSize: 18 }
+});

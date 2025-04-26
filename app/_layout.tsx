@@ -1,10 +1,30 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import './global.css';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FONT_FAMILY } from "@/constants/font";
+import { useEffect, useState } from "react";
 
 
 export default function RootLayout() {
+
+  const router = useRouter();
+  // const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
+  // useEffect(() => {
+  //   // Giả lập kiểm tra trạng thái đăng nhập
+  //   const checkLoginStatus = async () => {
+  //     const loggedIn = false; // Thay bằng logic kiểm tra đăng nhập thực tế
+  //     // setIsLoggedIn(loggedIn);
+
+  //     if (!loggedIn) {
+  //       router.replace("/signIn"); // Điều hướng đến màn hình đăng nhập
+  //     }
+  //   };
+
+  //   checkLoginStatus();
+  // }, []);
+
+
   return (
     <Stack>
       <Stack.Screen
@@ -14,9 +34,8 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="movie/[id]"
+        name="movie"
         options={{
-          title: "Movie Details",
           headerShown: false,
         }}
       />
@@ -24,20 +43,21 @@ export default function RootLayout() {
         name="signIn"
         options={
           {
-            headerTransparent: true,
-            headerTitle: "Login",
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: "bold",
-              fontFamily: FONT_FAMILY
-            },
-            headerBackground: () => (
-              <LinearGradient
-                colors={["#1e6fa8", "#70c6e5"]}
-                style={{ flex: 1 }}
-              />
-            ),
+            headerShown: false,
+            // headerTransparent: true,
+            // headerTitle: "Login",
+            // headerTintColor: "#fff",
+            // headerTitleStyle: {
+            //   fontSize: 20,
+            //   fontWeight: "bold",
+            //   fontFamily: FONT_FAMILY
+            // },
+            // headerBackground: () => (
+            //   <LinearGradient
+            //     colors={["#1e6fa8", "#70c6e5"]}
+            //     style={{ flex: 1 }}
+            //   />
+            // ),
           }
         }
       />
