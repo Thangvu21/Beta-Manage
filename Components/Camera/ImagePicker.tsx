@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Image, ImageURISource, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface Props {
     imageUri: string ;
@@ -7,8 +7,6 @@ interface Props {
 }
 
 const ImagePickerScreen = ({imageUri, setImageUri} : Props) => {
-    
-    const imageSource : ImageURISource = { uri: imageUri };
 
     const pickImage = async () => {
 

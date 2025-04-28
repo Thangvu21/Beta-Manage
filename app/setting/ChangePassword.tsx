@@ -1,4 +1,6 @@
 // ChangePasswordScreen.tsx
+import { LinearGradient } from 'expo-linear-gradient';
+import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -22,37 +24,52 @@ export default function ChangePasswordScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Đổi mật khẩu</Text>
 
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        placeholder="Mật khẩu hiện tại"
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
+    <>
+      <Stack.Screen
+        options={{
+          title: "Đổi mật khẩu", 
+          headerTintColor: '#fff', // tiêu đề header
+          headerBackground: () => (
+            <LinearGradient
+              colors={["#1e6fa8", "#70c6e5"]}
+              style={{ flex: 1 }}
+            />
+          )
+        }}
       />
+      <View style={styles.container}>
+        <Text style={styles.title}>Đổi mật khẩu</Text>
 
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        placeholder="Mật khẩu mới"
-        value={newPassword}
-        onChangeText={setNewPassword}
-      />
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          placeholder="Mật khẩu hiện tại"
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+        />
 
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        placeholder="Nhập lại mật khẩu mới"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          placeholder="Mật khẩu mới"
+          value={newPassword}
+          onChangeText={setNewPassword}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>Lưu thay đổi</Text>
-      </TouchableOpacity>
-    </View>
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          placeholder="Nhập lại mật khẩu mới"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+          <Text style={styles.buttonText}>Lưu thay đổi</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 

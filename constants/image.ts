@@ -42,6 +42,18 @@ export const images = {
   update
 };
 
+export const imageBase = [
+  bong,
+  coffee,
+  bg,
+  highlight,
+  beta,
+  avatar,
+  betaAVT,
+  beta2,
+  background,
+  update
+]
 
 export const foodImages = {
   bong,

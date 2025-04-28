@@ -13,7 +13,7 @@ const SignIn = () => {
     const handleLogin = () => {
         
         if (username && password) {
-            router.replace("/"); // Điều hướng đến tab chính sau khi đăng nhập
+            router.replace("/"); 
         } else {
             alert("Please enter valid credentials");
         }
@@ -43,17 +43,19 @@ const SignIn = () => {
                         <TextInput
                             placeholder="Email"
                             placeholderTextColor={'#DDDDDD'}
-                            className="border w-[250] py-2 px-4 rounded-full mb-4"
-                            style={{ borderColor: '#FFF', borderWidth: 2 }}
+                            className="border w-[250] py-3 px-6 rounded-full mb-4"
+                            style={{ borderColor: '#FFF', borderWidth: 2, color: '#FFF', fontSize: 20 }}
                             value={username}
                             onChangeText={setUsername}
                         />
                         <TextInput
                             placeholder="Password"
                             placeholderTextColor={'#DDDDDD'}
+                            textContentType='password'
+
                             secureTextEntry
-                            className="border w-[250] py-2 px-4 rounded-full mb-4"
-                            style={{ borderColor: '#FFF', borderWidth: 2 }}
+                            className="border w-[250] py-3 px-6 rounded-full mb-4"
+                            style={{ borderColor: '#FFF', borderWidth: 2, color: '#FFF', fontSize: 20 }}
                             value={password}
                             onChangeText={setPassword}
                         />

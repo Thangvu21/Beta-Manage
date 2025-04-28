@@ -2,7 +2,7 @@ import { Alert, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInpu
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ImageLibraryOptions, launchImageLibrary } from 'react-native-image-picker';
 import ImagePickerScreen from "../Camera/ImagePicker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FoodItem } from "@/constants/food";
 import { images, imagesUrl } from "@/constants/image";
 
@@ -30,6 +30,9 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
         setFoodList([...foodList, { id: foodList.length + 1, name: title, price: price, image: imagesUrl.img8 }]);
         console.log("Food Created:", { title, price, image });
         // Gửi API
+        setTitle('');
+        setPrice('');
+        setImage('');
         setModalCreateVisible(false);
     }
 

@@ -8,21 +8,23 @@ import { useEffect, useState } from "react";
 export default function RootLayout() {
 
   const router = useRouter();
-  // const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
-  // useEffect(() => {
-  //   // Giả lập kiểm tra trạng thái đăng nhập
-  //   const checkLoginStatus = async () => {
-  //     const loggedIn = false; // Thay bằng logic kiểm tra đăng nhập thực tế
-  //     // setIsLoggedIn(loggedIn);
+  useEffect(() => {
+    // Giả lập kiểm tra trạng thái đăng nhập
+    const checkLoginStatus = async () => {
+      const loggedIn = false; // Thay bằng logic kiểm tra đăng nhập thực tế
+      // setIsLoggedIn(loggedIn);
 
-  //     if (!loggedIn) {
-  //       router.replace("/signIn"); // Điều hướng đến màn hình đăng nhập
-  //     }
-  //   };
+      if (!loggedIn) {
+        router.replace("./login"); 
+      } else {
+        router.replace("./"); 
+      }
+    };
 
-  //   checkLoginStatus();
-  // }, []);
+    checkLoginStatus();
+  }, []);
 
 
   return (
@@ -40,31 +42,12 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen name="scanner" />
-      {/* <Stack.Screen name="scanner" options={{ 
-        headerShown: true, 
-        title: "Quét mã QR", 
-        headerTintColor: "#fff", 
-        headerStyle: { backgroundColor: "#70c6e5" }
-      }} /> */}
+      
       <Stack.Screen
         name="login"
         options={
           {
             headerShown: false,
-            // headerTransparent: true,
-            // headerTitle: "Login",
-            // headerTintColor: "#fff",
-            // headerTitleStyle: {
-            //   fontSize: 20,
-            //   fontWeight: "bold",
-            //   fontFamily: FONT_FAMILY
-            // },
-            // headerBackground: () => (
-            //   <LinearGradient
-            //     colors={["#1e6fa8", "#70c6e5"]}
-            //     style={{ flex: 1 }}
-            //   />
-            // ),
           }
         }
       />

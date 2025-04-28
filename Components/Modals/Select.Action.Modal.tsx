@@ -19,23 +19,32 @@ const SelectActionModal = ({
 
     return (
         <>
-            <Modal visible={isActionModalVisible} transparent animationType="fade">
+            <Modal visible={isActionModalVisible} transparent animationType="slide">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity style={styles.button} onPress={handleEdit}>
-                                <Text style={[styles.buttonText, { color: '#007AFF' }]}>Sửa</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={handleDelete}>
-                                <Text style={[styles.buttonText, { color: '#FF3B30' }]}>Xóa</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity style={styles.button} onPress={() => setIsActionModalVisible(false)}>
-                                <Text style={[styles.buttonText, { color: '#FF3B30' }]}>Đóng</Text>
-                            </TouchableOpacity>
-                        </View>
+
+                        {/* Nút sửa */}
+                        <TouchableOpacity style={styles.optionButton} onPress={handleEdit}>
+                            <Text style={[styles.optionText, { color: '#007AFF' }]}>Sửa</Text>
+                        </TouchableOpacity>
+
+                        {/* Nút xóa */}
+                        <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
+                            <Text style={[styles.optionText, { color: '#FF3B30' }]}>Xóa</Text>
+                        </TouchableOpacity>
+
                     </View>
+
+                    {/* Khoảng cách */}
+                    <View style={{ height: 8 }} />
+
+                    {/* Nút đóng riêng */}
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity style={styles.optionButton} onPress={() => setIsActionModalVisible(false)}>
+                            <Text style={[styles.optionText, { color: '#007AFF' }]}>Đóng</Text>
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
             </Modal>
 
@@ -45,38 +54,28 @@ const SelectActionModal = ({
 
 import { StyleSheet } from 'react-native';
 
+
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)', // nền đen mờ
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'flex-end', // modal trượt từ dưới lên
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        padding: 16,
     },
     modalContent: {
-        flexDirection: 'column',
-        width: '80%',
         backgroundColor: '#fff',
-        borderRadius: 16,
-        paddingVertical: 20,
-        paddingHorizontal: 24,
-        alignItems: 'center',
-        elevation: 5, // bóng đổ Android
-        shadowColor: '#000', // bóng đổ iOS
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        borderRadius: 12,
+        overflow: 'hidden',
     },
-    button: {
-        flex: 1,
-        borderRightColor: '#ccc',
-        paddingVertical: 12,
+    optionButton: {
+        paddingVertical: 16,
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E5E5',
+        borderBottomColor: '#eee',
     },
-    buttonText: {
+    optionText: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '500',
     },
 });
 

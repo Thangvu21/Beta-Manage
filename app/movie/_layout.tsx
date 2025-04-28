@@ -7,7 +7,7 @@ const MovieLayout = () => {
     return (
         <Stack
             screenOptions={{
-                headerShown: true, // Hiển thị header
+                headerShown: true, 
             }}
         >
             <Stack.Screen

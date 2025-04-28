@@ -1,8 +1,19 @@
+import { Stack } from "expo-router"
 import SignIn from "./signIn"
 
 const login = () => {
     return (
-        <SignIn />
+        <>
+            <Stack.Screen
+                options={{
+                    headerShown: false,
+                }}
+            />
+
+            <SignIn />
+        </>
+
+
     )
 }
 

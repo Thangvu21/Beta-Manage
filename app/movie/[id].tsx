@@ -1,4 +1,4 @@
-import { FilmData } from "@/constants/film";
+import { FilmData, Movie } from "@/constants/film";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from "react-native";
@@ -13,37 +13,38 @@ import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
 const Details = () => {
 
     const navigation = useNavigation();
-    const { id } = useLocalSearchParams<{ id: string }>();
-    const film = FilmData.find((item) => item.id === id);
+    const { id, title, image, description } = useLocalSearchParams<{ id: string, title: string, image:string, description: string }>();
+    // const film = FilmData.find((item) => item.id === id);
+    
 
     useEffect(() => {
-        if (film?.title) {
+        if (title) {
             navigation.setOptions({
-                headerTitle: film.title,
+                headerTitle: title,
             });
         }
-    }, [film, navigation]);
+    }, [id, navigation]);
 
     return (
         // c1
         <SafeAreaView>
             <View style={styles.imageContainer}>
                 <ImageBackground
-                    source={{ uri: film?.posterUrl }}
+                    source={{ uri: image }}
                     style={styles.background}
                     imageStyle={{}}
                     blurRadius={20}
                 >
                     <View className="absolute top-10 left-5 right-0 bottom-0 ">
                         <Text style={styles.textTitle}>
-                            {film?.title}
+                            {title}
                         </Text>
                         <Text style={styles.timeTitle}>
-                            {film?.releaseDate}
+                            {description}
                         </Text>
                     </View>
                     <View style={styles.overlay}>
-                        <Image source={{ uri: film?.posterUrl }} style={styles.posterImage} />
+                        <Image source={{ uri: image }} style={styles.posterImage} />
                     </View>
                 </ImageBackground>
                 {/* <TouchableOpacity onPress={() => setEditModalVisible(true)}

@@ -1,17 +1,20 @@
 // ChangeAvatarScreen.tsx
+import ImagePickerScreen from '@/Components/Camera/ImagePicker';
 import { images } from '@/constants/image';
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 export default function ChangeAvatarScreen() {
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+
+  const [avatarUri, setAvatarUri] = useState<string>(images.avatar.uri);
 
   const handleChooseImage = () => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.didCancel) return;
       if (response.assets && response.assets[0]) {
-        setAvatarUri(response.assets[0].uri || null);
+        // nếu ko có ảnh dúng image mặc định chẳng hạn
+        setAvatarUri(response.assets[0].uri || ''); 
         Alert.alert('Thành công', 'Ảnh đại diện đã được cập nhật!');
       }
     });
@@ -29,6 +32,7 @@ export default function ChangeAvatarScreen() {
       <TouchableOpacity style={styles.button} onPress={handleChooseImage}>
         <Text style={styles.buttonText}>Chọn ảnh từ thư viện</Text>
       </TouchableOpacity>
+      <ImagePickerScreen imageUri={avatarUri} setImageUri={setAvatarUri}/>
     </View>
   );
 }

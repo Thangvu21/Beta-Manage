@@ -88,7 +88,15 @@ export default function Index() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
-                    <TouchableOpacity onPress={() => router.push(`/movie/${item.id}`, {})} >
+                    <TouchableOpacity onPress={() => router.push({
+                      pathname: '/movie/[id]',
+                      params: {
+                        id: item.id,
+                        title: item.title,
+                        image: item.posterUrl,
+                        description: item.releaseDate
+                      }
+                    })} >
                       <View className="flex-col m p-[6px]">
                         {/* Poster */}
                         <Image source={{ uri: item.posterUrl }} style={styles.imageFilm} resizeMode="cover" />

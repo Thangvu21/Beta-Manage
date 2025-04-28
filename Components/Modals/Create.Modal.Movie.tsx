@@ -41,6 +41,9 @@ const CreateModalMovie = ({
             posterUrl: imagesUrl.img4
         }
         setListMovie([...listMovie, MovieAdded]);
+        setImage('');
+        setTitle('');
+        setDescription('');
         setModalCreateVisible(false);
     }
 
