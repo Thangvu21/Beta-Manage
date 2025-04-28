@@ -52,6 +52,33 @@ export default function Index() {
     setIsActionModalVisible(true)
   }
 
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch('localhost:/film', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // Có thể thêm authorization header nếu cần
+            // 'Authorization': 'Bearer YOUR_TOKEN'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        console.log(data);
+        setListMovie(data); // Giả sử bạn có một state để lưu trữ danh sách phim
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      }
+    };
+    
+    fetchMovies();
+  }, []);
+
   const [loaded, error] = useFonts({
     [FONT_FAMILY]: require('@/assets/fonts/Oswald-Regular.ttf'),
   });
