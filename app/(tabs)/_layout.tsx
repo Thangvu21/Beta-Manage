@@ -8,20 +8,26 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { LinearGradient } from "expo-linear-gradient";
 import { FONT_FAMILY } from "@/constants/font";
 import { BottomTabBarProps } from "@/types/bottomTabBarProps";
+import { useRouter } from "expo-router";
 
-const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => (
-    <View style={styles.fabWrapper}>
-        <TouchableOpacity
-            style={styles.fabContainer}
-            onPress={onPress}
-            activeOpacity={0.9}
-        >
-            <View style={styles.fab}>
-                {children}
-            </View>
-        </TouchableOpacity>
-    </View>
-);
+const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => {
+    const router = useRouter();
+
+    return (
+        <View style={styles.fabWrapper}>
+            <TouchableOpacity
+                style={styles.fabContainer}
+                onPress={() => router.push('../scanner')} // chú ý đường dẫn mới
+                activeOpacity={0.9}
+            >
+                <View style={styles.fab}>
+                    {children}
+                </View>
+            </TouchableOpacity>
+        </View>
+    );
+}
+
 
 const _Layout = () => {
     return (
@@ -71,17 +77,14 @@ const _Layout = () => {
                 }}
             />
 
-
-
             <Tabs.Screen
                 name="scan"
-                
                 options={{
-                    title: "Time", headerShown: false,
                     tabBarIcon: ({ color }) => <MaterialIcons name="control-camera" size={30} color={'white'} />,
-                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress} />,
+                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress}/>, // tự custom FAB bấm
                 }}
             />
+
 
             <Tabs.Screen
                 name="food"

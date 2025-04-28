@@ -1,5 +1,5 @@
 
-import { Text, View, Image, TouchableOpacity, FlatList, Modal } from "react-native";
+import { Text, View, Image, TouchableOpacity, FlatList, Modal, Button } from "react-native";
 // import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -14,6 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
 import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
+import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
+import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,25 +25,32 @@ export default function Index() {
 
   const [listMovie, setListMovie] = useState<Movie[]>(FilmData);
 
+  // is user selected
   const [movie, setMovie] = useState<Movie>();
-
-  const [modalVisible, setModalVisible] = useState(false);
 
   const [modalCreateVisible, setModalCreateVisible] = useState(false);
 
+  const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
+  
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
+
+  const handlEdit = () => {
+    setIsActionModalVisible(false);
+    setEditModalVisible(true);
+  }
+
+  const handleDelete = () => { 
+    setIsActionModalVisible(false);
+    setModalDeleteVisible(true);
+  }
+
   const handleOpenAddModal = (movieSelected: Movie) => {
     setMovie(movieSelected);
-    setModalVisible(true);
+    // setModalDeleteVisible(true);
+    setIsActionModalVisible(true)
   }
-
-  const handleDeleteMovie = () => {
-    // Xóa phim
-    const updatedListMovie = listMovie.filter(item => item.id !== movie?.id);
-    setListMovie(updatedListMovie);
-    setModalVisible(false);
-  }
-
-
 
   const [loaded, error] = useFonts({
     [FONT_FAMILY]: require('@/assets/fonts/Oswald-Regular.ttf'),
@@ -79,15 +88,10 @@ export default function Index() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
-                    <TouchableOpacity onPress={() => router.push(`/movie/${item.id}`, {
-
-                    })} >
-
-
+                    <TouchableOpacity onPress={() => router.push(`/movie/${item.id}`, {})} >
                       <View className="flex-col m p-[6px]">
                         {/* Poster */}
                         <Image source={{ uri: item.posterUrl }} style={styles.imageFilm} resizeMode="cover" />
-
                         <TouchableOpacity style={styles.menuButtonOverlay} onPress={() => handleOpenAddModal(item)}>
                           <Ionicons name="ellipsis-vertical" size={18} color="#fff" />
                         </TouchableOpacity>
@@ -108,41 +112,40 @@ export default function Index() {
 
             </View>
 
-            <ConfirmDeleteModal />
-            {/* <Modal
-              visible={modalVisible}
-              transparent
-              animationType="slide"
-              onRequestClose={() => setModalVisible(false)}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-
-
-                  <TouchableOpacity onPress={() => handleDeleteMovie()}>
-                    <Text style={[styles.modalOption, { color: 'red' }]}>Xóa</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <Text style={[styles.modalOption, { color: '#888' }]}>Đóng</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal> */}
-          </View>
-          
-          <CreateModalMovie 
-              modalCreateVisible={modalCreateVisible}
-              setModalCreateVisible={setModalCreateVisible}
+            <ConfirmDeleteModal
+              modalDeleteVisible={modalDeleteVisible}
+              setModalDeleteVisible={setModalDeleteVisible}
+              movie={movie}
+              setListMovie={setListMovie}
+              listMovie={listMovie}
             />
-          <TouchableOpacity onPress={() => {
-            console.log("Create Movie");
-            setModalCreateVisible(true);
-          }}>
+            {movie && <UpdateModalMovie
+              modalUpdateVisible={editModalVisible}
+              setModalUpdateVisible={setEditModalVisible}
+              movie={movie}
+              listMovie={listMovie}
+              setListMovie={setListMovie}
+            />}
+          </View>
+
+          <SelectActionModal
+            handleDelete={handleDelete}
+            handleEdit={handlEdit}
+            isActionModalVisible={isActionModalVisible}
+            setIsActionModalVisible={setIsActionModalVisible}
+          />
+          <CreateModalMovie
+            modalCreateVisible={modalCreateVisible}
+            setModalCreateVisible={setModalCreateVisible}
+            setListMovie={setListMovie}
+            listMovie={listMovie}
+          />
+          <TouchableOpacity onPress={() => setModalCreateVisible(true)}>
             <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
               <Ionicons name="add" size={28} color="#fff" />
             </LinearGradient>
           </TouchableOpacity>
+
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

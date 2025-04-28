@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { foodData, FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,7 +12,7 @@ import DeleteModalFood from "@/Components/Modals/Delete.Modal.Food";
 
 const Food = () => {
 
-    const [foodList, setFoodList] = useState(foodData);
+    const [foodList, setFoodList] = useState<FoodItem[]>(foodData);
 
     const [food, setFood] = useState<FoodItem>();
 
@@ -21,6 +21,10 @@ const Food = () => {
     const [modalEditVisible, setModalEditVisible] = useState(false);
 
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
+
+    const handleOpenAddModal = () => {
+        setModalCreateVisible(true);
+    }
 
     const handleUpdateMovie = (food: FoodItem) => {
         setFood(food);
@@ -31,6 +35,8 @@ const Food = () => {
         setFood(food);
         setModalDeleteVisible(true);
     }
+
+    
 
     return (
 
@@ -47,7 +53,7 @@ const Food = () => {
                     columnWrapperStyle={{ justifyContent: 'space-between' }}
                     renderItem={({ item }) => (
                         <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
-                            <Image source={item.image} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
+                            <Image source={{uri : item.image}} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
                             <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
                             <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
                             <View className="flex-row justify-between">
@@ -64,7 +70,7 @@ const Food = () => {
                                     onPress={() => {
                                         handleDeleteMovie(item);
                                     }}>
-                                    <Feather name="x-circle" size={24} color="black"/>
+                                    <Feather name="x-circle" size={24} color="black" />
 
                                 </TouchableOpacity>
                             </View>
@@ -72,18 +78,37 @@ const Food = () => {
                     )}
                 />
 
-                <CreateModalFood setModalCreateVisible={setModalCreateVisible} modalCreateVisible={modalCreateVisible} />
-                <UpdateModalFood setModalUpdateVisible={setModalEditVisible} modalUpdateVisible={modalEditVisible} food={food} />
-                <DeleteModalFood setModalDeleteVisible={setModalDeleteVisible} modalDeleteVisible={modalDeleteVisible} food={food} />
+                <CreateModalFood
+                    setModalCreateVisible={setModalCreateVisible}
+                    modalCreateVisible={modalCreateVisible}
+                    foodList={foodList}
+                    setFoodList={setFoodList} />
+                {
+                    food && (
+                        <UpdateModalFood
+                            setModalUpdateVisible={setModalEditVisible}
+                            modalUpdateVisible={modalEditVisible}
+                            food={food}
+                            foodList={foodList}
+                            setFoodList={setFoodList}
+                        />
+                    )
+                }
+                <DeleteModalFood
+                    setModalDeleteVisible={setModalDeleteVisible}
+                    modalDeleteVisible={modalDeleteVisible}
+                    food={food}
+                    foodList={foodList}
+                    setFoodList={setFoodList}
+                />
                 {/* Modal thêm món */}
-                <TouchableOpacity onPress={() => {
-                    console.log("Create Food");
-                    setModalCreateVisible(true);
-                }}>
-                    <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-                        <Ionicons name="add" size={28} color="#fff" />
-                    </LinearGradient>
-                </TouchableOpacity>
+                <View>
+                    <TouchableOpacity onPress={() => handleOpenAddModal()}>
+                        <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
+                            <Ionicons name="add" size={28} color="#fff" />
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
             </View>
         </>
 

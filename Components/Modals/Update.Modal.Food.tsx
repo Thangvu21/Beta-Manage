@@ -1,39 +1,65 @@
 import { FoodItem } from "@/constants/food";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Button, ImageURISource, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
+import { imagesUrl } from "@/constants/image";
 
 interface props {
     modalUpdateVisible: boolean,
     setModalUpdateVisible: (visible: boolean) => void
-    food: FoodItem | undefined
+    food: FoodItem,
+    foodList: FoodItem[],
+    setFoodList: (foodList: FoodItem[]) => void
 }
 
-const UpdateModalFood = (props: props) => {
+const UpdateModalFood = ({
+    modalUpdateVisible,
+    setModalUpdateVisible,
+    food,
+    foodList,
+    setFoodList
+}: props) => {
 
-    const [image, setImage] = useState<string | null>(null);
-    const [title, setTitle] = useState<string>(props.food?.name || '');
-    const [price, setPrice] = useState<string>(props.food?.price || '');
+    useEffect(() => {
+        setTitle(food?.name || '')
+        setPrice(food?.price || '')
+        setImage(food?.image || '')
+    }, [food])
+
+    const [image, setImage] = useState<string>(food?.image || '');
+    const [title, setTitle] = useState<string>(food?.name || '');
+    const [price, setPrice] = useState<string>(food?.price || '');
+
     const handelupdateFood = () => {
-        if (!title || !price || !image) {
+        if (!title || !price) {
             Alert.alert("Please fill all fields");
             return;
         }
         // Handle food update logic here
-        console.log("Food Updated:", { title, price, image });
+        // console.log("Food Updated:", { title, price, image });
         // Gửi API
-        props.setModalUpdateVisible(!props.modalUpdateVisible);
+        console.log('image', image);
+        setFoodList(
+            foodList.map((item) => {
+                if (item.id === food?.id) {
+                    return { ...item, name: title, price: price, image: image };
+                }
+                return item;
+            }),
+        )
+        console.log("Food Updated:");
+        setModalUpdateVisible(false);
     }
 
     return (
         <Modal
             animationType="slide"
             transparent={true}
-            visible={props.modalUpdateVisible}
+            visible={modalUpdateVisible}
             onRequestClose={() => {
                 Alert.alert('Modal has been closed.');
-                props.setModalUpdateVisible(!props.modalUpdateVisible);
+                setModalUpdateVisible(!modalUpdateVisible);
             }}>
             <View style={styles.modalWrapper}>
                 <View style={styles.container}>
@@ -42,7 +68,7 @@ const UpdateModalFood = (props: props) => {
                         <Text style={styles.headerTitle}>
                             Update Food
                         </Text>
-                        <Pressable onPress={() => props.setModalUpdateVisible(!props.modalUpdateVisible)}>
+                        <Pressable onPress={() => setModalUpdateVisible(!modalUpdateVisible)}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
                     </View>

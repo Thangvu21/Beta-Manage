@@ -15,7 +15,6 @@ const Details = () => {
     const navigation = useNavigation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const film = FilmData.find((item) => item.id === id);
-    const [editModalVisible, setEditModalVisible] = useState(false);
 
     useEffect(() => {
         if (film?.title) {
@@ -24,10 +23,6 @@ const Details = () => {
             });
         }
     }, [film, navigation]);
-
-    const handleUpdateMovie = () => {
-        setEditModalVisible(true);
-    }
 
     return (
         // c1
@@ -51,13 +46,13 @@ const Details = () => {
                         <Image source={{ uri: film?.posterUrl }} style={styles.posterImage} />
                     </View>
                 </ImageBackground>
-                <TouchableOpacity onPress={() => setEditModalVisible(true)}
+                {/* <TouchableOpacity onPress={() => setEditModalVisible(true)}
                     style={styles.fabButton}>
 
                     <Ionicons name="refresh-circle-outline" size={36} color='black' />
 
-                </TouchableOpacity>
-                <UpdateModalMovie modalUpdateVisible={editModalVisible} setModalUpdateVisible={setEditModalVisible} movie={film}/>
+                </TouchableOpacity> */}
+                
             </View>
         </SafeAreaView>
     )

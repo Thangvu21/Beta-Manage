@@ -3,44 +3,62 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ImageLibraryOptions, launchImageLibrary } from 'react-native-image-picker';
 import { useState } from "react";
 import ImagePickerScreen from "../Camera/ImagePicker";
+import { Movie } from "@/constants/film";
+import { images, imagesUrl } from "@/constants/image";
 
 interface Props {
     modalCreateVisible: boolean,
-    setModalCreateVisible: (visible: boolean) => void
+    setModalCreateVisible: (visible: boolean) => void,
+    listMovie: Movie[],
+    setListMovie: (listMovie: Movie[]) => void;
 }
 
-const CreateModalMovie = (props: Props) => {
+const CreateModalMovie = ({
+    modalCreateVisible,
+    setModalCreateVisible,
+    listMovie,
+    setListMovie
+}: Props) => {
 
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string>('');
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
     const handelCreateMovie = () => {
-        if (!title || !description || !image) {
+        if (!title || !description) {
             Alert.alert("Please fill all fields");
             return;
         }
         // Handle movie creation logic here
         console.log("Movie Created:", { title, description, image });
         // Gửi API
-        props.setModalCreateVisible(false);
+        
+        // setListMovie
+        const MovieAdded: Movie = {
+            id: Math.random().toString(4),
+            title: title,
+            releaseDate: description,
+            posterUrl: imagesUrl.img4
+        }
+        setListMovie([...listMovie, MovieAdded]);
+        setModalCreateVisible(false);
     }
 
     return (
         <Modal
             animationType="slide"
             transparent={true}
-            visible={props.modalCreateVisible}
+            visible={modalCreateVisible}
             onRequestClose={() => {
                 Alert.alert('Modal has been closed.');
-                props.setModalCreateVisible(false);
+                setModalCreateVisible(false);
             }}>
             <View style={styles.modalWrapper}>
                 <View style={styles.modalContainer}>
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>Create Movie</Text>
-                        <Pressable onPress={() => props.setModalCreateVisible(false)}>
+                        <Pressable onPress={() => setModalCreateVisible(false)}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
                     </View>

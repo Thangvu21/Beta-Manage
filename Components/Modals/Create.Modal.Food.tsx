@@ -1,46 +1,53 @@
-import { Alert, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { Alert, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, ImageURISource } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ImageLibraryOptions, launchImageLibrary } from 'react-native-image-picker';
 import ImagePickerScreen from "../Camera/ImagePicker";
 import React, { useState } from "react";
+import { FoodItem } from "@/constants/food";
+import { images, imagesUrl } from "@/constants/image";
 
 interface Props {
     modalCreateVisible: boolean,
-    setModalCreateVisible: (visible: boolean) => void
+    setModalCreateVisible: (visible: boolean) => void,
+    foodList: FoodItem[],
+    setFoodList: (foodList: FoodItem[]) => void
 }
 
-const CreateModalFood = (props: Props) => {
+const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, setFoodList }: Props) => {
 
     const [title, setTitle] = useState<string>('');
     const [price, setPrice] = useState<string>('');
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string>('');
 
     const handelCreateFood = () => {
-        if (!title || !price || !image) {
+        if (!title || !price) {
+
             Alert.alert("Please fill all fields");
             return;
         }
+
         // Handle food creation logic here
+        setFoodList([...foodList, { id: foodList.length + 1, name: title, price: price, image: imagesUrl.img8 }]);
         console.log("Food Created:", { title, price, image });
         // Gửi API
-        props.setModalCreateVisible(false);
+        setModalCreateVisible(false);
     }
 
     return (
         <Modal
             animationType="slide"
             transparent={true}
-            visible={props.modalCreateVisible}
+            visible={modalCreateVisible}
             onRequestClose={() => {
                 Alert.alert('Modal has been closed.');
-                props.setModalCreateVisible(false);
+                setModalCreateVisible(false);
             }}>
             <View style={styles.modalWrapper}>
                 <View style={styles.modalContainer}>
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>Create Food</Text>
-                        <Pressable onPress={() => props.setModalCreateVisible(false)}>
+                        <Pressable onPress={() => setModalCreateVisible(false)}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
                     </View>
@@ -72,7 +79,7 @@ const CreateModalFood = (props: Props) => {
                         </View>
 
                         {/* Image */}
-                        <ImagePickerScreen imageUri={image} setImageUri={setImage}/>
+                        <ImagePickerScreen imageUri={image} setImageUri={setImage} />
                     </ScrollView>
 
                     {/* Footer */}

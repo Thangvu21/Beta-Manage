@@ -1,36 +1,43 @@
 // SettingScreen.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { UserData } from "@/constants/user";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 export default function Profile() {
   const navigation = useNavigation();
 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cài đặt</Text>
 
-      <TouchableOpacity
-        style={styles.item}
-        // onPress={() => navigation.navigate('../setting/ChangeAvatar')}
-      >
-        <Text style={styles.itemText}>Thay đổi ảnh đại diện</Text>
-      </TouchableOpacity>
+      <View style= {{ backgroundColor: '#fff', flexDirection: 'column', alignItems: 'center', padding: 20, marginBottom: 10, borderBottomWidth: 2, borderBottomColor: "#ccc", width: '100%', borderRadius:10 }}>
+        <Image source={UserData.profilePictureUrl} style={{width: 60, height: 60, marginBottom: 10, borderRadius: 30}}/>
+        <Text style={{fontSize: 15, fontWeight: 300}}>Xin Chào</Text>
+        <Text style={{fontSize: 25, fontWeight: 500}}>{UserData.name.toUpperCase()}</Text>
+      </View>
 
-      <TouchableOpacity
-        style={styles.item}
-        // onPress={() => navigation.navigate('./setting/ChangePassword')}
-      >
-        <Text style={styles.itemText}>Đổi mật khẩu</Text>
-      </TouchableOpacity>
-
-      {/* Các mục khác như Ngôn ngữ, Đăng xuất... có thể thêm tương tự */}
-      <TouchableOpacity
-        style={styles.item}
-        // onPress={() => navigation.navigate('./setting/ChangePassword')}
-      >
-        <Text style={styles.itemText}>Đăng xuất</Text>
-      </TouchableOpacity>
+      
+      <View>
+        <Text style={{fontSize: 20, fontWeight: 'bold'}}>Cá nhân</Text>
+        <View>
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent:'space-between', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+            <Text>Đổi ảnh đại diện</Text>
+            <FontAwesome5 name="user-circle" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent:'space-between', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+            <Text>Đổi mật khẩu</Text>
+            <EvilIcons name="lock" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent:'space-between', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+            <Text>
+              Đăng xuất
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }

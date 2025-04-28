@@ -1,15 +1,14 @@
-import { useState } from "react";
 import * as ImagePicker from 'expo-image-picker';
-import { Button, Image, ImageURISource, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ImageURISource, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface Props {
-    imageUri: string | null ;
-    setImageUri: (uri: string | null) => void;
+    imageUri: string ;
+    setImageUri: (uri: string) => void;
 }
 
 const ImagePickerScreen = ({imageUri, setImageUri} : Props) => {
     
-
+    const imageSource : ImageURISource = { uri: imageUri };
 
     const pickImage = async () => {
 
@@ -40,7 +39,7 @@ const ImagePickerScreen = ({imageUri, setImageUri} : Props) => {
             <Text style={styles.createButtonText}>
                 Hãy chọn ảnh từ thư viện
             </Text> 
-            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
+            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, }} resizeMode="cover" />}
         </TouchableOpacity>
     )
 

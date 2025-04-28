@@ -39,8 +39,15 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="scanner" />
+      {/* <Stack.Screen name="scanner" options={{ 
+        headerShown: true, 
+        title: "Quét mã QR", 
+        headerTintColor: "#fff", 
+        headerStyle: { backgroundColor: "#70c6e5" }
+      }} /> */}
       <Stack.Screen
-        name="signIn"
+        name="login"
         options={
           {
             headerShown: false,

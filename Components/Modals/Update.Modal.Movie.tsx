@@ -1,22 +1,36 @@
 import { Movie } from "@/constants/film";
 import { FoodItem } from "@/constants/food";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Button, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
 
 interface props {
     modalUpdateVisible: boolean,
     setModalUpdateVisible: (visible: boolean) => void
-    movie: Movie | undefined
+    movie: Movie,
+    listMovie: Movie[],
+    setListMovie: (listMovie: Movie[]) => void;
 }
 
 
-const UpdateModalMovie = (props: props) => {
+const UpdateModalMovie = ({
+        modalUpdateVisible,
+        setModalUpdateVisible,
+        movie,
+        listMovie,
+        setListMovie
+}: props) => {
 
-    const [image, setImage] = useState<string | null>(null);
-    const [title, setTitle] = useState<string>(props.movie?.title || '');
-    const [releaseDate, setReleaseDate] = useState<string>(props.movie?.releaseDate || '');
+    const [image, setImage] = useState<string>(movie?.posterUrl || '');
+    const [title, setTitle] = useState<string>(movie?.title || '');
+    const [releaseDate, setReleaseDate] = useState<string>(movie?.releaseDate || '');
+
+    useEffect(() => {
+        setImage(movie?.posterUrl || '');
+        setTitle(movie?.title || '');
+        setReleaseDate(movie?.releaseDate || '');
+    }, [movie])
 
     const handelUpdateMovie = () => {
 
@@ -25,19 +39,25 @@ const UpdateModalMovie = (props: props) => {
             return;
         }
         // Handle movie update logic here
-        console.log("Movie Updated:", { title, releaseDate, image });
+        setListMovie(listMovie.map((item) => {    
+            return item.id === movie.id ? { ...item, title, releaseDate, posterUrl: image } : item;
+        })
+        )
+        setImage(image)
+        setTitle(title)
+        setReleaseDate(releaseDate)
         // Gửi API
-        props.setModalUpdateVisible(!props.modalUpdateVisible);
+        setModalUpdateVisible(!modalUpdateVisible);
     }
 
     return (
         <Modal
             animationType="slide"
             transparent={true}
-            visible={props.modalUpdateVisible}
+            visible={modalUpdateVisible}
             onRequestClose={() => {
                 Alert.alert('Modal has been closed.');
-                props.setModalUpdateVisible(false);
+                setModalUpdateVisible(false);
             }}
         >
             <View style={styles.modalWrapper}>
@@ -45,7 +65,7 @@ const UpdateModalMovie = (props: props) => {
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.title}>Update Movie</Text>
-                        <Pressable onPress={() => props.setModalUpdateVisible(false)}>
+                        <Pressable onPress={() => setModalUpdateVisible(false)}>
                             <AntDesign name="close" size={24} color="black" />
                         </Pressable>
                     </View>
@@ -69,7 +89,7 @@ const UpdateModalMovie = (props: props) => {
                         />
 
                         <Text style={styles.label}>Movie Poster</Text>
-                        <ImagePickerScreen imageUri={image} setImageUri={setImage} />
+                        {image && <ImagePickerScreen imageUri={image} setImageUri={setImage} />}
                     </View>
 
                     {/* Footer */}
@@ -84,7 +104,7 @@ const UpdateModalMovie = (props: props) => {
                     <View className="mt-1 mb-1">
                         <TouchableOpacity
                             style={styles.button}  
-                            onPress={() => props.setModalUpdateVisible(false)}
+                            onPress={() => setModalUpdateVisible(false)}
                         >
                             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Close</Text>
                         </TouchableOpacity>
