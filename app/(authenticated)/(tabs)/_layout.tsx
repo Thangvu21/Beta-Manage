@@ -17,7 +17,7 @@ const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => {
         <View style={styles.fabWrapper}>
             <TouchableOpacity
                 style={styles.fabContainer}
-                onPress={() => router.push('../scanner')} // chú ý đường dẫn mới
+                onPress={() => router.push('/(authenticated)/scanner')}
                 activeOpacity={0.9}
             >
                 <View style={styles.fab}>
@@ -30,6 +30,8 @@ const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => {
 
 
 const _Layout = () => {
+
+    
     return (
         <Tabs
             screenOptions={{
@@ -81,7 +83,7 @@ const _Layout = () => {
                 name="scan"
                 options={{
                     tabBarIcon: ({ color }) => <MaterialIcons name="control-camera" size={30} color={'white'} />,
-                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress}/>, // tự custom FAB bấm
+                    tabBarButton: (props) => <CustomTabBarButton children={props.children} onPress={props.onPress} />, // tự custom FAB bấm
                 }}
             />
 
@@ -106,7 +108,6 @@ const _Layout = () => {
                     tabBarIcon: ({ color }) => <MaterialIcons name="fastfood" size={30} color={color} />
                 }}
             />
-
 
             <Tabs.Screen
                 name="profile"

@@ -1,8 +1,6 @@
 
 import { Text, View, Image, TouchableOpacity, FlatList, Modal, Button } from "react-native";
 // import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import * as SplashScreen from 'expo-splash-screen';
-import { useFonts } from 'expo-font';
 import { useEffect, useState } from "react";
 import { fonts, FONT_FAMILY } from "@/constants/font";
 import { FilmData, Movie } from "@/constants/film";
@@ -17,7 +15,7 @@ import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
 import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
 
-SplashScreen.preventAutoHideAsync();
+
 
 export default function Index() {
 
@@ -52,50 +50,37 @@ export default function Index() {
     setIsActionModalVisible(true)
   }
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch('localhost:/film', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            // Có thể thêm authorization header nếu cần
-            // 'Authorization': 'Bearer YOUR_TOKEN'
-          }
-        });
+  // useEffect(() => {
+  //   const fetchMovies = async () => {
+  //     try {
+  //       const response = await fetch('localhost:/film', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           // Có thể thêm authorization header nếu cần
+  //           // 'Authorization': 'Bearer YOUR_TOKEN'
+  //         }
+  //       });
         
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
         
-        const data = await response.json();
-        console.log(data);
-        setListMovie(data); // Giả sử bạn có một state để lưu trữ danh sách phim
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-      }
-    };
+  //       const data = await response.json();
+  //       console.log(data);
+  //       setListMovie(data); 
+  //     } catch (error) {
+  //       console.error('Error fetching movies:', error);
+  //     }
+  //   };
     
-    fetchMovies();
-  }, []);
+  //   fetchMovies();
+  // }, []);
 
-  const [loaded, error] = useFonts({
-    [FONT_FAMILY]: require('@/assets/fonts/Oswald-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
-
+  
 
   return (
-    <SafeAreaProvider>
+    <>
 
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-col bg-white flex-1">
@@ -116,7 +101,7 @@ export default function Index() {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity onPress={() => router.push({
-                      pathname: '/movie/[id]',
+                      pathname: '/(authenticated)/movie/[id]',
                       params: {
                         id: item.id,
                         title: item.title,
@@ -183,7 +168,7 @@ export default function Index() {
 
         </View>
       </SafeAreaView>
-    </SafeAreaProvider>
+    </>
   );
 }
 

@@ -9,11 +9,13 @@ const SignIn = () => {
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleLogin = () => {
         
         if (username && password) {
-            router.replace("/"); 
+            router.replace('/(authenticated)/(tabs)');
         } else {
             alert("Please enter valid credentials");
         }
@@ -21,14 +23,14 @@ const SignIn = () => {
 
 
     return (
-        <SafeAreaView className="h-full bg-white">
+        <SafeAreaView className="h-full">
             <ScrollView contentContainerClassName='h-full'>
-                <ImageBackground source={images.background} className="flex-1" resizeMode="cover" style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.4)', flex: 1 }}>
+                <>
                     <View className="flex-1 items-center justify-center px-6" style={{
-                        backgroundColor: 'rgba(200,200,200,0.3)',
+                        backgroundColor: '#fff7e6',
                         borderRadius: 12,
                         padding: 16,
-                        backdropFilter: 'blur(10px)',
+                        // backdropFilter: 'blur(10px)',
 
                     }}>
                         <Image source={images.betaAVT} className="rounded-full mb-3" style={{
@@ -37,14 +39,14 @@ const SignIn = () => {
                             shadowOpacity: 0.3,
                             shadowRadius: 4,
                         }} />
-                        <Text style={{ fontSize: 24, fontWeight: 900, color: 'white' }}>Welcome Back!</Text>
-                        <Text className="mb-6" style={{ color: "#fff", fontWeight: 700 }}>Sign in to your account</Text>
+                        <Text style={{ fontSize: 24, fontWeight: 900, color: 'black' }}>Welcome Back!</Text>
+                        <Text className="mb-6" style={{ color: "black", fontWeight: 700 }}>Sign in to your account</Text>
 
                         <TextInput
                             placeholder="Email"
                             placeholderTextColor={'#DDDDDD'}
                             className="border w-[250] py-3 px-6 rounded-full mb-4"
-                            style={{ borderColor: '#FFF', borderWidth: 2, color: '#FFF', fontSize: 20 }}
+                            style={{ borderColor: 'black', borderWidth: 1, color: 'black', fontSize: 20 }}
                             value={username}
                             onChangeText={setUsername}
                         />
@@ -55,7 +57,7 @@ const SignIn = () => {
 
                             secureTextEntry
                             className="border w-[250] py-3 px-6 rounded-full mb-4"
-                            style={{ borderColor: '#FFF', borderWidth: 2, color: '#FFF', fontSize: 20 }}
+                            style={{ borderColor: 'black', borderWidth: 1, color: 'black', fontSize: 20 }}
                             value={password}
                             onChangeText={setPassword}
                         />
@@ -94,15 +96,8 @@ const SignIn = () => {
                         <View className="flex-row space-x-4">
 
                         </View>
-
-                        <View className="flex-row mt-14">
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 900 }}>Don't have an account?</Text>
-                            <TouchableOpacity>
-                                <Text className="ml-1" style={{ color: 'white', fontSize: 20, fontWeight: 500 }}>Sign up</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
-                </ImageBackground>
+                </>
             </ScrollView>
         </SafeAreaView>
     )

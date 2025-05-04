@@ -23,7 +23,7 @@ const CreateModalMovie = ({
     const [image, setImage] = useState<string>('');
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-
+    //them aysnc await cho fetch API
     const handelCreateMovie = () => {
         if (!title || !description) {
             Alert.alert("Please fill all fields");
@@ -32,7 +32,37 @@ const CreateModalMovie = ({
         // Handle movie creation logic here
         console.log("Movie Created:", { title, description, image });
         // Gửi API
+        // const response = fetch('localhost:/film/admin/', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         title: title,
+        //         description: description,
+        //         image: image,
+        //         realeaseDate: new Date().toISOString(),
+        //         language: 'en',
+        //         director: 'John Doe',
+        //         actors: ['Actor 1', 'Actor 2'],
+        //         duration: 120,
+        //         gerners: ['Action', 'Drama'],
+        //         posterUrl: imagesUrl.img4,
+        //         trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        //         status: 'active',
+        //     }),
+        // }).then((response) => {
+        //     if (response.ok) {
+        //         console.log("Movie created successfully");
+        //     } else {
+        //         console.error("Error creating movie:", response.statusText);
+        //     }
+        // }).catch((error) => {
+        //     console.error("Error creating movie:", error);
+        // });
         
+        
+
         // setListMovie
         const MovieAdded: Movie = {
             id: Math.random().toString(4),

@@ -6,7 +6,7 @@ const NotLoginedStatus = () => {
     return (
 
         <View className="p-2" style={{ marginHorizontal: 20}}>
-            <Link href={"/login/signIn"} >
+            <Link href={"/(login)"} >
                 <View className="flex-row p-2 items-center bg-white borded rounded-lg border" style={{ borderColor: '#337ab7' }}>
                     <FontAwesome6 name="user" size={20} color="#337ab7"/>
                     <Text className="text-base font-semibold" style={{ fontFamily: FONT_FAMILY, marginHorizontal: 15, color: '#337ab7', fontSize: 15}}>Login</Text>

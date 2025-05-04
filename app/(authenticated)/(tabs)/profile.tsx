@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { FONT_FAMILY } from '@/constants/font';
 const Stack = createNativeStackNavigator();
 
-export default function Profile() {
+export default function ProfileScreen() {
   const navigation = useNavigation();
 
   const [imageUri, setImageUri] = useState<string>(imagesUrl.img2 || '');
@@ -47,7 +47,7 @@ export default function Profile() {
       <View style={styles.container}>
 
         <View style={{ backgroundColor: '#fff', flexDirection: 'column', alignItems: 'center', padding: 20, marginBottom: 10, borderBottomWidth: 2, borderBottomColor: "#ccc", width: '100%', borderRadius: 10 }}>
-          <Image source={{ uri: imageUri }} style={{ width: 60, height: 60, marginBottom: 10, borderRadius: 30 }} />
+          <Image source={{ uri: imageUri }} style={{ width: 250, height: 250, marginBottom: 10, borderRadius: 120 }} />
           <Text style={{ fontSize: 15, fontWeight: 300 }}>Xin Chào</Text>
           <Text style={{ fontSize: 25, fontWeight: 500 }}>{UserData.name.toUpperCase()}</Text>
         </View>
@@ -61,11 +61,11 @@ export default function Profile() {
               <FontAwesome5 name="user-circle" size={24} color="black" />
             </TouchableOpacity>
             {/* <ImagePickerScreen imageUri={imageUri} setImageUri={setImageUri}/> */}
-            <TouchableOpacity style={styles.button} onPress={() => router.push('../setting/ChangePassword')}>
+            <TouchableOpacity style={styles.button} onPress={() => router.navigate('/(authenticated)/user')}>
               <Text style={styles.buttonText}>Đổi mật khẩu</Text>
               <FontAwesome5 name="lock" size={24} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => router.push('../login')}>
+            <TouchableOpacity style={styles.button} onPress={() => router.replace('/(login)')}>
               <Text style={styles.buttonText}>
                 Đăng xuất
               </Text>

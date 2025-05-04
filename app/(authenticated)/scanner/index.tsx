@@ -67,12 +67,6 @@ export default function HomeScanner() {
     return (
         <>
             <View style={StyleSheet.absoluteFill}>
-                <Stack.Screen
-                    options={{
-                        title: "Quét mã QR",
-                        headerShown: true
-                    }}
-                />
                 {Platform.OS === "android" ? <StatusBar hidden /> : null}
                 <CameraView
                     style={StyleSheet.absoluteFillObject}
