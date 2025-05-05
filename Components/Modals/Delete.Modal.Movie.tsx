@@ -15,6 +15,26 @@ const ConfirmDeleteModal = ({modalDeleteVisible, setListMovie, movie, listMovie,
 
   const handleDeleteMovie = () => {
       // Xóa phim
+
+      fetch(`localhost:/film/admin/${movie?.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          // Có thể thêm Authorization header nếu cần
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          return res.json(); // Nếu server trả về JSON
+        })
+        .then((data) => {
+          console.log("Phản hồi từ server:", data);
+        })
+        .catch((error) => {
+          console.error("Lỗi khi gọi API:", error);
+        });
       const updatedListMovie = listMovie.filter(item => item.id !== movie?.id);
       setListMovie(updatedListMovie);
       setModalDeleteVisible(false);

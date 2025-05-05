@@ -14,6 +14,7 @@ const SignIn = () => {
 
     const handleLogin = () => {
         
+        // username password validation
         if (username && password) {
             router.replace('/(authenticated)/(tabs)');
         } else {

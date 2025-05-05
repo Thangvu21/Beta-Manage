@@ -5,6 +5,7 @@ import { useState } from "react";
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { Movie } from "@/constants/film";
 import { images, imagesUrl } from "@/constants/image";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
     modalCreateVisible: boolean,
@@ -32,40 +33,41 @@ const CreateModalMovie = ({
         // Handle movie creation logic here
         console.log("Movie Created:", { title, description, image });
         // Gửi API
-        // const response = fetch('localhost:/film/admin/', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         title: title,
-        //         description: description,
-        //         image: image,
-        //         realeaseDate: new Date().toISOString(),
-        //         language: 'en',
-        //         director: 'John Doe',
-        //         actors: ['Actor 1', 'Actor 2'],
-        //         duration: 120,
-        //         gerners: ['Action', 'Drama'],
-        //         posterUrl: imagesUrl.img4,
-        //         trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        //         status: 'active',
-        //     }),
-        // }).then((response) => {
-        //     if (response.ok) {
-        //         console.log("Movie created successfully");
-        //     } else {
-        //         console.error("Error creating movie:", response.statusText);
-        //     }
-        // }).catch((error) => {
-        //     console.error("Error creating movie:", error);
-        // });
+        fetch('localhost:/film/admin/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: uuidv4(),
+                title: title,
+                description: description,
+                image: image,
+                realeaseDate: new Date().toISOString(),
+                language: 'en',
+                director: 'John Doe',
+                actors: ['Actor 1', 'Actor 2'],
+                duration: 120,
+                gerners: ['Action', 'Drama'],
+                posterUrl: imagesUrl.img4,
+                trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                status: 'active',
+            }),
+        }).then((response) => {
+            if (response.ok) {
+                console.log("Movie created successfully");
+            } else {
+                console.error("Error creating movie:", response.statusText);
+            }
+        }).catch((error) => {
+            console.error("Error creating movie:", error);
+        });
         
         
 
         // setListMovie
         const MovieAdded: Movie = {
-            id: Math.random().toString(4),
+            id: uuidv4(),
             title: title,
             releaseDate: description,
             posterUrl: imagesUrl.img4

@@ -1,10 +1,11 @@
 import { CameraView } from "expo-camera";
 import { Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
+import { BarCodeScanner } from "expo-barcode-scanner";
 
 
 export default function HomeScanner() {
@@ -33,18 +34,59 @@ export default function HomeScanner() {
             const uri = result.assets[0].uri;
             setImageUri(uri);
             // xử lý image đấy luôn
+            try {
+                // Quét mã QR từ ảnh
+                const scanResult = await BarCodeScanner.scanFromURLAsync(uri);
+                if (scanResult.length > 0) {
+                    const qrData = scanResult[0].data;
+                    console.log("QR Data:", qrData);
+    
+                    // Xử lý dữ liệu quét được
+                    handleScanCode({ data: qrData });
+                } else {
+                    Alert.alert("Không tìm thấy mã QR trong ảnh.");
+                }
+            } catch (error) {
+                console.error("Lỗi khi quét mã QR từ ảnh:", error);
+                Alert.alert("Lỗi", "Không thể quét mã QR từ ảnh.");
+            }
         }
 
     }
 
-    const handleScanCode = ({ data }: { data: string }) => {
+    const handleScanCode = async ({ data }: { data: string }) => {
         if (data && !qrLock.current) {
             qrLock.current = true;
-            setTimeout(async () => {
-                await Linking.openURL(data);
-            }, 500);
+    
+            try {
+                const res = await fetch(`localhost:booking/admin/${data}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Authorization': `Bearer ${token}`, // nếu middleware yêu cầu xác thực
+                    },
+                });
+    
+                if (!res.ok) {
+                    throw new Error(`Mã không hợp lệ! Status: ${res.status}`);
+                }
+    
+                const result = await res.json();
+                console.log("Thông tin người dùng:", result);
+    
+                // Sau đó có thể điều hướng hoặc hiển thị
+                Alert.alert("Thành công", `Người dùng: ${result.user.name}`);
+            } catch (error) {
+                console.error("Lỗi khi kiểm tra mã QR:", error);
+                Alert.alert("Lỗi", "Không tìm thấy thông tin đặt chỗ.");
+            } finally {
+                // Mở lại khóa sau 2 giây
+                setTimeout(() => {
+                    qrLock.current = false;
+                }, 2000);
+            }
         }
-    }
+    };
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", (nextAppState) => {

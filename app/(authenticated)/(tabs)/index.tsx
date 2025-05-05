@@ -50,32 +50,30 @@ export default function Index() {
     setIsActionModalVisible(true)
   }
 
-  // useEffect(() => {
-  //   const fetchMovies = async () => {
-  //     try {
-  //       const response = await fetch('localhost:/film', {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           // Có thể thêm authorization header nếu cần
-  //           // 'Authorization': 'Bearer YOUR_TOKEN'
-  //         }
-  //       });
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch('localhost:/film', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
         
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
         
-  //       const data = await response.json();
-  //       console.log(data);
-  //       setListMovie(data); 
-  //     } catch (error) {
-  //       console.error('Error fetching movies:', error);
-  //     }
-  //   };
+        const data = await response.json();
+        console.log(data);
+        setListMovie(data); 
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      }
+    };
     
-  //   fetchMovies();
-  // }, []);
+    fetchMovies();
+  }, []);
 
   
 

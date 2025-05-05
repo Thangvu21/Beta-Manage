@@ -5,6 +5,7 @@ import ImagePickerScreen from "../Camera/ImagePicker";
 import React, { useEffect, useState } from "react";
 import { FoodItem } from "@/constants/food";
 import { images, imagesUrl } from "@/constants/image";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
     modalCreateVisible: boolean,
@@ -25,6 +26,26 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
             Alert.alert("Please fill all fields");
             return;
         }
+
+        fetch(`localhost:/booking/admin/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: uuidv4(),
+                name: title,
+                price: price,
+                image: image,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+        })
 
         // Handle food creation logic here
         setFoodList([...foodList, { id: foodList.length + 1, name: title, price: price, image: imagesUrl.img8 }]);

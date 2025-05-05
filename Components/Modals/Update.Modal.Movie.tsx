@@ -4,6 +4,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Alert, Button, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
+import { imagesUrl } from "@/constants/image";
+import { v4 as uuidv4 } from 'uuid';
 
 interface props {
     modalUpdateVisible: boolean,
@@ -15,11 +17,11 @@ interface props {
 
 
 const UpdateModalMovie = ({
-        modalUpdateVisible,
-        setModalUpdateVisible,
-        movie,
-        listMovie,
-        setListMovie
+    modalUpdateVisible,
+    setModalUpdateVisible,
+    movie,
+    listMovie,
+    setListMovie
 }: props) => {
 
     const [image, setImage] = useState<string>(movie?.posterUrl || '');
@@ -38,8 +40,42 @@ const UpdateModalMovie = ({
             Alert.alert("Please fill all fields");
             return;
         }
+
+        fetch(`localhost:/film/admin/${movie.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                // Có thể thêm Authorization header nếu cần
+            },
+            body: JSON.stringify({
+                title: title,
+                description: releaseDate,
+                image: image,
+                realeaseDate: new Date().toISOString(),
+                language: 'en',
+                director: 'John Doe',
+                actors: ['Actor 1', 'Actor 2'],
+                duration: 120,
+                gerners: ['Action', 'Drama'],
+                posterUrl: imagesUrl.img4,
+                trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                status: 'active',
+            }),
+        }).then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            return res.json(); // Nếu server trả về JSON
+        }
+        ).then((data) => {
+            console.log("Phản hồi từ server:", data);
+        })
+            .catch((error) => {
+                console.error("Lỗi khi gọi API:", error);
+            });
+
         // Handle movie update logic here
-        setListMovie(listMovie.map((item) => {    
+        setListMovie(listMovie.map((item) => {
             return item.id === movie.id ? { ...item, title, releaseDate, posterUrl: image } : item;
         })
         )
@@ -103,7 +139,7 @@ const UpdateModalMovie = ({
                     </View>
                     <View className="mt-1 mb-1">
                         <TouchableOpacity
-                            style={styles.button}  
+                            style={styles.button}
                             onPress={() => setModalUpdateVisible(false)}
                         >
                             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Close</Text>

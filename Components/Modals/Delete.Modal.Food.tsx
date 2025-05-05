@@ -22,15 +22,24 @@ const DeleteModalFood = ({
 
     const handleDelete = () => {
 
-        // fetch('', {
-        //   method: 'DELETE',
-        //   headers: {
-        //       'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //       id: food?.id,
-        //   }),
-        // })
+        fetch(`localhost:/booking/admin/${food?.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+        }).then((res) => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            return res.json(); // nếu server trả về JSON
+        })
+            .then((data) => {
+                console.log("Xóa thành công:", data);
+            })
+            .catch((error) => {
+                console.error("Lỗi khi xóa:", error);
+            });
 
         if (food) {
             const updatedFoodList = foodList.filter(item => item.id !== food.id);

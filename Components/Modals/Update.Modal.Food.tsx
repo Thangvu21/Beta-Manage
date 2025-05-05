@@ -39,6 +39,27 @@ const UpdateModalFood = ({
         // Handle food update logic here
         // console.log("Food Updated:", { title, price, image });
         // Gửi API
+        fetch(`localhost:/booking/admin/${food?.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: food?.id,
+                name: title,
+                price: price,
+                image: image,
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success update food:', data);
+            })
+            .catch((error) => {
+                console.error('Error update food:', error);
+        })
+
+
         console.log('image', image);
         setFoodList(
             foodList.map((item) => {
