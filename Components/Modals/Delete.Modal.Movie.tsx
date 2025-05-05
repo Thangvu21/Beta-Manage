@@ -1,7 +1,9 @@
 import { Movie } from '@/constants/film';
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Constants from 'expo-constants';
+import axios from 'axios';
+const API_URL = Constants.manifest?.extra?.API_URL;
 interface Props {
   modalDeleteVisible: boolean;
   setModalDeleteVisible: (visible: boolean) => void;
@@ -13,28 +15,30 @@ interface Props {
 const ConfirmDeleteModal = ({modalDeleteVisible, setListMovie, movie, listMovie, setModalDeleteVisible}: Props) => {
 
 
-  const handleDeleteMovie = () => {
+  const handleDeleteMovie = async () => {
       // Xóa phim
 
-      fetch(`localhost:/film/admin/${movie?.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          // Có thể thêm Authorization header nếu cần
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-          return res.json(); // Nếu server trả về JSON
-        })
-        .then((data) => {
-          console.log("Phản hồi từ server:", data);
-        })
-        .catch((error) => {
-          console.error("Lỗi khi gọi API:", error);
+      try {
+        const res = await axios.delete(`${API_URL}/film/admin/${movie?.id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Authorization: `Bearer ${token}`, // nếu cần
+          },
         });
+    
+        console.log("Phản hồi từ server:", res.data);
+        // Xử lý UI nếu cần, ví dụ: Alert.alert("Thành công", "Phim đã được xoá!");
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const message = error.response?.data?.message || "Lỗi khi xóa phim.";
+          console.error(`Lỗi khi gọi API: ${status} - ${message}`);
+          Alert.alert("Lỗi", message);
+        } else {
+          console.error("Lỗi không xác định:", error);
+          Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
+        }
+      }
       const updatedListMovie = listMovie.filter(item => item.id !== movie?.id);
       setListMovie(updatedListMovie);
       setModalDeleteVisible(false);

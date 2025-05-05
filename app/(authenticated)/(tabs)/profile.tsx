@@ -39,7 +39,6 @@ export default function ProfileScreen() {
       const uri = result.assets[0].uri;
       setImageUri(uri);
 
-      // fetch(`localhost:/admin/`)
     }
   }
 

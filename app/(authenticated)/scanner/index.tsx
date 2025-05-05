@@ -5,8 +5,10 @@ import { Alert, AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
-import { BarCodeScanner } from "expo-barcode-scanner";
-
+// import { BarCodeScanner} from "expo-barcode-scanner";
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 export default function HomeScanner() {
 
@@ -34,22 +36,22 @@ export default function HomeScanner() {
             const uri = result.assets[0].uri;
             setImageUri(uri);
             // xử lý image đấy luôn
-            try {
-                // Quét mã QR từ ảnh
-                const scanResult = await BarCodeScanner.scanFromURLAsync(uri);
-                if (scanResult.length > 0) {
-                    const qrData = scanResult[0].data;
-                    console.log("QR Data:", qrData);
+            // try {
+            //     // Quét mã QR từ ảnh
+            //     const scanResult = await BarCodeScanner.scanFromURLAsync(uri);
+            //     if (scanResult.length > 0) {
+            //         const qrData = scanResult[0].data;
+            //         console.log("QR Data:", qrData);
     
-                    // Xử lý dữ liệu quét được
-                    handleScanCode({ data: qrData });
-                } else {
-                    Alert.alert("Không tìm thấy mã QR trong ảnh.");
-                }
-            } catch (error) {
-                console.error("Lỗi khi quét mã QR từ ảnh:", error);
-                Alert.alert("Lỗi", "Không thể quét mã QR từ ảnh.");
-            }
+            //         // Xử lý dữ liệu quét được
+            //         handleScanCode({ data: qrData });
+            //     } else {
+            //         Alert.alert("Không tìm thấy mã QR trong ảnh.");
+            //     }
+            // } catch (error) {
+            //     console.error("Lỗi khi quét mã QR từ ảnh:", error);
+            //     Alert.alert("Lỗi", "Không thể quét mã QR từ ảnh.");
+            // }
         }
 
     }
@@ -59,31 +61,18 @@ export default function HomeScanner() {
             qrLock.current = true;
     
             try {
-                const res = await fetch(`localhost:booking/admin/${data}`, {
-                    method: 'GET',
+                console.log("QR Data:", data);
+                const response = await axios.get(`${API_URL}/booking/admin/${data}`, {
                     headers: {
-                        'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${token}`, // nếu middleware yêu cầu xác thực
+                        "Content-Type": "application/json",
                     },
-                });
-    
-                if (!res.ok) {
-                    throw new Error(`Mã không hợp lệ! Status: ${res.status}`);
-                }
-    
-                const result = await res.json();
-                console.log("Thông tin người dùng:", result);
-    
-                // Sau đó có thể điều hướng hoặc hiển thị
-                Alert.alert("Thành công", `Người dùng: ${result.user.name}`);
+                })
+
+                const result = response.data;
+                console.log("Result:", result);
             } catch (error) {
-                console.error("Lỗi khi kiểm tra mã QR:", error);
-                Alert.alert("Lỗi", "Không tìm thấy thông tin đặt chỗ.");
-            } finally {
-                // Mở lại khóa sau 2 giây
-                setTimeout(() => {
-                    qrLock.current = false;
-                }, 2000);
+                console.error("Error:", error);
+                Alert.alert("Lỗi", "Không thể xử lý mã QR.");
             }
         }
     };

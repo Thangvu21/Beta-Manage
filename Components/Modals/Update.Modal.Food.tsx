@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { Alert, Button, ImageURISource, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { imagesUrl } from "@/constants/image";
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface props {
     modalUpdateVisible: boolean,
@@ -31,33 +34,37 @@ const UpdateModalFood = ({
     const [title, setTitle] = useState<string>(food?.name || '');
     const [price, setPrice] = useState<string>(food?.price || '');
 
-    const handelupdateFood = () => {
+    const handelupdateFood = async () => {
         if (!title || !price) {
             Alert.alert("Please fill all fields");
             return;
         }
-        // Handle food update logic here
-        // console.log("Food Updated:", { title, price, image });
-        // Gửi API
-        fetch(`localhost:/booking/admin/${food?.id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        try {
+            const response = await axios.patch(`${API_URL}/booking/admin/item/${food?.id}`, {
                 id: food?.id,
                 name: title,
                 price: price,
                 image: image,
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Success update food:', data);
-            })
-            .catch((error) => {
-                console.error('Error update food:', error);
-        })
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Authorization: `Bearer ${token}`, // nếu middleware yêu cầu
+                }
+            });
+
+            console.log('Success update food:', response.data);
+            // Có thể thêm: Alert.alert("Thành công", "Món ăn đã được cập nhật!");
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                const status = error.response?.status;
+                const message = error.response?.data?.message || "Cập nhật thất bại.";
+                console.error(`Lỗi API: ${status} - ${message}`);
+                Alert.alert("Lỗi", message);
+            } else {
+                console.error('Lỗi không xác định:', error);
+                Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
+            }
+        }
 
 
         console.log('image', image);
@@ -121,7 +128,7 @@ const UpdateModalFood = ({
                     </View>
 
                     {/* Footer */}
-                    <View style={[styles.createButton, {marginTop: 20, marginBottom: 20}]}>
+                    <View style={[styles.createButton, { marginTop: 20, marginBottom: 20 }]}>
                         <TouchableOpacity onPress={() => handelupdateFood()}>
                             <Text style={styles.createButtonText}>Update</Text>
                         </TouchableOpacity>

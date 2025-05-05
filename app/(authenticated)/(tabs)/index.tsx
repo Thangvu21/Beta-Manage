@@ -14,6 +14,10 @@ import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
 import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
 import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
+import axios from "axios";
+import Constants from 'expo-constants';
+const API_URL = Constants.manifest?.extra?.API_URL;
+
 
 
 
@@ -53,20 +57,14 @@ export default function Index() {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await fetch('localhost:/film', {
-          method: 'GET',
+        const response = await axios.get(`${API_URL}/film`, {
           headers: {
             'Content-Type': 'application/json',
           }
         });
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        
-        const data = await response.json();
-        console.log(data);
-        setListMovie(data); 
+    
+        console.log(response.data);
+        setListMovie(response.data);
       } catch (error) {
         console.error('Error fetching movies:', error);
       }

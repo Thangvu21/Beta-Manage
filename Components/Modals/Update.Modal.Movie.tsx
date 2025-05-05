@@ -6,6 +6,9 @@ import { Alert, Button, Modal, Pressable, StyleSheet, Text, TextInput, Touchable
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { imagesUrl } from "@/constants/image";
 import { v4 as uuidv4 } from 'uuid';
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface props {
     modalUpdateVisible: boolean,
@@ -34,20 +37,15 @@ const UpdateModalMovie = ({
         setReleaseDate(movie?.releaseDate || '');
     }, [movie])
 
-    const handelUpdateMovie = () => {
+    const handelUpdateMovie = async () => {
 
         if (!title || !releaseDate || !image) {
             Alert.alert("Please fill all fields");
             return;
         }
 
-        fetch(`localhost:/film/admin/${movie.id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                // Có thể thêm Authorization header nếu cần
-            },
-            body: JSON.stringify({
+        try {
+            const response = await axios.patch(`${API_URL}/film/admin/${movie.id}`, {
                 title: title,
                 description: releaseDate,
                 image: image,
@@ -60,19 +58,25 @@ const UpdateModalMovie = ({
                 posterUrl: imagesUrl.img4,
                 trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 status: 'active',
-            }),
-        }).then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            return res.json(); // Nếu server trả về JSON
-        }
-        ).then((data) => {
-            console.log("Phản hồi từ server:", data);
-        })
-            .catch((error) => {
-                console.error("Lỗi khi gọi API:", error);
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Authorization: `Bearer ${token}`, // nếu có xác thực
+                }
             });
+
+            console.log("Phản hồi từ server:", response.data);
+            // Alert.alert("Thành công", "Phim đã được cập nhật!");
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                const message = error.response?.data?.message || "Không thể cập nhật phim.";
+                console.error("Lỗi API:", message);
+                Alert.alert("Lỗi", message);
+            } else {
+                console.error("Lỗi không xác định:", error);
+                Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
+            }
+        }
 
         // Handle movie update logic here
         setListMovie(listMovie.map((item) => {
