@@ -1,11 +1,14 @@
 import { CameraView } from "expo-camera";
 import { Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
-
+// import { BarCodeScanner} from "expo-barcode-scanner";
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 export default function HomeScanner() {
 
@@ -33,18 +36,46 @@ export default function HomeScanner() {
             const uri = result.assets[0].uri;
             setImageUri(uri);
             // xử lý image đấy luôn
+            // try {
+            //     // Quét mã QR từ ảnh
+            //     const scanResult = await BarCodeScanner.scanFromURLAsync(uri);
+            //     if (scanResult.length > 0) {
+            //         const qrData = scanResult[0].data;
+            //         console.log("QR Data:", qrData);
+    
+            //         // Xử lý dữ liệu quét được
+            //         handleScanCode({ data: qrData });
+            //     } else {
+            //         Alert.alert("Không tìm thấy mã QR trong ảnh.");
+            //     }
+            // } catch (error) {
+            //     console.error("Lỗi khi quét mã QR từ ảnh:", error);
+            //     Alert.alert("Lỗi", "Không thể quét mã QR từ ảnh.");
+            // }
         }
 
     }
 
-    const handleScanCode = ({ data }: { data: string }) => {
+    const handleScanCode = async ({ data }: { data: string }) => {
         if (data && !qrLock.current) {
             qrLock.current = true;
-            setTimeout(async () => {
-                await Linking.openURL(data);
-            }, 500);
+    
+            try {
+                console.log("QR Data:", data);
+                const response = await axios.get(`${API_URL}/booking/admin/${data}`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+
+                const result = response.data;
+                console.log("Result:", result);
+            } catch (error) {
+                console.error("Error:", error);
+                Alert.alert("Lỗi", "Không thể xử lý mã QR.");
+            }
         }
-    }
+    };
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", (nextAppState) => {

@@ -4,6 +4,11 @@ import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Alert, Button, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
+import { imagesUrl } from "@/constants/image";
+import { v4 as uuidv4 } from 'uuid';
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface props {
     modalUpdateVisible: boolean,
@@ -15,11 +20,11 @@ interface props {
 
 
 const UpdateModalMovie = ({
-        modalUpdateVisible,
-        setModalUpdateVisible,
-        movie,
-        listMovie,
-        setListMovie
+    modalUpdateVisible,
+    setModalUpdateVisible,
+    movie,
+    listMovie,
+    setListMovie
 }: props) => {
 
     const [image, setImage] = useState<string>(movie?.posterUrl || '');
@@ -32,14 +37,49 @@ const UpdateModalMovie = ({
         setReleaseDate(movie?.releaseDate || '');
     }, [movie])
 
-    const handelUpdateMovie = () => {
+    const handelUpdateMovie = async () => {
 
         if (!title || !releaseDate || !image) {
             Alert.alert("Please fill all fields");
             return;
         }
+
+        try {
+            const response = await axios.patch(`${API_URL}/film/admin/${movie.id}`, {
+                title: title,
+                description: releaseDate,
+                image: image,
+                realeaseDate: new Date().toISOString(),
+                language: 'en',
+                director: 'John Doe',
+                actors: ['Actor 1', 'Actor 2'],
+                duration: 120,
+                gerners: ['Action', 'Drama'],
+                posterUrl: imagesUrl.img4,
+                trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                status: 'active',
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Authorization: `Bearer ${token}`, // nếu có xác thực
+                }
+            });
+
+            console.log("Phản hồi từ server:", response.data);
+            // Alert.alert("Thành công", "Phim đã được cập nhật!");
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                const message = error.response?.data?.message || "Không thể cập nhật phim.";
+                console.error("Lỗi API:", message);
+                Alert.alert("Lỗi", message);
+            } else {
+                console.error("Lỗi không xác định:", error);
+                Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
+            }
+        }
+
         // Handle movie update logic here
-        setListMovie(listMovie.map((item) => {    
+        setListMovie(listMovie.map((item) => {
             return item.id === movie.id ? { ...item, title, releaseDate, posterUrl: image } : item;
         })
         )
@@ -103,7 +143,7 @@ const UpdateModalMovie = ({
                     </View>
                     <View className="mt-1 mb-1">
                         <TouchableOpacity
-                            style={styles.button}  
+                            style={styles.button}
                             onPress={() => setModalUpdateVisible(false)}
                         >
                             <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Close</Text>

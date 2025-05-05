@@ -5,6 +5,10 @@ import ImagePickerScreen from "../Camera/ImagePicker";
 import React, { useEffect, useState } from "react";
 import { FoodItem } from "@/constants/food";
 import { images, imagesUrl } from "@/constants/image";
+import { v4 as uuidv4 } from 'uuid';
+import Constants from 'expo-constants';
+import axios from "axios";
+const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface Props {
     modalCreateVisible: boolean,
@@ -19,12 +23,30 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
     const [price, setPrice] = useState<string>('');
     const [image, setImage] = useState<string>('');
 
-    const handelCreateFood = () => {
+    const handelCreateFood = async () => {
         if (!title || !price) {
 
             Alert.alert("Please fill all fields");
             return;
         }
+
+        try {
+            const response = await axios.post(`${API_URL}/booking/admin/item/`, {
+                id: uuidv4(),
+                name: title,
+                price: price,
+                image: image,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            console.log('Success:', response.data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
 
         // Handle food creation logic here
         setFoodList([...foodList, { id: foodList.length + 1, name: title, price: price, image: imagesUrl.img8 }]);
