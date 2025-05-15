@@ -1,20 +1,32 @@
-import { Movie } from '@/constants/film';
+import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
+import { MovieData } from '@/constants/film';
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 interface Props {
   modalDeleteVisible: boolean;
   setModalDeleteVisible: (visible: boolean) => void;
-  movie: Movie | undefined;
-  listMovie: Movie[];
-  setListMovie: (listMovie: Movie[]) => void;
+  movie: MovieData | undefined;
+  listMovie: MovieData[];
+  setListMovie: (listMovie: MovieData[]) => void;
 }
 
 const ConfirmDeleteModal = ({modalDeleteVisible, setListMovie, movie, listMovie, setModalDeleteVisible}: Props) => {
 
 
-  const handleDeleteMovie = () => {
+  const handleDeleteMovie = async () => {
       // Xóa phim
+
+      try {
+        const res = await axiosClient.delete(`${API.deleteFilm}/${movie?.id}`);
+    
+        console.log("Phản hồi từ server:", res.data);
+        // Xử lý UI nếu cần, ví dụ: Alert.alert("Thành công", "Phim đã được xoá!");
+      } catch (error: any) {
+        console.error("Lỗi khi xoá phim:", error);
+        Alert.alert("Lỗi", "Có lỗi xảy ra khi xoá phim. Vui lòng thử lại.");
+      }
       const updatedListMovie = listMovie.filter(item => item.id !== movie?.id);
       setListMovie(updatedListMovie);
       setModalDeleteVisible(false);

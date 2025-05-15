@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView, Pressable } from "react-native";
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView, Pressable, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { foodData, FoodItem } from "@/constants/food";
@@ -9,10 +9,12 @@ import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
 import UpdateModalFood from "@/Components/Modals/Update.Modal.Food";
 import Feather from '@expo/vector-icons/Feather';
 import DeleteModalFood from "@/Components/Modals/Delete.Modal.Food";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
 
 const Food = () => {
 
-    const [foodList, setFoodList] = useState<FoodItem[]>(foodData);
+    const [foodList, setFoodList] = useState<FoodItem[]>();
 
     const [food, setFood] = useState<FoodItem>();
 
@@ -36,7 +38,24 @@ const Food = () => {
         setModalDeleteVisible(true);
     }
 
-    
+    useEffect(() => {
+        const fetchFoodList = async () => {
+            try {
+                const response = await axiosClient.get(API.getAllFood);
+
+                console.log("response", response.data);
+                if (response.status === 200) {
+                    setFoodList(response.data);
+                }
+            } catch (error) {
+                Alert.alert("Error", "Không thể lấy danh sách món ăn");
+            }
+        }
+
+        fetchFoodList();
+    }, [])
+
+
 
     return (
 
@@ -53,7 +72,7 @@ const Food = () => {
                     columnWrapperStyle={{ justifyContent: 'space-between' }}
                     renderItem={({ item }) => (
                         <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
-                            <Image source={{uri : item.image}} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
+                            <Image source={{ uri: item.image }} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
                             <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
                             <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
                             <View className="flex-row justify-between">
@@ -78,13 +97,13 @@ const Food = () => {
                     )}
                 />
 
-                <CreateModalFood
+                {foodList && <CreateModalFood
                     setModalCreateVisible={setModalCreateVisible}
                     modalCreateVisible={modalCreateVisible}
                     foodList={foodList}
-                    setFoodList={setFoodList} />
+                    setFoodList={setFoodList} />}
                 {
-                    food && (
+                    food && foodList && (
                         <UpdateModalFood
                             setModalUpdateVisible={setModalEditVisible}
                             modalUpdateVisible={modalEditVisible}
@@ -94,13 +113,17 @@ const Food = () => {
                         />
                     )
                 }
-                <DeleteModalFood
-                    setModalDeleteVisible={setModalDeleteVisible}
-                    modalDeleteVisible={modalDeleteVisible}
-                    food={food}
-                    foodList={foodList}
-                    setFoodList={setFoodList}
-                />
+                {
+                    food && foodList && (
+                        <DeleteModalFood
+                            setModalDeleteVisible={setModalDeleteVisible}
+                            modalDeleteVisible={modalDeleteVisible}
+                            food={food}
+                            foodList={foodList}
+                            setFoodList={setFoodList}
+                        />
+                    )
+                }
                 {/* Modal thêm món */}
                 <View>
                     <TouchableOpacity onPress={() => handleOpenAddModal()}>

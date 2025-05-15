@@ -1,22 +1,24 @@
 // SettingScreen.tsx
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { UserData } from "@/constants/user";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import EvilIcons from '@expo/vector-icons/EvilIcons';
 import * as ImagePicker from 'expo-image-picker';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { imagesUrl } from '@/constants/image';
 import { router } from 'expo-router';
 import { FONT_FAMILY } from '@/constants/font';
+import { useUser } from '@/Components/Context/UserProvider';
+import { useAuthContext } from '@/Components/Context/AuthProvider';
 const Stack = createNativeStackNavigator();
 
 export default function ProfileScreen() {
-  const navigation = useNavigation();
 
-  const [imageUri, setImageUri] = useState<string>(imagesUrl.img2 || '');
+  const { user, setUser } = useUser();
+
+  const { logout } = useAuthContext();
+
+  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || '');
 
   const pickImage = async () => {
 
@@ -42,6 +44,15 @@ export default function ProfileScreen() {
     }
   }
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace('/(login)');
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -49,7 +60,7 @@ export default function ProfileScreen() {
         <View style={{ backgroundColor: '#fff', flexDirection: 'column', alignItems: 'center', padding: 20, marginBottom: 10, borderBottomWidth: 2, borderBottomColor: "#ccc", width: '100%', borderRadius: 10 }}>
           <Image source={{ uri: imageUri }} style={{ width: 250, height: 250, marginBottom: 10, borderRadius: 120 }} />
           <Text style={{ fontSize: 15, fontWeight: 300 }}>Xin Chào</Text>
-          <Text style={{ fontSize: 25, fontWeight: 500 }}>{UserData.name.toUpperCase()}</Text>
+          <Text style={{ fontSize: 25, fontWeight: 500 }}>{user.name.toUpperCase()}</Text>
         </View>
 
 
@@ -61,11 +72,11 @@ export default function ProfileScreen() {
               <FontAwesome5 name="user-circle" size={24} color="black" />
             </TouchableOpacity>
             {/* <ImagePickerScreen imageUri={imageUri} setImageUri={setImageUri}/> */}
-            <TouchableOpacity style={styles.button} onPress={() => router.navigate('/(authenticated)/user')}>
+            {/* <TouchableOpacity style={styles.button} onPress={() => router.navigate('/(authenticated)/user')}>
               <Text style={styles.buttonText}>Đổi mật khẩu</Text>
               <FontAwesome5 name="lock" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => router.replace('/(login)')}>
+            </TouchableOpacity> */}
+            <TouchableOpacity style={styles.button} onPress={() => handleLogout()}>
               <Text style={styles.buttonText}>
                 Đăng xuất
               </Text>

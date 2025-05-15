@@ -1,6 +1,8 @@
+import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
 import { FoodItem } from '@/constants/food';
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,18 +22,20 @@ const DeleteModalFood = ({
     setFoodList
 }: props) => {
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
 
-        // fetch('', {
-        //   method: 'DELETE',
-        //   headers: {
-        //       'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //       id: food?.id,
-        //   }),
-        // })
-
+        try {
+            console.log("Xóa món ăn:", food?.id);
+            const res = await axiosClient.delete(`${API.deleteFood}/${food?.id}`);
+        
+            console.log("Xóa thành công:", res.data);
+            Alert.alert("Success", "Xóa món ăn thành công");
+            // Có thể hiển thị alert hoặc cập nhật UI tại đây
+          } catch (error: any) {
+            console.error("Lỗi khi xóa món ăn:", error);
+            Alert.alert("Error", "Không thể xóa món ăn");
+          }
+        
         if (food) {
             const updatedFoodList = foodList.filter(item => item.id !== food.id);
             setFoodList(updatedFoodList);

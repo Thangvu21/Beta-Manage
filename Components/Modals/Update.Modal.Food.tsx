@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { Alert, Button, ImageURISource, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { imagesUrl } from "@/constants/image";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
+
 
 interface props {
     modalUpdateVisible: boolean,
@@ -21,34 +24,41 @@ const UpdateModalFood = ({
     setFoodList
 }: props) => {
 
-    useEffect(() => {
-        setTitle(food?.name || '')
-        setPrice(food?.price || '')
-        setImage(food?.image || '')
-    }, [food])
+    
 
-    const [image, setImage] = useState<string>(food?.image || '');
+    const [image, setImage] = useState<string>(food?.image || imagesUrl.img5);
     const [title, setTitle] = useState<string>(food?.name || '');
-    const [price, setPrice] = useState<string>(food?.price || '');
+    const [price, setPrice] = useState<string>(food?.price.toString() || '');
 
-    const handelupdateFood = () => {
+    useEffect(() => {
+        setImage(food?.image || imagesUrl.img5);
+        setTitle(food?.name || '');
+        setPrice(food?.price.toString() || '');
+    }, [food]);
+
+
+    const handelupdateFood = async () => {
         if (!title || !price) {
             Alert.alert("Please fill all fields");
             return;
         }
-        // Handle food update logic here
-        // console.log("Food Updated:", { title, price, image });
-        // Gửi API
-        console.log('image', image);
-        setFoodList(
-            foodList.map((item) => {
-                if (item.id === food?.id) {
-                    return { ...item, name: title, price: price, image: image };
-                }
-                return item;
-            }),
-        )
-        console.log("Food Updated:");
+        try {
+            console.log("Cập nhật món ăn:", food?.id);
+            const response = await axiosClient.patch(`${API.updateFood}/${food?.id}`, {
+                name: title,
+                price: price,
+            });
+
+            console.log('Success update food:', response.data);
+            if (response.status === 200) {
+                setFoodList(foodList.map(item => item.id === food?.id ? { ...item, name: title, price: price, image: image } : item));
+            }
+            
+        } catch (error: any) {
+            console.error("Lỗi khi cập nhật món ăn:", error);
+            Alert.alert("Error", "Không thể cập nhật món ăn");
+        }
+
         setModalUpdateVisible(false);
     }
 
@@ -100,7 +110,7 @@ const UpdateModalFood = ({
                     </View>
 
                     {/* Footer */}
-                    <View style={[styles.createButton, {marginTop: 20, marginBottom: 20}]}>
+                    <View style={[styles.createButton, { marginTop: 20, marginBottom: 20 }]}>
                         <TouchableOpacity onPress={() => handelupdateFood()}>
                             <Text style={styles.createButtonText}>Update</Text>
                         </TouchableOpacity>

@@ -59,3 +59,11 @@ export const foodImages = {
   bong,
   coffee
 }
+
+export const imageBaseUrl: string[] = [
+  'https://files.betacorp.vn/media/images/2025/05/12/1702x621-39-085600-120525-56.jpg',
+  "https://files.betacorp.vn/media/images/2025/05/12/1702wx621h-4-093735-120525-73.jpg",
+  'https://files.betacorp.vn/media/images/2025/05/05/123-lao-dong-1702-x-621-144800-050525-92.png',
+  'https://files.betacorp.vn/media/images/2025/05/10/don-khoi-nghi-he-900-x-900-copy-3-1702-x-621-182625-100525-68.png',
+  'https://files.betacorp.vn/media/images/2025/05/10/1702x621-11-183216-100525-51.png'
+]

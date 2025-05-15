@@ -3,7 +3,7 @@ import { foodImages, images, imagesUrl } from "./image";
 
 export interface FoodItem {
 
-    id: number;
+    id: string;
     name: string;
     price: string;
     image: string;
@@ -12,13 +12,13 @@ export interface FoodItem {
 
 export const foodData: FoodItem[] = [
     {
-        id: 1,
+        id: "1",
         name: "Mỳ",
         price: "25.000đ",
         image: imagesUrl.img1
     },
     {
-        id: 2,
+        id: '2',
         name: "Coffee",
         price: "15.000đ",
         image: imagesUrl.img2
