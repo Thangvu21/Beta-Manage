@@ -1,15 +1,15 @@
-import { Movie } from '@/constants/film';
+import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
+import { MovieData } from '@/constants/film';
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Constants from 'expo-constants';
-import axios from 'axios';
-const API_URL = Constants.manifest?.extra?.API_URL;
+
 interface Props {
   modalDeleteVisible: boolean;
   setModalDeleteVisible: (visible: boolean) => void;
-  movie: Movie | undefined;
-  listMovie: Movie[];
-  setListMovie: (listMovie: Movie[]) => void;
+  movie: MovieData | undefined;
+  listMovie: MovieData[];
+  setListMovie: (listMovie: MovieData[]) => void;
 }
 
 const ConfirmDeleteModal = ({modalDeleteVisible, setListMovie, movie, listMovie, setModalDeleteVisible}: Props) => {
@@ -19,25 +19,13 @@ const ConfirmDeleteModal = ({modalDeleteVisible, setListMovie, movie, listMovie,
       // Xóa phim
 
       try {
-        const res = await axios.delete(`${API_URL}/film/admin/${movie?.id}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Authorization: `Bearer ${token}`, // nếu cần
-          },
-        });
+        const res = await axiosClient.delete(`${API.deleteFilm}/${movie?.id}`);
     
         console.log("Phản hồi từ server:", res.data);
         // Xử lý UI nếu cần, ví dụ: Alert.alert("Thành công", "Phim đã được xoá!");
       } catch (error: any) {
-        if (axios.isAxiosError(error)) {
-          const status = error.response?.status;
-          const message = error.response?.data?.message || "Lỗi khi xóa phim.";
-          console.error(`Lỗi khi gọi API: ${status} - ${message}`);
-          Alert.alert("Lỗi", message);
-        } else {
-          console.error("Lỗi không xác định:", error);
-          Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
-        }
+        console.error("Lỗi khi xoá phim:", error);
+        Alert.alert("Lỗi", "Có lỗi xảy ra khi xoá phim. Vui lòng thử lại.");
       }
       const updatedListMovie = listMovie.filter(item => item.id !== movie?.id);
       setListMovie(updatedListMovie);

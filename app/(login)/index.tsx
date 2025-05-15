@@ -1,24 +1,41 @@
 
+import { useAuthContext } from '@/Components/Context/AuthProvider';
+import { API } from '@/constants/api';
 import { images } from '@/constants/image';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { SafeAreaView, View, Text, ScrollView, Image, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { SafeAreaView, View, Text, ScrollView, Image, TextInput, TouchableOpacity, ImageBackground, Alert } from 'react-native';
+
 
 const SignIn = () => {
 
+    const  { login } = useAuthContext();
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
 
-    const handleLogin = () => {
-        
-        // username password validation
-        if (username && password) {
-            router.replace('/(authenticated)/(tabs)');
-        } else {
+    const handleLogin = async () => {
+        if (!username || !password) {
             alert("Please enter valid credentials");
+            return;
+        }
+
+        try {
+
+            const res = await axios.post(API.login, {
+                email: username,
+                password,
+            });
+
+            const { accessToken, refreshToken } = res.data.data;
+            if (res.status === 200) {
+                await login(accessToken, refreshToken);
+                router.replace('/(authenticated)/(tabs)');
+            } 
+        } catch (error) {
+            Alert.alert("Mật khẩu hoặc tài khoản không đúng");
+            console.log(error);
         }
     };
 
@@ -46,7 +63,7 @@ const SignIn = () => {
                         <TextInput
                             placeholder="Email"
                             placeholderTextColor={'#DDDDDD'}
-                            className="border w-[250] py-3 px-6 rounded-full mb-4"
+                            className="border w-[300] py-3 px-6 rounded-full mb-4"
                             style={{ borderColor: 'black', borderWidth: 1, color: 'black', fontSize: 20 }}
                             value={username}
                             onChangeText={setUsername}
@@ -57,7 +74,7 @@ const SignIn = () => {
                             textContentType='password'
 
                             secureTextEntry
-                            className="border w-[250] py-3 px-6 rounded-full mb-4"
+                            className="border w-[300] py-3 px-6 rounded-full mb-4"
                             style={{ borderColor: 'black', borderWidth: 1, color: 'black', fontSize: 20 }}
                             value={password}
                             onChangeText={setPassword}
@@ -84,10 +101,10 @@ const SignIn = () => {
                             shadowRadius: 5,
                             elevation: 5,
                             marginBottom: 16,
-                            }
+                        }
                         }
                             onPress={handleLogin}
-                            
+
                         >
                             <Text className="text-white text-center font-semibold" >Sign In</Text>
                         </TouchableOpacity>

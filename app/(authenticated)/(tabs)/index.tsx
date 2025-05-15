@@ -1,10 +1,10 @@
 
-import { Text, View, Image, TouchableOpacity, FlatList, Modal, Button } from "react-native";
+import { Text, View, Image, TouchableOpacity, FlatList, Modal, Button, ScrollViewBase, ScrollViewComponent, ScrollView } from "react-native";
 // import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { useEffect, useState } from "react";
 import { fonts, FONT_FAMILY } from "@/constants/font";
-import { FilmData, Movie } from "@/constants/film";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { FilmData, MovieData, MovieDetailDataList } from "@/constants/film";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
 import { useRouter } from 'expo-router';
 import HomeHeader from "@/Components/Headers/HomeHeader";
@@ -13,67 +13,64 @@ import { LinearGradient } from "expo-linear-gradient";
 import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
 import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
-import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
-import axios from "axios";
-import Constants from 'expo-constants';
-const API_URL = Constants.manifest?.extra?.API_URL;
-
-
-
+import Swiper from 'react-native-swiper'
+import { imageBase, imageBaseUrl, imagesUrl } from "@/constants/image";
+import { useMovieContext } from "@/Components/Context/MoiveProvider";
+import { useUser } from "@/Components/Context/UserProvider";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
 
 export default function Index() {
 
   const router = useRouter();
 
-  const [listMovie, setListMovie] = useState<Movie[]>(FilmData);
+  // const [listMovie, setListMovie] = useState<MovieDetailData[]>(MovieDetailDataList);
+  const { listMovie, setListMovie } = useMovieContext();
+
 
   // is user selected
-  const [movie, setMovie] = useState<Movie>();
+  const [movie, setMovie] = useState<MovieData>();
+
+  const { user, setUser } = useUser();
 
   const [modalCreateVisible, setModalCreateVisible] = useState(false);
 
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
-  
-  const [editModalVisible, setEditModalVisible] = useState(false);
 
   const [isActionModalVisible, setIsActionModalVisible] = useState(false);
 
-  const handlEdit = () => {
-    setIsActionModalVisible(false);
-    setEditModalVisible(true);
-  }
-
-  const handleDelete = () => { 
+  const handleDelete = () => {
     setIsActionModalVisible(false);
     setModalDeleteVisible(true);
   }
 
-  const handleOpenAddModal = (movieSelected: Movie) => {
+  const handleOpenAddModal = (movieSelected: MovieData) => {
     setMovie(movieSelected);
     // setModalDeleteVisible(true);
     setIsActionModalVisible(true)
   }
 
   useEffect(() => {
+    const fetchUser = async () => {
+      
+    }
+
     const fetchMovies = async () => {
       try {
-        const response = await axios.get(`${API_URL}/film`, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-    
-        console.log(response.data);
+        const response = await axiosClient.get(API.getAllFilm);
+
+        // console.log('thành công', response.data);
         setListMovie(response.data);
       } catch (error) {
         console.error('Error fetching movies:', error);
       }
     };
-    
+
+    // setListMovie(FilmData);
     fetchMovies();
   }, []);
 
-  
+
 
   return (
     <>
@@ -81,52 +78,72 @@ export default function Index() {
       <SafeAreaView className="flex-1 bg-white">
         <View className="flex-col bg-white flex-1">
           {/* header */}
-          <HomeHeader />
+          <HomeHeader user={user} setUser={setUser}/>
           {/* body */}
-          <View className="bg-white m-2 flex-1 flex-col" >
+          <View className="bg-white m-2 flex-1 flex-col pb-6" >
 
             {/* ds film */}
+            <ScrollView className="flex-1 mb-4 ">
+              <View style={styles.sliderContainer}>
+                <Swiper
+                  autoplay={true}
+                  autoplayTimeout={3}
+                  showsButtons={false}
+                  showsPagination={true}
+                  paginationStyle={styles.pagination}
+                  dotStyle={styles.dot}
+                  activeDotStyle={styles.activeDot}
+                >
+                  {imageBaseUrl.map((item, index) => (
+                    <View key={index} style={styles.slide}>
+                      <Image source={{ uri: item }} style={styles.sliderImage} />
+                      {/* <Text style={styles.sliderTitle}>{item.title}</Text> */}
+                    </View>
+                  ))}
+                </Swiper>
+              </View>
 
-            <View className="mt-3 flex-1">
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20, flex: 1 }}>
+                {listMovie.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(authenticated)/movie/[id]',
+                        params: {
+                          id: item.id,
+                          title: item.title,
+                        },
+                      })
+                    }
+                    style={{ width: '33.33%' }} // chia làm 3 cột
+                  >
+                    <View className="flex-col m p-[6px]">
+                      {/* Poster */}
+                      <Image
+                        source={{ uri: item.posterUrl }}
+                        style={styles.imageFilm}
+                        resizeMode="cover"
+                      />
+                      <TouchableOpacity
+                        style={styles.menuButtonOverlay}
+                        onPress={() => handleOpenAddModal(item)}
+                      >
+                        <Ionicons name="ellipsis-vertical" size={18} color="#fff" />
+                      </TouchableOpacity>
 
-              <FlatList
-                data={listMovie}
-                numColumns={3}
-                style={{ flexDirection: 'row', flexWrap: 'wrap', }}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity onPress={() => router.push({
-                      pathname: '/(authenticated)/movie/[id]',
-                      params: {
-                        id: item.id,
-                        title: item.title,
-                        image: item.posterUrl,
-                        description: item.releaseDate
-                      }
-                    })} >
-                      <View className="flex-col m p-[6px]">
-                        {/* Poster */}
-                        <Image source={{ uri: item.posterUrl }} style={styles.imageFilm} resizeMode="cover" />
-                        <TouchableOpacity style={styles.menuButtonOverlay} onPress={() => handleOpenAddModal(item)}>
-                          <Ionicons name="ellipsis-vertical" size={18} color="#fff" />
-                        </TouchableOpacity>
-
-                        {/* Nội dung */}
-                        <View className="flex-row justify-around items-center">
-                          <View className="flex-col">
-                            {/* <Text style={styles.title}>{item.releaseDate}</Text> */}
-                            <Text style={[styles.title, styles.titleMovie]}>{item.title}</Text>
-                          </View>
+                      {/* Nội dung */}
+                      <View className="flex-row justify-around items-center">
+                        <View className="flex-col">
+                          <Text style={[styles.title, styles.titleMovie]}>{item.title}</Text>
                         </View>
                       </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
 
-                    </TouchableOpacity>
-                  )
-                }}
-              />
-
-            </View>
 
             <ConfirmDeleteModal
               modalDeleteVisible={modalDeleteVisible}
@@ -135,18 +152,11 @@ export default function Index() {
               setListMovie={setListMovie}
               listMovie={listMovie}
             />
-            {movie && <UpdateModalMovie
-              modalUpdateVisible={editModalVisible}
-              setModalUpdateVisible={setEditModalVisible}
-              movie={movie}
-              listMovie={listMovie}
-              setListMovie={setListMovie}
-            />}
+            
           </View>
 
           <SelectActionModal
             handleDelete={handleDelete}
-            handleEdit={handlEdit}
             isActionModalVisible={isActionModalVisible}
             setIsActionModalVisible={setIsActionModalVisible}
           />
@@ -246,4 +256,59 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  image: {
+    width: '95%',
+    height: 150,
+    borderRadius: 10,
+    resizeMode: 'cover',
+  },
+
+  // slide
+  sliderContainer: {
+    height: 150,
+    marginTop: 5,
+    marginBottom: 5,
+    // marginVertical: 0,
+    // padding: 0,
+    // borderRadius: 10,
+  },
+  slide: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sliderImage: {
+    width: '95%',
+    height: 175,
+    borderRadius: 15,
+    resizeMode: 'cover',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  sliderTitle: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+  },
+  pagination: {
+    bottom: 5,
+  },
+  dot: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    width: 5,
+    height: 5,
+    borderRadius: 4,
+    marginHorizontal: 3,
+  },
+  activeDot: {
+    backgroundColor: '#337ab7',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 3,
+  },
 });

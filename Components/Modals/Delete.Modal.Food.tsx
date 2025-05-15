@@ -1,9 +1,8 @@
+import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
 import { FoodItem } from '@/constants/food';
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
-import Constants from 'expo-constants';
-import axios from 'axios';
-const API_URL = Constants.manifest?.extra?.API_URL;
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,24 +25,15 @@ const DeleteModalFood = ({
     const handleDelete = async () => {
 
         try {
-            const res = await axios.delete(`${API_URL}/booking/admin/item/${food?.id}`, {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
+            console.log("Xóa món ăn:", food?.id);
+            const res = await axiosClient.delete(`${API.deleteFood}/${food?.id}`);
         
             console.log("Xóa thành công:", res.data);
+            Alert.alert("Success", "Xóa món ăn thành công");
             // Có thể hiển thị alert hoặc cập nhật UI tại đây
           } catch (error: any) {
-            if (axios.isAxiosError(error)) {
-              const status = error.response?.status;
-              const message = error.response?.data?.message || "Đã xảy ra lỗi khi xóa.";
-              console.error(`Lỗi khi xóa: ${status} - ${message}`);
-              Alert.alert("Lỗi", message);
-            } else {
-              console.error("Lỗi không xác định:", error);
-              Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định.");
-            }
+            console.error("Lỗi khi xóa món ăn:", error);
+            Alert.alert("Error", "Không thể xóa món ăn");
           }
         
         if (food) {

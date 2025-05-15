@@ -4,14 +4,12 @@ interface Props {
 
     isActionModalVisible: boolean,
     setIsActionModalVisible: (visible: boolean) => void,
-    handleEdit: () => void,
     handleDelete: () => void
 }
 
 const SelectActionModal = ({
     isActionModalVisible,
     setIsActionModalVisible,
-    handleEdit,
     handleDelete
 }: Props) => {
 
@@ -24,9 +22,9 @@ const SelectActionModal = ({
                     <View style={styles.modalContent}>
 
                         {/* Nút sửa */}
-                        <TouchableOpacity style={styles.optionButton} onPress={handleEdit}>
+                        {/* <TouchableOpacity style={styles.optionButton} onPress={handleEdit}>
                             <Text style={[styles.optionText, { color: '#007AFF' }]}>Sửa</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         {/* Nút xóa */}
                         <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>

@@ -8,6 +8,8 @@ import { images, imagesUrl } from "@/constants/image";
 import { v4 as uuidv4 } from 'uuid';
 import Constants from 'expo-constants';
 import axios from "axios";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
 const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface Props {
@@ -22,6 +24,7 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
     const [title, setTitle] = useState<string>('');
     const [price, setPrice] = useState<string>('');
     const [image, setImage] = useState<string>('');
+    const [id, setId] = useState<string>('');
 
     const handelCreateFood = async () => {
         if (!title || !price) {
@@ -31,26 +34,27 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
         }
 
         try {
-            const response = await axios.post(`${API_URL}/booking/admin/item/`, {
-                id: uuidv4(),
-                name: title,
+            const response = await axiosClient.post(`${API.createFood}`, {
+                title: title,
                 price: price,
                 image: image,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
             })
-
-            console.log('Success:', response.data);
+            console.log("response", response.data);
+            if (response.status === 200) {
+                setId(response.data.id);
+            }
         } catch (error) {
             console.error('Error:', error);
         }
 
-
+        const newFood: FoodItem = {
+            id: id,
+            name: title,
+            price: price,
+            image: imagesUrl.img6,
+        };
         // Handle food creation logic here
-        setFoodList([...foodList, { id: foodList.length + 1, name: title, price: price, image: imagesUrl.img8 }]);
-        console.log("Food Created:", { title, price, image });
+        setFoodList([...foodList, newFood]);
         // Gửi API
         setTitle('');
         setPrice('');

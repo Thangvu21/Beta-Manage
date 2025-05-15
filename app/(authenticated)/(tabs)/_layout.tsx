@@ -9,29 +9,32 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FONT_FAMILY } from "@/constants/font";
 import { BottomTabBarProps } from "@/types/bottomTabBarProps";
 import { useRouter } from "expo-router";
+import { UserProvider } from "@/Components/Context/UserProvider";
 
 const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => {
     const router = useRouter();
 
     return (
-        <View style={styles.fabWrapper}>
-            <TouchableOpacity
-                style={styles.fabContainer}
-                onPress={() => router.push('/(authenticated)/scanner')}
-                activeOpacity={0.9}
-            >
-                <View style={styles.fab}>
-                    {children}
-                </View>
-            </TouchableOpacity>
-        </View>
+        <>
+            <View style={styles.fabWrapper}>
+                <TouchableOpacity
+                    style={styles.fabContainer}
+                    onPress={() => router.push('/(authenticated)/scanner')}
+                    activeOpacity={0.9}
+                >
+                    <View style={styles.fab}>
+                        {children}
+                    </View>
+                </TouchableOpacity>
+            </View>
+        </>
     );
 }
 
 
 const _Layout = () => {
 
-    
+
     return (
         <Tabs
             screenOptions={{

@@ -4,14 +4,21 @@ import { images, imagesUrl } from "@/constants/image";
 import React, { useState } from "react";
 import LoginedStatus from "./LoginedStatus";
 import NotLoginedStatus from "./NotLoginedStatus";
+import { UserData, UserProfile } from "@/constants/user";
 
-const HomeHeader = () => {
+interface Props {
+    user: UserProfile;
+    setUser: (user: UserProfile) => void;
+}
 
-    const [isLogin, setIsLogin] = useState(true);
+const HomeHeader = ({
+    user,
+    setUser
+}: Props) => {
 
     return (
         <View className="flex-row justify-between items-center" style={{borderBottomColor: '#ccc', borderBottomWidth: 1,}}>
-            {isLogin ? <LoginedStatus /> : <NotLoginedStatus />}
+            {<LoginedStatus user={user} setUser={setUser}/>}
             <Image source={images.beta} style={{ width: 150, height: 50 }} />
         </View>
     )
