@@ -22,6 +22,26 @@ export const API = {
     changeAvatar: `${API_URL}/user`,
     getUser: `${API_URL}/user`,
 
+    // cinema
+    getAllCinema: `${API_URL}/cinema`,
+    getCinemaDetail: `${API_URL}/cinema/`,
+    createCinema: `${API_URL}/cinema/admin/`,
+    updateCinema: `${API_URL}/cinema/admin/`,
+    deleteCinema: `${API_URL}/cinema/admin/`,
+    // notification
+    getAllNotification: `${API_URL}/notification`,
+    getNotificationDetail: `${API_URL}/notification/`,
+    createNotification: `${API_URL}/notification/admin/`,
+    updateNotification: `${API_URL}/notification/admin/`,
+    deleteNotification: `${API_URL}/notification/admin/`,
+
+    // showtime
+    getAllShowtime: `${API_URL}/showtime`,
+    getShowtimeDetail: `${API_URL}/showtime/`,
+    createShowtime: `${API_URL}/showtime/admin/`,
+    updateShowtime: `${API_URL}/showtime/admin/`,
+    deleteShowtime: `${API_URL}/showtime/admin/`,
+
     // scan boking
     scanBooking: `${API_URL}/booking/scan`,
     

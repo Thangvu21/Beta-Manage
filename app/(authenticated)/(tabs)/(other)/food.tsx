@@ -1,8 +1,7 @@
-import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView, Pressable, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { foodData, FoodItem } from "@/constants/food";
+import { FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
@@ -60,7 +59,7 @@ const Food = () => {
             try {
                 const response = await axiosClient.get(API.getAllFood);
 
-                console.log("response", response.data);
+                // console.log("response", response.data);
                 if (response.status === 200) {
                     setFoodList(response.data);
                 }
@@ -77,7 +76,7 @@ const Food = () => {
     return (
 
         <>
-            <View className="flex-1 bg-gray-100 px-4 pt-20">
+            <View className="flex-1 bg-gray-100 px-4 pt-5">
                 {/* Header */}
 
 

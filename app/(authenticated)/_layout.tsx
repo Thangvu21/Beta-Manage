@@ -15,7 +15,6 @@ export default function AuthenticatedLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="movie" options={{ headerShown: false }} />
-          <Stack.Screen name='user' options={{ headerShown: false }} />
           <Stack.Screen
             name="scanner"
             options={{

@@ -3,15 +3,11 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useState } from "react";
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { AgeRating, MovieData, MovieDetailData, Status } from "@/constants/film";
-import { images, imagesUrl } from "@/constants/image";
-import uuid from 'react-native-uuid';
-import Constants from 'expo-constants';
-import axios from "axios";
+import { imagesUrl } from "@/constants/image";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
-const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface Props {
     modalCreateVisible: boolean,

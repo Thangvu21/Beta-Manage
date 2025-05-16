@@ -1,16 +1,12 @@
 // SettingScreen.tsx
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { UserData } from "@/constants/user";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import * as ImagePicker from 'expo-image-picker';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { imagesUrl } from '@/constants/image';
 import { router } from 'expo-router';
 import { FONT_FAMILY } from '@/constants/font';
 import { useUser } from '@/Components/Context/UserProvider';
 import { useAuthContext } from '@/Components/Context/AuthProvider';
-const Stack = createNativeStackNavigator();
 
 export default function ProfileScreen() {
 
@@ -31,7 +27,7 @@ export default function ProfileScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync(
       {
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images',
         allowsEditing: true,
         quality: 1,
       }

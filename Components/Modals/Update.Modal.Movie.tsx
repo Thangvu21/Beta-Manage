@@ -1,19 +1,14 @@
 import { AgeRating, MovieData, Status } from "@/constants/film";
-import { FoodItem } from "@/constants/food";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Alert, Button, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImagePickerScreen from "../Camera/ImagePicker";
 import { imagesUrl } from "@/constants/image";
-import { v4 as uuidv4 } from 'uuid';
-import Constants from 'expo-constants';
-import axios from "axios";
 import { MovieDetailData } from "@/constants/film";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
-const API_URL = Constants.manifest?.extra?.API_URL;
 
 interface props {
     modalUpdateVisible: boolean,
