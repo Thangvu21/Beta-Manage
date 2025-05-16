@@ -53,23 +53,9 @@ const _Layout = () => {
             }}>
 
             <Tabs.Screen
-                name="statistics"
+                name="(analyst)"
                 options={{
-                    title: "Analyst",
-                    headerTransparent: false,
-                    headerTitle: "Analyst",
-                    headerTintColor: "#fff",
-                    headerTitleStyle: {
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        fontFamily: FONT_FAMILY
-                    },
-                    headerBackground: () => (
-                        <LinearGradient
-                            colors={["#1e6fa8", "#70c6e5"]}
-                            style={{ flex: 1 }}
-                        />
-                    ),
+                    headerShown: false,
                     tabBarIcon: ({ color }) => <Ionicons name="analytics" size={30} color={color} />
                 }}
             />
@@ -92,22 +78,9 @@ const _Layout = () => {
 
 
             <Tabs.Screen
-                name="food"
+                name="(other)"
                 options={{
-                    headerTransparent: true,
-                    headerTitle: "Food",
-                    headerTintColor: "#fff",
-                    headerTitleStyle: {
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        fontFamily: FONT_FAMILY
-                    },
-                    headerBackground: () => (
-                        <LinearGradient
-                            colors={["#1e6fa8", "#70c6e5"]}
-                            style={{ flex: 1 }}
-                        />
-                    ),
+                    headerShown: false,
                     tabBarIcon: ({ color }) => <MaterialIcons name="fastfood" size={30} color={color} />
                 }}
             />

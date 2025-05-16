@@ -13,13 +13,34 @@ export const API = {
     updateFilm: `${API_URL}/film/admin/`,
     deleteFilm: `${API_URL}/film/admin/`,
     // food 
-    getAllFood: `${API_URL}/item/admin/`,
-    createFood: `${API_URL}/item/admin`,
-    updateFood: `${API_URL}/item/admin`,
-    deleteFood: `${API_URL}/item/admin`,
+    getAllFood: `${API_URL}/booking/item/admin/`,
+    createFood: `${API_URL}/booking/item/admin/`,
+    updateFood: `${API_URL}/booking/item/admin`,
+    updateFoodImage: `${API_URL}/booking/item/admin/image`,
+    deleteFood: `${API_URL}/booking/item/admin`,
     // user
     changeAvatar: `${API_URL}/user`,
     getUser: `${API_URL}/user`,
+
+    // cinema
+    getAllCinema: `${API_URL}/cinema`,
+    getCinemaDetail: `${API_URL}/cinema/`,
+    createCinema: `${API_URL}/cinema/admin/`,
+    updateCinema: `${API_URL}/cinema/admin/`,
+    deleteCinema: `${API_URL}/cinema/admin/`,
+    // notification
+    getAllNotification: `${API_URL}/notification`,
+    getNotificationDetail: `${API_URL}/notification/`,
+    createNotification: `${API_URL}/notification/admin/`,
+    updateNotification: `${API_URL}/notification/admin/`,
+    deleteNotification: `${API_URL}/notification/admin/`,
+
+    // showtime
+    getAllShowtime: `${API_URL}/showtime`,
+    getShowtimeDetail: `${API_URL}/showtime/`,
+    createShowtime: `${API_URL}/showtime/admin/`,
+    updateShowtime: `${API_URL}/showtime/admin/`,
+    deleteShowtime: `${API_URL}/showtime/admin/`,
 
     // scan boking
     scanBooking: `${API_URL}/booking/scan`,

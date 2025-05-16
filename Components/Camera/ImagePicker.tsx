@@ -1,4 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
+import { MediaType } from 'expo-image-picker';
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface Props {
@@ -19,7 +20,7 @@ const ImagePickerScreen = ({imageUri, setImageUri} : Props) => {
 
         const result = await ImagePicker.launchImageLibraryAsync(
             {
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: 'images',
                 allowsEditing: true,
                 quality: 1,
             }

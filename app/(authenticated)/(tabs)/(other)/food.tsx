@@ -1,8 +1,7 @@
-import { Link } from "expo-router";
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, Image, FlatList, StyleSheet, SafeAreaView, Pressable, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { foodData, FoodItem } from "@/constants/food";
+import { FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
@@ -11,6 +10,8 @@ import Feather from '@expo/vector-icons/Feather';
 import DeleteModalFood from "@/Components/Modals/Delete.Modal.Food";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
+import UpdateImageModalFood from "@/Components/Modals/Update.Modal.Image.Food";
+import SelectActionItemModal from "@/Components/Modals/Select.Action.Item.Modal";
 
 const Food = () => {
 
@@ -20,7 +21,11 @@ const Food = () => {
 
     const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
 
-    const [modalEditVisible, setModalEditVisible] = useState(false);
+    const [modalSelectionVisible, setModalSelectionVisible] = useState(false);
+
+    const [modalUpdateItem, setModalUpdateItem] = useState(false);
+
+    const [modalUpdateImageItem, setModalUpdateImageItem] = useState(false);
 
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
 
@@ -30,7 +35,18 @@ const Food = () => {
 
     const handleUpdateMovie = (food: FoodItem) => {
         setFood(food);
-        setModalEditVisible(true);
+        setModalSelectionVisible(true);
+
+    }
+
+    const handleUpdateImageMovie = (food: FoodItem) => {
+        setModalUpdateImageItem(true);
+        setModalSelectionVisible(false);
+    }
+
+    const handleUpdateItem = (food: FoodItem) => {
+        setModalUpdateItem(true);
+        setModalSelectionVisible(false);
     }
 
     const handleDeleteMovie = (food: FoodItem) => {
@@ -43,7 +59,7 @@ const Food = () => {
             try {
                 const response = await axiosClient.get(API.getAllFood);
 
-                console.log("response", response.data);
+                // console.log("response", response.data);
                 if (response.status === 200) {
                     setFoodList(response.data);
                 }
@@ -60,7 +76,7 @@ const Food = () => {
     return (
 
         <>
-            <View className="flex-1 bg-gray-100 px-4 pt-20">
+            <View className="flex-1 bg-gray-100 px-4 pt-5">
                 {/* Header */}
 
 
@@ -102,11 +118,35 @@ const Food = () => {
                     modalCreateVisible={modalCreateVisible}
                     foodList={foodList}
                     setFoodList={setFoodList} />}
+
+                {
+                    food && (
+                        <SelectActionItemModal
+                            handleUpdateImage={() => handleUpdateImageMovie(food)}
+                            handleUpdateItem={() => handleUpdateItem(food)}
+                            isActionModalVisible={modalSelectionVisible}
+                            setIsActionModalVisible={setModalSelectionVisible}
+                            food={food}
+
+                        />
+                    )
+                }
                 {
                     food && foodList && (
                         <UpdateModalFood
-                            setModalUpdateVisible={setModalEditVisible}
-                            modalUpdateVisible={modalEditVisible}
+                            setModalUpdateVisible={setModalUpdateItem}
+                            modalUpdateVisible={modalUpdateItem}
+                            food={food}
+                            foodList={foodList}
+                            setFoodList={setFoodList}
+                        />
+                    )
+                }
+                {
+                    food && foodList && (
+                        <UpdateImageModalFood
+                            setModalUpdateVisible={setModalUpdateImageItem}
+                            modalUpdateVisible={modalUpdateImageItem}
                             food={food}
                             foodList={foodList}
                             setFoodList={setFoodList}

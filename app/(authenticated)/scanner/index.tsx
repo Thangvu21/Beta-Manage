@@ -1,14 +1,13 @@
 import { CameraView } from "expo-camera";
-import { Stack } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, AppState, Linking, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, AppState, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
 // import { BarCodeScanner} from "expo-barcode-scanner";
 import Constants from 'expo-constants';
-import axios from "axios";
-const API_URL = Constants.manifest?.extra?.API_URL;
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
 
 export default function HomeScanner() {
 
@@ -26,7 +25,7 @@ export default function HomeScanner() {
 
         const result = await ImagePicker.launchImageLibraryAsync(
             {
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: 'images',
                 allowsEditing: true,
                 quality: 1,
             }
@@ -62,10 +61,10 @@ export default function HomeScanner() {
     
             try {
                 console.log("QR Data:", data);
-                const response = await axios.get(`${API_URL}/booking/admin/${data}`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                const response = await axiosClient.get(`${API.scanBooking}`, {
+                    params: {
+                        code: data
+                    }
                 })
 
                 const result = response.data;

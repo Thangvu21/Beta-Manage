@@ -6,6 +6,7 @@ import ImagePickerScreen from "../Camera/ImagePicker";
 import { imagesUrl } from "@/constants/image";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
+import * as FileSystem from 'expo-file-system';
 
 
 interface props {
@@ -16,7 +17,7 @@ interface props {
     setFoodList: (foodList: FoodItem[]) => void
 }
 
-const UpdateModalFood = ({
+const UpdateImageModalFood = ({
     modalUpdateVisible,
     setModalUpdateVisible,
     food,
@@ -24,43 +25,46 @@ const UpdateModalFood = ({
     setFoodList
 }: props) => {
 
-    
-
-    // const [image, setImage] = useState<string>(food?.image || imagesUrl.img5);
-    const [title, setTitle] = useState<string>(food?.name || '');
-    const [price, setPrice] = useState<string>(food?.price.toString() || '');
+    const [image, setImage] = useState<string>(food?.image || imagesUrl.img5);
 
     useEffect(() => {
-        // setImage(food?.image || imagesUrl.img5);
-        setTitle(food?.name || '');
-        setPrice(food?.price.toString() || '');
+        setImage(food?.image || imagesUrl.img5);
     }, [food]);
 
-
-    const handelupdateFood = async () => {
-        if (!title || !price) {
-            Alert.alert("Please fill all fields");
+    const handleUpdateImageItem = async () => {
+        if (!image) {
+            Alert.alert("Please select an image");
             return;
         }
         try {
-            
-            const response = await axiosClient.patch(`${API.updateFood}/${food?.id}`, {
-                name: title,
-                price: price,
-            });
-
-            
-            if (response.status === 200) {
-                Alert.alert("Success", "Cập nhật món ăn thành công");
-                setFoodList(foodList.map(item => item.id === food?.id ? { ...item, name: title, price: price } : item));
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            if (!fileInfo.exists) {
+                Alert.alert("File không tồn tại!");
+                return;
             }
-            
-        } catch (error: any) {
-            console.error("Lỗi khi cập nhật món ăn:", error);
-            Alert.alert("Error", "Không thể cập nhật món ăn");
-        }
+            const fileName = image.split('/').pop() || 'photo.jpg';
+            const fileType = fileName.split('.').pop();
 
-        setModalUpdateVisible(false);
+            const formData = new FormData();
+            formData.append('image', {
+                uri: image,
+                name: fileName,
+                type: `image/${fileType}`,
+            } as any);
+            
+            const response = await axiosClient.patch(`${API.updateFoodImage}/${food?.id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            if (response.status === 200 || response.status === 201) {
+                Alert.alert("Success", "Cập nhật ảnh món ăn thành công");
+                setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: response.data.imageUrl } : item));
+            }
+        } catch (error: any) {
+            console.error("Lỗi khi cập nhật ảnh món ăn:", error);
+            Alert.alert("Error", "Không thể cập nhật ảnh món ăn");
+        }
     }
 
     return (
@@ -83,44 +87,19 @@ const UpdateModalFood = ({
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
                     </View>
-
-                    {/* Body */}
-                    <View>
-                        <View>
-                            <Text style={styles.label}>Food Title</Text>
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder="Enter food title"
-                                value={title}
-                                onChangeText={setTitle}
-                            />
-                        </View>
-
-                        <View>
-                            <Text style={styles.label}>Food Price</Text>
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder="Enter food price"
-                                value={price}
-                                onChangeText={setPrice}
-                            />
-                        </View>
-
-                        {/* Image */}
-                        {/* <ImagePickerScreen imageUri={image} setImageUri={setImage} /> */}
-                    </View>
-
-                    {/* Footer */}
+                    <ImagePickerScreen imageUri={image} setImageUri={setImage} />
                     <View style={[styles.createButton, { marginTop: 20, marginBottom: 20 }]}>
-                        <TouchableOpacity onPress={() => handelupdateFood()}>
+                        <TouchableOpacity onPress={() => handleUpdateImageItem()}>
                             <Text style={styles.createButtonText}>Update</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-        </Modal>
-    );
-};
+        </Modal >
+    )
+
+
+}
 
 const styles = StyleSheet.create({
     modalWrapper: {
@@ -199,4 +178,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UpdateModalFood;
+export default UpdateImageModalFood;
