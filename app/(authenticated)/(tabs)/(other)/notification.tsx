@@ -3,6 +3,9 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView }
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Notification, sampleNotifications, NotificationType } from '@/constants/notification';
 import { LinearGradient } from 'expo-linear-gradient';
+import CreateModalNotification from '@/Components/Modals/Create.Modal.Noti';
+import UpdateModalNotification from '@/Components/Modals/Update.Modal.Noti';
+import DeleteModalNotification from '@/Components/Modals/Delete.Modal.Noti';
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -20,17 +23,29 @@ const getIcon = (type: string) => {
 
 export default function NotificationScreen() {
   const [notifications, setNotifications] = useState<Notification[]>(sampleNotifications);
+  const [modalCreateVisible, setModalCreateVisible] = useState(false);
+  const [modalEditVisible, setModalEditVisible] = useState(false);
+  const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
   const handleAdd = () => {
-
+    setModalCreateVisible(true);
   };
 
   const handleEdit = (id: string) => {
-
+    const notificationToEdit = notifications.find((notif) => notif.id === id);
+    if (notificationToEdit) {
+      setSelectedNotification(notificationToEdit);
+      setModalEditVisible(true);
+    }
   };
 
   const handleDelete = (id: string) => {
-
+    const notificationToDelete = notifications.find((notif) => notif.id === id);
+    if (notificationToDelete) {
+      setSelectedNotification(notificationToDelete);
+      setModalDeleteVisible(true);
+    }
   };
 
   return (
@@ -62,6 +77,27 @@ export default function NotificationScreen() {
           </View>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+
+      <CreateModalNotification 
+        modalVisible={modalCreateVisible}
+        setModalVisible={setModalCreateVisible}
+        setNotificationList={setNotifications}
+        notificationList={notifications}
+      />
+      <UpdateModalNotification
+        modalVisible={modalEditVisible}
+        setModalVisible={setModalEditVisible}
+        setNotificationList={setNotifications}
+        notificationList={notifications}
+        notificationToEdit={selectedNotification}
+        />
+      <DeleteModalNotification
+        modalDeleteVisible={modalDeleteVisible}
+        setModalDeleteVisible={setModalDeleteVisible}
+        notification={selectedNotification}
+        notificationList={notifications}
+        setNotificationList={setNotifications}
       />
     </View>
   );

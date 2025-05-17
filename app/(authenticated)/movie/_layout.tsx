@@ -23,6 +23,19 @@ const MovieLayout = () => {
                     ),
                 }}
             />
+            <Stack.Screen
+                name="detail"
+                options={{
+                    headerTitle: "Movie Showtime",
+                    headerTintColor: "#fff", 
+                    headerBackground: () => (
+                        <LinearGradient
+                            colors={["#1e6fa8", "#70c6e5"]}
+                            style={{ flex: 1 }}
+                        />
+                    ),
+                }}
+            />
         </Stack>
     );
 };

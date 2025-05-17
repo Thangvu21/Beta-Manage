@@ -10,6 +10,7 @@ import { FONT_FAMILY } from "@/constants/font";
 import { BottomTabBarProps } from "@/types/bottomTabBarProps";
 import { useRouter } from "expo-router";
 import { UserProvider } from "@/Components/Context/UserProvider";
+import { colors } from "@/constants/color";
 
 const CustomTabBarButton = ({ children, onPress }: BottomTabBarProps) => {
     const router = useRouter();
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     fabWrapper: {
         position: 'absolute',
         top: -25,
+        left: 8,
         height: 70,
         width: 70,
         borderRadius: 40,
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: '#337ab7',
+        backgroundColor: colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 4,

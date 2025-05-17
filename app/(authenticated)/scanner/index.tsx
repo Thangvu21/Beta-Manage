@@ -5,7 +5,6 @@ import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
 // import { BarCodeScanner} from "expo-barcode-scanner";
-import Constants from 'expo-constants';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 

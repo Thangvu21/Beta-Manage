@@ -25,7 +25,8 @@ export default function Dashboard() {
             <Ionicons name="bar-chart-outline" size={32} color="#1f2937" />
             <Text style={styles.cardText}>Báo cáo doanh thu</Text>
           </TouchableOpacity>
-
+          {/* Dữ liệu động múa tí động hơn tĩnh */}
+          
           {/* <TouchableOpacity
             style={[styles.card, { backgroundColor: '#ede9fe' }]}
             onPress={() => router.push('/users')}
