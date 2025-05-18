@@ -9,6 +9,20 @@ export enum AgeRating {
     C18 = 'C18',
 }
 
+export enum ColorAgeRating {
+    P = '#00C853',    
+    C13 = '#FFD600',    
+    C16 = '#FF6D00',    
+    C18 = '#D50000',    
+}
+
+export enum TextAgeRating {
+    P = 'Phù hợp cho mọi lứa tuổi',
+    C13 = 'Phù hợp cho trẻ từ 13 tuổi trở lên',
+    C16 = 'Phù hợp cho trẻ từ 16 tuổi trở lên',
+    C18 = 'Phù hợp cho người từ 18 tuổi trở lên',
+}
+
 export enum Status {
     ComingSoon = 'coming_soon',
     NowShowing = 'now_showing',
@@ -119,7 +133,7 @@ export const FilmData: MovieData[] = [
         title: 'The Dark Knight',
         releaseDate: new Date('2008-07-18'),
         ageRating: AgeRating.C16,
-        posterUrl: imagesUrl.img2   
+        posterUrl: imagesUrl.img2
     },
 
     {
@@ -181,7 +195,7 @@ export const FilmData: MovieData[] = [
     {
         id: '10',
         title: 'The Godfather',
-        releaseDate:new Date('1994-09-23'),
+        releaseDate: new Date('1994-09-23'),
         ageRating: AgeRating.C18,
         posterUrl: imagesUrl.img7
     },

@@ -1,304 +1,409 @@
-import { FilmData, MovieDetailData } from "@/constants/film";
-import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Button, Linking } from "react-native";
 import { FONT_FAMILY } from "@/constants/font";
 import { useEffect, useState } from "react";
-import { images } from "@/constants/image";
-import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
-import axios from "axios";
-import { useMovieContext } from "@/Components/Context/MoiveProvider";
 import { LinearGradient } from "expo-linear-gradient";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
+import { ShowTimes, sampleShowTimes, sampleShowDate, ShowTime } from "@/constants/dateTime";
+import { sampleCinemas, sampleNameCinemas } from "@/constants/cinema";
+import { colors } from "@/constants/color";
+import { Timestamp } from "react-native-reanimated/lib/typescript/commonTypes";
+import CreateTimeModal from "@/Components/Modals/Create.Modal.ShowTime";
+import UpdateTimeModal from "@/Components/Modals/Update.Modal.ShowTime";
+import DeleteTimeModal from "@/Components/Modals/Delete.Modal";
 
 
 const Details = () => {
 
     const navigation = useNavigation();
-    const { id, title } = useLocalSearchParams<{ id: string, title: string }>();
-    // nhận vào id film để fetch film details
-    const [filmDetail, setFilmDetail] = useState<MovieDetailData>();
-    const [editModalVisible, setEditModalVisible] = useState(false);
+    const router = useRouter();
+    // id film
+    const { id, title, posterUrl } = useLocalSearchParams<{ id: string, title: string, posterUrl: string }>();
 
-    const { listMovie, setListMovie } = useMovieContext();
+    const [listShowDate, setListShowDate] = useState<Date[]>();
+    const [listShowTime, setListShowTime] = useState<ShowTimes[]>();
 
+    const [selectedIndex, setSelectedIndex] = useState<number>(0);
+    const [selectedIndexCinema, setSelectedIndexCinema] = useState<number>(0);
 
-    const handleOpenYouTube = () => {
-        if (filmDetail && filmDetail.trailerUrl) {
-            Linking.openURL(filmDetail.trailerUrl).catch(err =>
-                console.error("Failed to open URL:", err)
-            );
-        } else {
-            Linking.openURL(MovieDetailData.trailerUrl).catch(err =>
-                console.error("Failed to open URL:", err)
-            );
-        }
+    const [modalCreateShowTime, setModalCreateShowTime] = useState(false);
+    const [modalEditShowTime, setModalEditShowTime] = useState(false);
+    const [modalDeleteShowTime, setModalDeleteShowTime] = useState(false);
+    
+    const [timeSeleted, setTimeSelected] = useState<ShowTime>({} as ShowTime);
+    const [dateSelected, setDateSelected] = useState<Date>();
+    const [betaSelected, setBetaSelected] = useState('');
+
+    // chọn ngày trước
+    const chooseDate = (date: Date) => {
+        setDateSelected(date)
+    }
+
+    const chooseIndex = (index: number) => {
+        setSelectedIndex(index);
+    }
+
+    // chọn rạp
+    const handleSelectedBeta = (beta: string) => {
+        // console.log('Beta đã chọn:', beta);
+        setBetaSelected(beta);
+    }
+
+    // chọn thời gian
+    const handleSelectedTime = (showtime: ShowTime) => {
+        console.log('Thời gian đã chọn:', showtime);
+        setTimeSelected(showtime);
+    }
+
+    const handleEditShowTime = (cinemaName: string) => {
+        setModalEditShowTime(true);
     };
 
+    const handleDeleteShowTime = (cinemaName: string) => {
+        setModalDeleteShowTime(true);
+    };
+
+    function getDate(dateStr: Date) {
+        const date = new Date(dateStr);
+        return date.getDate(); // Trả về ngày: 18
+    }
+
+    function getDayLabel(dateStr: Date) {
+        const date = new Date(dateStr);
+        const today = new Date();
+        const isToday =
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear();
+
+        if (isToday) return 'Today';
+
+        // const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayName = dayNames[date.getDay()];
+
+        return `${month}-${dayName}`;
+    }
+
+
+
+
     useEffect(() => {
-        const fetchFilmDetails = async () => {
+        const fetchFilmShowTime = async () => {
             try {
                 const response = await axiosClient.get(`${API.getFilmDetail}/${id}`)
                 const data = response.data;
-                setFilmDetail(data);
+
                 // Từ film data nhận được thì set lại title các thứ
             } catch (error) {
                 console.error("Error fetching film details:", error);
             }
         }
 
-        fetchFilmDetails();
+        // fetchFilmShowTime();
+
+        // setListShowTime(sampleShowTimes.sort((a, b) => {
+        //     const dateA = new Date(a.date);
+        //     const dateB = new Date(b.date);
+        //     return dateA.getTime() - dateB.getTime();
+        // }));
+        setListShowTime(sampleShowTimes);
+        setListShowDate(sampleShowDate);
+        setDateSelected(sampleShowDate[0]);
 
         if (title) {
             navigation.setOptions({
-                headerTitle: title,
+                headerTitle: `${title} Showtime`,
             });
         }
     }, [id, navigation]);
 
+    useEffect(() => {
+        
+    }, []);
+
     return (
-        <SafeAreaView style={styles.container}>
-            {filmDetail && (
+
+        <ScrollView style={{ paddingBottom: 20, marginBottom: 20 }} showsVerticalScrollIndicator={true}>
+            <View>
                 <ImageBackground
-                    source={{ uri: filmDetail.posterUrl }}
-                    style={styles.background}
-                    blurRadius={12}
+                    source={{ uri: posterUrl }}
+                    style={{ width: '100%', height: 200 }}
+
                 >
-                    <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <View style={styles.videoContainer}>
-                            <TouchableOpacity onPress={handleOpenYouTube}>
-                                <Image
-                                    source={{ uri: filmDetail.posterUrl }}
-                                    style={styles.videoThumbnail}
-                                />
-                                <Ionicons
-                                    name="play-circle"
-                                    size={64}
-                                    color="#fff"
-                                    style={styles.playIcon}
-                                />
+                    <LinearGradient
+                        colors={['rgba(0, 0, 0, 0.8)', 'rgba(0, 0, 0, 0.1)']}
+                        style={{ flex: 1 }}
+                    >
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#fff', fontSize: 24, marginBottom: 5 }}>{title}</Text>
+                            <TouchableOpacity style={styles.buttonDetail}
+                                onPress={() => router.push({
+                                    pathname: '/movie/detail',
+                                    params: {
+                                        id: id,
+                                        title: title,
+                                    }
+                                })}>
+                                <Text style={styles.textDetail}>Film Details</Text>
                             </TouchableOpacity>
                         </View>
-
-                        <View style={styles.overlay}>
-                            <Image source={{ uri: filmDetail.posterUrl }} style={styles.posterImage} />
-                            <Text style={styles.title}>{filmDetail.title}</Text>
-                            <Text style={styles.ageRating}>No children under 16 years old</Text>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>DIRECTOR</Text>
-                                <Text style={styles.value}>{filmDetail.director}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>CAST</Text>
-                                <Text style={styles.value}>{filmDetail.actors.join(', ')}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>GENRE</Text>
-                                <Text style={styles.value}>{filmDetail.genres.join(', ')}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>RUN TIME</Text>
-                                <Text style={styles.value}>{filmDetail.duration.toString()} Minutes</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>LANGUAGE</Text>
-                                <Text style={styles.value}>{filmDetail.language}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>RELEASE DATE</Text>
-                                {filmDetail?.releaseDate && (
-                                    <Text style={styles.value}>{new Date(filmDetail.releaseDate).toLocaleDateString()}</Text>
-                                )}
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>DESCRIPTION</Text>
-                                <Text style={styles.value}>{filmDetail.description}</Text>
-                            </View>
-                        </View>
-                    </ScrollView>
-                    {filmDetail && <UpdateModalMovie
-                        modalUpdateVisible={editModalVisible}
-                        setModalUpdateVisible={setEditModalVisible}
-                        movie={filmDetail}
-                        listMovie={listMovie}
-                        setListMovie={setListMovie}
-                    />}
-                    <TouchableOpacity onPress={() => setEditModalVisible(true)}>
-                        <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-                            <Ionicons name="add" size={28} color="#fff" />
-                        </LinearGradient>
-                    </TouchableOpacity>
+                    </LinearGradient>
                 </ImageBackground>
-            )}
-        </SafeAreaView>
+            </View>
+
+            <View>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 10 }}>Showtimes</Text>
+
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{
+                        paddingHorizontal: 10,
+                        gap: 12,
+                        marginVertical: 10,
+                    }}
+                >
+                    {listShowDate && listShowDate.map((item, index) => {
+                        const isSelected = index === selectedIndex;
+                        const day = getDate(item);
+                        const label = getDayLabel(item);
+
+                        return (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => {
+                                    chooseDate(item);
+                                    chooseIndex(index);
+                                }}
+                                activeOpacity={0.8}
+                            >
+                                <View
+                                    style={{
+                                        width: 75,
+                                        paddingVertical: 10,
+                                        alignItems: 'center',
+                                        borderBottomWidth: 2,
+                                        borderBottomColor: isSelected ? '#e50914' : 'transparent',
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            fontSize: 30, // Tăng từ 18 → 22
+                                            fontWeight: isSelected ? 'bold' : '500',
+                                            color: isSelected ? '#e50914' : '#444',
+                                        }}
+                                    >
+                                        {day}
+                                    </Text>
+
+                                    <Text
+                                        style={{
+                                            fontSize: 20, // Tăng từ 12 → 14
+                                            color: isSelected ? '#e50914' : '#666',
+                                            marginTop: 2,
+                                        }}
+                                    >
+                                        {label}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </ScrollView>
+            </View>
+
+            <View>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 10 }}>Cinemas</Text>
+                { listShowTime && listShowTime.map((cinema, index) => {
+                    const cinemaName = Object.keys(cinema)[0];
+
+                    return (
+                        <View
+                            key={index}
+                            style={{
+                                backgroundColor: '#f9f9f9',
+                                borderRadius: 10,
+                                marginHorizontal: 10,
+                                marginVertical: 5,
+                                padding: 10,
+                                shadowColor: '#000',
+                                shadowOpacity: 0.1,
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowRadius: 4,
+                                elevation: 2,
+                            }}
+                        >
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <TouchableOpacity onPress={() => {/* xử lý lọc */ }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
+                                        {cinemaName}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        handleSelectedBeta(cinemaName);
+                                        setSelectedIndexCinema(index);
+                                        setModalCreateShowTime(true);
+                                    }}
+                                    style={{
+                                        backgroundColor: colors.primary,
+                                        paddingVertical: 2,
+                                        paddingHorizontal: 2,
+                                        borderRadius: 25,
+                                    }}
+                                >
+                                    <Ionicons name="add" size={28} color="#fff" />
+                                </TouchableOpacity>
+
+
+                            </View>
+
+                            {/* Hiển thị danh sách khung giờ chiếu */}
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
+                                {cinema[cinemaName].map((timeCinema, timeIndex) => (
+                                    <View style={styles.showtimeContainer} key={timeIndex}>
+                                        <TouchableOpacity style={styles.timeButton}>
+                                            <Text style={styles.timeText}>
+                                                {new Date(timeCinema.time).toLocaleTimeString([], {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <View style={styles.iconButtonRow}>
+                                            <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
+                                                onPress={
+                                                    () => {
+                                                        handleSelectedBeta(cinemaName)
+                                                        handleSelectedTime(timeCinema)
+                                                        handleEditShowTime(cinemaName)
+                                                        setSelectedIndexCinema(index);
+                                                    }}>
+                                                <Text style={styles.iconButton}>✏️</Text>
+                                            </TouchableOpacity>
+                                            
+
+                                            <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
+                                                onPress={() => {
+                                                    handleSelectedBeta(cinemaName)
+                                                    handleSelectedTime(timeCinema)
+                                                    handleDeleteShowTime(cinemaName)
+                                                    setSelectedIndexCinema(index);
+                                                }}>
+                                                <Text style={styles.iconButton}>🗑️</Text>
+                                            </TouchableOpacity>
+                                        
+                                        </View>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )
+                })}
+            </View>
+
+            {
+                dateSelected && listShowTime && (
+                    <CreateTimeModal
+                        listShowTime={listShowTime}
+                        setListShowTime={setListShowTime}
+                        modalCreateShowTime={modalCreateShowTime}
+                        setModalCreateShowTime={setModalCreateShowTime}
+                        cinemaName={betaSelected}
+                        date={getDate(dateSelected).toString()}
+                        indexArray={selectedIndexCinema}
+                    />
+                )
+            }
+            {
+                dateSelected && listShowTime && timeSeleted && (
+                    <UpdateTimeModal
+                        listShowTime={listShowTime}
+                        setListShowTime={setListShowTime}
+                        modalUpdateShowTime={modalEditShowTime}
+                        setModalUpdateShowTime={setModalEditShowTime}
+                        cinemaName={betaSelected}
+                        date={getDate(dateSelected).toString()}
+                        showtimeSelected={timeSeleted}
+                        setShowTimeSelected={setTimeSelected}
+                        indexArray={selectedIndexCinema}
+                    />
+                )
+            }
+            {
+                dateSelected && listShowTime && timeSeleted && (
+                    <DeleteTimeModal
+                        listShowTime={listShowTime}
+                        setListShowTime={setListShowTime}
+                        modalDeleteShowTime={modalDeleteShowTime}
+                        setModalDeleteShowTime={setModalDeleteShowTime}
+                        cinemaName={betaSelected}
+                        date={getDate(dateSelected).toString()}
+                        showtime={timeSeleted}
+                        setShowTime={setTimeSelected}
+                        indexArray={selectedIndexCinema}
+                    />
+                )
+            }
+        </ScrollView >
+
 
     )
 }
 
-const styles1 = StyleSheet.create({
-    // c1
-    imageContainer: {
-        width: '100%',
-        height: '100%',
-    },
-    background: {
-        flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        padding: 10,
-        borderRadius: 16,
-    },
-    posterImage: {
-        width: 300,
-        height: 400,
-        borderRadius: 16,
-    },
-    textTitle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    timeTitle: {
-        fontSize: 24,
-        color: '#fff',
-        fontWeight: 'bold',
-        fontFamily: FONT_FAMILY
-    },
-
-    // modal button
-    fabButton: {
-        position: 'absolute',
-        bottom: 70,
-        right: 20,
-        backgroundColor: '#337ab7',
-        width: 50,
-        height: 50,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-    },
-
-});
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    background: {
-        flex: 1,
-        resizeMode: 'cover',
-    },
-    scrollContainer: {
-        alignItems: 'center',
-        padding: 20,
-    },
-    videoContainer: {
-        marginBottom: 20,
-        alignItems: 'center',
-    },
-    video: {
-        width: 340,
-        height: 220,
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 8,
-    },
-    overlay: {
-        backgroundColor: 'rgba(0,0,0,0.65)',
-        borderRadius: 20,
-        padding: 20,
-        width: '100%',
-    },
-    posterImage: {
-        width: '100%',
-        height: 280,
-        borderRadius: 16,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: '700',
-        color: '#fff',
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    ageRating: {
-        fontSize: 14,
-        color: '#f77',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    infoBlock: {
-        marginBottom: 14,
-    },
-    label: {
-        fontWeight: '600',
-        color: '#ccc',
-        fontSize: 13,
-    },
-    value: {
-        color: '#fff',
-        fontSize: 15,
-        marginTop: 4,
-        lineHeight: 20,
-    },
-    videoThumbnail: {
-        width: 340,
-        height: 220,
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 8,
-    },
-    playIcon: {
-        position: 'absolute',
-        top: '40%',
-        left: '40%',
-        zIndex: 1,
-        opacity: 0.8,
+    buttonDetail: {
+        paddingVertical: 5, paddingHorizontal: 10, borderWidth: 1, borderColor: '#337ab7', borderRadius: 30
     },
 
-    // button modify
-    fabButton: {
-        position: 'absolute',
-        bottom: 70,
-        right: 20,
-        backgroundColor: '#337ab7',
-        width: 50,
-        height: 50,
-        borderRadius: 30,
-        justifyContent: 'center',
+    textDetail: {
+        fontFamily: FONT_FAMILY, fontWeight: 900, color: '#337ab7', fontSize: 20
+    },
+
+    showtimeContainer: {
+        flexDirection: 'column',
         alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
+        padding: 8,
+        marginHorizontal: 8,
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+        minWidth: 80,
+    },
+
+    timeButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+        backgroundColor: colors.primary,
+        borderRadius: 20,
+        marginBottom: 4,
+    },
+
+    timeText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
+    },
+
+    iconButtonRow: {
+        flexDirection: 'row',
+        marginTop: 4,
+        gap: 12,
+    },
+
+    iconButton: {
+        padding: 4,
     },
 });
 

@@ -15,29 +15,33 @@ const SignIn = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = async () => {
-        if (!username || !password) {
-            alert("Please enter valid credentials");
-            return;
-        }
+    // const handleLogin = async () => {
+    //     if (!username || !password) {
+    //         alert("Please enter valid credentials");
+    //         return;
+    //     }
 
-        try {
+    //     try {
 
-            const res = await axios.post(API.login, {
-                email: username,
-                password,
-            });
+    //         const res = await axios.post(API.login, {
+    //             email: username,
+    //             password,
+    //         });
 
-            const { accessToken, refreshToken } = res.data.data;
-            if (res.status === 200) {
-                await login(accessToken, refreshToken);
-                router.replace('/(authenticated)/(tabs)');
-            } 
-        } catch (error) {
-            Alert.alert("Mật khẩu hoặc tài khoản không đúng");
-            console.log(error);
-        }
-    };
+    //         const { accessToken, refreshToken } = res.data.data;
+    //         if (res.status === 200) {
+    //             await login(accessToken, refreshToken);
+    //             router.replace('/(authenticated)/(tabs)');
+    //         } 
+    //     } catch (error) {
+    //         Alert.alert("Mật khẩu hoặc tài khoản không đúng");
+    //         console.log(error);
+    //     }
+    // };
+
+    const handleLogin = () => {
+        router.replace('/(authenticated)/(tabs)');
+    }
 
 
     return (

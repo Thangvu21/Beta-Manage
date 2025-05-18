@@ -4,20 +4,36 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { sampleCinemas } from '@/constants/cinema';
 import { Cinema } from '@/constants/cinema';
 import { LinearGradient } from 'expo-linear-gradient';
+import CreateModalCinema from '@/Components/Modals/Create.Modal.Cinema';
+import UpdateModalCinema from '@/Components/Modals/Update.Modal.Cinema';
+import DeleteModalCinema from '@/Components/Modals/Delete.Modal.Cinema';
+import { colors } from '@/constants/color';
 
 export default function CinemaScreen() {
-  const [cinemas, setCinemas] = useState(sampleCinemas);
+  const [cinemas, setCinemas] = useState<Cinema[]>(sampleCinemas);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [selectedCinema, setSelectedCinema] = useState<Cinema | null>(null);
 
   const handleDelete = (id: string) => {
-
+    const cinemaToDelete = cinemas.find((cinema) => cinema.id === id);
+    if (cinemaToDelete) {
+      setSelectedCinema(cinemaToDelete);
+      setIsDeleteModalVisible(true);
+    }
   };
 
   const handleEdit = (id: string) => {
-    Alert.alert('Chức năng sửa chưa được triển khai.');
+    const cinemaToEdit = cinemas.find((cinema) => cinema.id === id);
+    if (cinemaToEdit) {
+      setSelectedCinema(cinemaToEdit);
+      setIsEditModalVisible(true);
+    }
   };
 
   const handleAdd = () => {
-    Alert.alert('Chức năng thêm chưa được triển khai.');
+    setIsCreateModalVisible(true);
   };
 
   return (
@@ -28,38 +44,76 @@ export default function CinemaScreen() {
         </LinearGradient>
       </TouchableOpacity>
 
-      <FlatList
-        data={cinemas}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={{ uri: item.avatar }} style={styles.avatar} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.name}>{item.name}</Text>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
+        <FlatList
 
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Feather name="map-pin" size={14} color="#6b7280" style={{ marginRight: 4 }} />
-                <Text style={styles.text}>{item.address}</Text>
-              </View>
+          data={cinemas}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image source={{ uri: item.avatar }} style={styles.avatar} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>{item.name}</Text>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-                <Feather name="phone" size={14} color="#10b981" style={{ marginRight: 4 }} />
-                <Text style={styles.phone}>{item.phone}</Text>
-              </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Feather name="map-pin" size={14} color="#6b7280" style={{ marginRight: 5 }} />
+                  <Text 
+                  numberOfLines={3}
+                  style={styles.text}>{item.address.full}</Text>
+                </View>
 
-              <View style={styles.actions}>
-                <TouchableOpacity onPress={() => handleEdit(item.id)} activeOpacity={0.7}>
-                  <Feather name="edit" size={18} color="#3b82f6" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item.id)} activeOpacity={0.7}>
-                  <Feather name="trash-2" size={18} color="#ef4444" />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                  <Feather name="phone" size={14} color="#10b981" style={{ marginRight: 4 }} />
+                  <Text 
+                  numberOfLines={3}
+                  style={styles.phone}>{item.phone}</Text>
+                </View>
+
+                <View style={styles.iconButtonRow}>
+                  <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => handleEdit(item.id)}>
+                    <Text style={styles.iconButton}>✏️</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => handleDelete(item.id)}>
+                    <Text style={styles.iconButton}>🗑️</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-        ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
-      />
+          )}
+          ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
+        />
+      </View>
+
+      {(
+        <CreateModalCinema
+          modalCinemaVisible={isCreateModalVisible}
+          setModalCinemaVisible={setIsCreateModalVisible}
+          setCinemaList={setCinemas}
+          cinemaList={cinemas}
+
+        />
+      )}
+      {
+        <UpdateModalCinema
+          modalCinemaVisible={isEditModalVisible}
+          setModalCinemaVisible={setIsEditModalVisible}
+          setCinemaList={setCinemas}
+          cinemaList={cinemas}
+          selectedCinema={selectedCinema}
+          setSelectedCinema={setSelectedCinema}
+        />
+      }
+      {selectedCinema && (
+        <DeleteModalCinema
+          modalDeleteVisible={isDeleteModalVisible}
+          setModalDeleteVisible={setIsDeleteModalVisible}
+          selectedCinema={selectedCinema}
+          cinemaList={cinemas}
+          setCinemaList={setCinemas}
+          setSelectedCinema={setSelectedCinema}
+        />
+      )}
     </View>
   );
 }
@@ -98,6 +152,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     color: '#4b5563',
+    marginRight: 2
   },
   phone: {
     fontSize: 13,
@@ -129,4 +184,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
+
+
+  iconButtonRow: {
+        flexDirection: 'row',
+        marginTop: 4,
+        gap: 12,
+    },
+
+    iconButton: {
+        padding: 4,
+    },
 });

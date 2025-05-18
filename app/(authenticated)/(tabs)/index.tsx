@@ -1,9 +1,9 @@
 
-import { Text, View, Image, TouchableOpacity, FlatList, Modal, Button, ScrollViewBase, ScrollViewComponent, ScrollView } from "react-native";
+import { Text, View, Image, TouchableOpacity, ScrollView } from "react-native";
 // import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { useEffect, useState } from "react";
-import { fonts, FONT_FAMILY } from "@/constants/font";
-import { FilmData, MovieData, MovieDetailDataList } from "@/constants/film";
+import { FONT_FAMILY } from "@/constants/font";
+import { ColorAgeRating, FilmData, MovieData } from "@/constants/film";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
 import { useRouter } from 'expo-router';
@@ -14,7 +14,7 @@ import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
 import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
 import Swiper from 'react-native-swiper'
-import { imageBase, imageBaseUrl, imagesUrl } from "@/constants/image";
+import { imageBaseUrl } from "@/constants/image";
 import { useMovieContext } from "@/Components/Context/MoiveProvider";
 import { useUser } from "@/Components/Context/UserProvider";
 import axiosClient from "@/constants/axiosClient";
@@ -26,7 +26,6 @@ export default function Index() {
 
   // const [listMovie, setListMovie] = useState<MovieDetailData[]>(MovieDetailDataList);
   const { listMovie, setListMovie } = useMovieContext();
-
 
   // is user selected
   const [movie, setMovie] = useState<MovieData>();
@@ -50,6 +49,10 @@ export default function Index() {
     setIsActionModalVisible(true)
   }
 
+  const ColorAgeSelect = (ageRating: string) => {
+    return ColorAgeRating[ageRating as keyof typeof ColorAgeRating];
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       
@@ -66,8 +69,8 @@ export default function Index() {
       }
     };
 
-    // setListMovie(FilmData);
-    fetchMovies();
+    setListMovie(FilmData);
+    // fetchMovies();
   }, []);
 
 
@@ -75,7 +78,7 @@ export default function Index() {
   return (
     <>
 
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white pb-5">
         <View className="flex-col bg-white flex-1">
           {/* header */}
           <HomeHeader user={user} setUser={setUser}/>
@@ -113,11 +116,15 @@ export default function Index() {
                         params: {
                           id: item.id,
                           title: item.title,
+                          posterUrl: item.posterUrl
                         },
                       })
                     }
                     style={{ width: '33.33%' }} // chia làm 3 cột
                   >
+                    <View style={{ width: 45, height: 25, top: 10, left: 10, justifyContent: 'center', alignItems: 'center', padding: 1, position: 'absolute', borderRadius: 8, backgroundColor: ColorAgeSelect(item.ageRating), zIndex: 10 }}>
+                        <Text style={{fontSize: 16, fontFamily: FONT_FAMILY, color:'#fff', fontWeight:900}}>{item.ageRating}</Text>
+                      </View>
                     <View className="flex-col m p-[6px]">
                       {/* Poster */}
                       <Image
@@ -125,6 +132,7 @@ export default function Index() {
                         style={styles.imageFilm}
                         resizeMode="cover"
                       />
+                      
                       <TouchableOpacity
                         style={styles.menuButtonOverlay}
                         onPress={() => handleOpenAddModal(item)}
