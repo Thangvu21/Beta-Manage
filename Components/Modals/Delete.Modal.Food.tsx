@@ -25,21 +25,25 @@ const DeleteModalFood = ({
     const handleDelete = async () => {
 
         try {
-            console.log("Xóa món ăn:", food?.id);
             const res = await axiosClient.delete(`${API.deleteFood}/${food?.id}`);
-        
+
+            if (res.status !== 200) {
+                Alert.alert("Error", "Không thể xóa món ăn");
+                return;
+            }
+            // console.log("Xóa thành công:", res.data);
+            if (food) {
+                const updatedFoodList = foodList.filter(item => item.id !== food.id);
+                setFoodList(updatedFoodList);
+            }
             console.log("Xóa thành công:", res.data);
-            Alert.alert("Success", "Xóa món ăn thành công");
             // Có thể hiển thị alert hoặc cập nhật UI tại đây
-          } catch (error: any) {
+        } catch (error: any) {
             console.error("Lỗi khi xóa món ăn:", error);
             Alert.alert("Error", "Không thể xóa món ăn");
-          }
-        
-        if (food) {
-            const updatedFoodList = foodList.filter(item => item.id !== food.id);
-            setFoodList(updatedFoodList);
         }
+
+
         setModalDeleteVisible(false);
     }
 

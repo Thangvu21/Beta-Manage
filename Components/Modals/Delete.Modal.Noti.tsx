@@ -1,6 +1,9 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import { Notification } from '@/constants/notification';
+import axios from 'axios';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
 
 const { width } = Dimensions.get('window');
 
@@ -20,13 +23,24 @@ const DeleteModalNotification = ({
   setNotificationList,
 }: Props) => {
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!notification) return;
 
-    const updatedList = notificationList.filter(n => n.id !== notification.id);
-    setNotificationList(updatedList);
-    Alert.alert('Thành công', 'Xóa thông báo thành công');
-    setModalDeleteVisible(false);
+    try {
+      // const response = await axiosClient.delete(`${API.deleteNotification}/${notification.id}`);
+      if (true) {
+        const updatedList = notificationList.filter((item) => item.id !== notification.id);
+        setNotificationList(updatedList);
+        Alert.alert('Notification deleted successfully');
+        setModalDeleteVisible(false);
+      } else {
+        Alert.alert('Error', 'Failed to delete notification');
+      }
+
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      Alert.alert('Error', 'Failed to delete notification');
+    }
   };
 
   return (

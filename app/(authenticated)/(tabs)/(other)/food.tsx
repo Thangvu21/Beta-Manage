@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { FoodItem } from "@/constants/food";
+import { foodData, FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
@@ -12,10 +12,11 @@ import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import UpdateImageModalFood from "@/Components/Modals/Update.Modal.Image.Food";
 import SelectActionItemModal from "@/Components/Modals/Select.Action.Item.Modal";
+import { colors } from "@/constants/color";
 
 const Food = () => {
 
-    const [foodList, setFoodList] = useState<FoodItem[]>();
+    const [foodList, setFoodList] = useState<FoodItem[]>([]);
 
     const [food, setFood] = useState<FoodItem>();
 
@@ -30,10 +31,11 @@ const Food = () => {
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
 
     const handleOpenAddModal = () => {
+        console.log("open add modal");
         setModalCreateVisible(true);
     }
 
-    const handleUpdateMovie = (food: FoodItem) => {
+    const handleUpdateFood = (food: FoodItem) => {
         setFood(food);
         setModalSelectionVisible(true);
 
@@ -49,7 +51,7 @@ const Food = () => {
         setModalSelectionVisible(false);
     }
 
-    const handleDeleteMovie = (food: FoodItem) => {
+    const handleDeleteFood = (food: FoodItem) => {
         setFood(food);
         setModalDeleteVisible(true);
     }
@@ -68,7 +70,8 @@ const Food = () => {
             }
         }
 
-        fetchFoodList();
+        // fetchFoodList();
+        setFoodList(foodData)
     }, [])
 
 
@@ -92,21 +95,17 @@ const Food = () => {
                             <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
                             <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
                             <View className="flex-row justify-between">
-                                <TouchableOpacity
-                                    className="bg-yellow-400 p-2 rounded-lg"
-                                    onPress={() => {
-                                        handleUpdateMovie(item);
-                                    }}>
 
-                                    <AntDesign name="edit" size={24} color="black" />
-
+                                <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
+                                    handleUpdateFood(item);
+                                }}>
+                                    <Text style={{ padding: 4, }}>✏️</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity className="bg-red-500 p-2 rounded-lg"
-                                    onPress={() => {
-                                        handleDeleteMovie(item);
-                                    }}>
-                                    <Feather name="x-circle" size={24} color="black" />
 
+                                <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
+                                    handleDeleteFood(item);
+                                }}>
+                                    <Text style={{ padding: 4, }}>🗑️</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

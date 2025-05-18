@@ -7,7 +7,7 @@ import { FoodItem } from "@/constants/food";
 import * as FileSystem from 'expo-file-system';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
-import { Cinema } from "@/constants/cinema";
+import { Cinema, LocationType } from "@/constants/cinema";
 
 interface Props {
     modalCinemaVisible: boolean,
@@ -55,58 +55,61 @@ const CreateModalCinema = ({ modalCinemaVisible, setModalCinemaVisible, cinemaLi
 
         handleAfterUpdate();
 
+        try {
+            const formData = new FormData();
+            formData.append('avatar', {
+                uri: cinemaAvatar,
+                name: 'avatar.jpg',
+                type: 'image/jpeg',
+            } as any);
+            formData.append('name', cinemaName);
+            formData.append('phone', cinemaPhone);
+            formData.append('address', JSON.stringify({
+                full: getFullAddress(),
+                street,
+                ward,
+                district,
+                city,
+            }));
+            formData.append('location', JSON.stringify({
+                type: 'Point',
+                coordinates: [parseFloat(longitude), parseFloat(latitude)],
+            }));
+            // const response = await axiosClient.post(API.createCinema, formData, {
+            //     headers: { 'Content-Type': 'multipart/form-data' }
+            // });
+            if (true) {
+                Alert.alert("Cinema created successfully");
+                const newCinema: Cinema = {
+                    // id: response.data.id,
+                    id: 'notif-' + Math.random().toString(36).substr(2, 9),
+                    name: cinemaName,
+                    phone: cinemaPhone,
+                    address: {
+                        street,
+                        ward,
+                        district,
+                        city,
+                        full: getFullAddress(),
+                    },
+                    location: {
+                        type: LocationType.Point,
+                        coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                    },
+                    avatar: cinemaAvatar,
+                };
+                setCinemaList([
+                    ...cinemaList,
+                    newCinema
+                ]);
+            }
+            
+        } catch (error) {
+            Alert.alert("Error creating cinema");
+            console.error(error);
+        }
 
-        // try {
-        //     // setup cho create food
-        //     const uri = image;
-        //     if (!uri) {
-        //         Alert.alert("Vui lòng chọn ảnh!");
-        //         return;
-        //     }
-        //     const fileInfo = await FileSystem.getInfoAsync(uri);
-        //     if (!fileInfo.exists) {
-        //         Alert.alert("File không tồn tại!");
-        //         return;
-        //     }
-        //     const fileName = uri.split('/').pop() || 'photo.jpg';
-        //     const fileType = fileName.split('.').pop();
-
-        //     const formData = new FormData();
-        //     formData.append('image', {
-        //         uri,
-        //         name: fileName,
-        //         type: `image/${fileType}`,
-        //     } as any);
-        //     formData.append('name', title);
-        //     formData.append('price', price);
-
-        //     const response = await axiosClient.post(API.createFood, formData, {
-        //         headers: { 'Content-Type': 'multipart/form-data' }
-        //     });
-
-        //     if (response.status === 200 || response.status === 201) {
-        //         Alert.alert("Success", "Tạo món ăn thành công");
-        //         setFoodList([
-        //             ...foodList,
-        //             {
-        //                 id: response.data.id, // lấy id trực tiếp từ response
-        //                 name: title,
-        //                 price: price,
-        //                 image: response.data.image,
-        //             }
-        //         ]);
-        //         // Reset form và đóng modal chỉ khi thành công
-        //         setTitle('');
-        //         setPrice('');
-        //         setImage('');
-        //         setModalCinemaVisible(false);
-        //     } else {
-        //         Alert.alert("Lỗi", "Không thể tạo món ăn!");
-        //     }
-        // } catch (error) {
-        //     console.error('Error:', error);
-        //     Alert.alert("Lỗi", "Có lỗi xảy ra khi tạo món ăn!");
-        // }
+        
     }
 
     return (

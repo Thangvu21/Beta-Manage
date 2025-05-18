@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Notification, sampleNotifications, NotificationType } from '@/constants/notification';
 import { LinearGradient } from 'expo-linear-gradient';
 import CreateModalNotification from '@/Components/Modals/Create.Modal.Noti';
 import UpdateModalNotification from '@/Components/Modals/Update.Modal.Noti';
 import DeleteModalNotification from '@/Components/Modals/Delete.Modal.Noti';
+import { colors } from '@/constants/color';
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -49,57 +50,62 @@ export default function NotificationScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-        <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-          <Ionicons name="add" size={28} color="#fff" />
-        </LinearGradient>
-      </TouchableOpacity>
+    <>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+          <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
+            <Ionicons name="add" size={28} color="#fff" />
+          </LinearGradient>
+        </TouchableOpacity>
 
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.iconContainer}>{getIcon(item.type)}</View>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
-              <View style={styles.actionRow}>
-                <TouchableOpacity onPress={() => handleEdit(item.id)}>
-                  <Feather name="edit" size={18} color="#0ea5e9" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                  <Feather name="trash-2" size={18} color="#ef4444" />
-                </TouchableOpacity>
+        <View style={{ flex: 1, paddingBottom: 70 }}>
+          <FlatList
+            data={notifications}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <View style={styles.iconContainer}>{getIcon(item.type)}</View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.description}>{item.description}</Text>
+                  <View style={styles.iconButtonRow}>
+                    <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => handleEdit(item.id)}>
+                      <Text style={styles.iconButton}>✏️</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => handleDelete(item.id)}>
+                      <Text style={styles.iconButton}>🗑️</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
-        )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
+            )}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
 
-      <CreateModalNotification 
-        modalVisible={modalCreateVisible}
-        setModalVisible={setModalCreateVisible}
-        setNotificationList={setNotifications}
-        notificationList={notifications}
-      />
-      <UpdateModalNotification
-        modalVisible={modalEditVisible}
-        setModalVisible={setModalEditVisible}
-        setNotificationList={setNotifications}
-        notificationList={notifications}
-        notificationToEdit={selectedNotification}
+        </View>
+        <CreateModalNotification
+          modalVisible={modalCreateVisible}
+          setModalVisible={setModalCreateVisible}
+          setNotificationList={setNotifications}
+          notificationList={notifications}
         />
-      <DeleteModalNotification
-        modalDeleteVisible={modalDeleteVisible}
-        setModalDeleteVisible={setModalDeleteVisible}
-        notification={selectedNotification}
-        notificationList={notifications}
-        setNotificationList={setNotifications}
-      />
-    </View>
+        <UpdateModalNotification
+          modalVisible={modalEditVisible}
+          setModalVisible={setModalEditVisible}
+          setNotificationList={setNotifications}
+          notificationList={notifications}
+          notificationToEdit={selectedNotification}
+        />
+        <DeleteModalNotification
+          modalDeleteVisible={modalDeleteVisible}
+          setModalDeleteVisible={setModalDeleteVisible}
+          notification={selectedNotification}
+          notificationList={notifications}
+          setNotificationList={setNotifications}
+        />
+      </View>
+    </>
   );
 }
 
@@ -167,4 +173,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
+
+
+  iconButtonRow: {
+        flexDirection: 'row',
+        marginTop: 4,
+        gap: 12,
+    },
+
+    iconButton: {
+        padding: 4,
+    },
 });

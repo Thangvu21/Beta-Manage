@@ -5,6 +5,9 @@ import {
 import React, { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Notification, NotificationType } from "@/constants/notification";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
+import { Picker } from "@react-native-picker/picker";
 
 interface Props {
   modalVisible: boolean;
@@ -24,18 +27,46 @@ const UpdateModalNotification = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<NotificationType>(NotificationType.BOOKING);
+  const [cinemaId, setCinemaId] = useState('');
 
   useEffect(() => {
     if (notificationToEdit) {
       setTitle(notificationToEdit.title);
       setDescription(notificationToEdit.description);
       setType(notificationToEdit.type);
-      
+      setCinemaId(notificationToEdit.id || '');
     }
   }, [notificationToEdit]);
 
-  const handleUpdateNotification = () => {
-    if (!notificationToEdit) return;
+  const handleUpdateNotification = async () => {
+    if (!title || !description) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+    try {
+      const updatedNotification = {
+        id: cinemaId,
+        title,
+        description,
+        type,
+        data: {}
+      };
+
+      // const response = await axiosClient.put(API.updateNotification, {
+      //   ...updatedNotification,
+      // })
+      // if (response.status !== 200) {
+      //   throw new Error("Failed to update notification");
+      // }
+
+      const updatedList = notificationList.map((notif) =>
+        notif.id === notificationToEdit?.id ? updatedNotification : notif
+      );
+      setNotificationList(updatedList);
+    } catch (error) {
+      console.error("Error updating notification:", error);
+      Alert.alert("Error", "Failed to update notification");
+    }
 
     setModalVisible(false);
   };
@@ -72,43 +103,18 @@ const UpdateModalNotification = ({
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>📂 Type</Text>
-              <TextInput
-                value={type}
-                onChangeText={(text) => setType(text as NotificationType)}
-                style={styles.textInput}
-              />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={type}
+                  onValueChange={(itemValue) => setType(itemValue as NotificationType)}
+                  style={styles.picker}
+                >
+                  {Object.values(NotificationType).map((value) => (
+                    <Picker.Item key={value} label={value} value={value} />
+                  ))}
+                </Picker>
+              </View>
             </View>
-
-            {/* {type === NotificationType.BOOKING && (
-              <>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🏢 Cinema ID</Text>
-                  <TextInput
-                    value={cinemaId}
-                    onChangeText={setCinemaId}
-                    style={styles.textInput}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🎞️ Film ID</Text>
-                  <TextInput
-                    value={filmId}
-                    onChangeText={setFilmId}
-                    style={styles.textInput}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🕒 Show Time</Text>
-                  <TextInput
-                    value={showTime}
-                    onChangeText={setShowTime}
-                    style={styles.textInput}
-                  />
-                </View>
-              </>
-            )} */}
           </ScrollView>
 
           <TouchableOpacity style={styles.createButton} onPress={handleUpdateNotification}>
@@ -169,6 +175,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  picker: {
+    height: 50,
   },
 });
 

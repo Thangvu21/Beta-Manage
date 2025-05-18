@@ -1,9 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
-export interface DateTime {
-    date: Date;
-    cinemaId: string;
-    filmId: string;
-}
+
 
 export interface ShowTimes {
     [cinemaName: string]: ShowTime[];
@@ -137,12 +132,12 @@ export const sampleShowTimes: ShowTimes[] = [
 ];
 
 // 
-export const sampleShowDate = [
-    { date: new Date('2025-05-17') },
-    { date: new Date('2025-05-18') },
-    { date: new Date('2025-05-19') },
-    { date: new Date('2025-05-20') },
-    { date: new Date('2025-05-21') }
+export const sampleShowDate : Date[] = [
+    new Date('2025-05-17'),
+    new Date('2025-05-18'),
+    new Date('2025-05-19'),
+    new Date('2025-05-20'),
+    new Date('2025-05-21') 
 ]
 
 

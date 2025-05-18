@@ -24,15 +24,16 @@ const DeleteModalCinema = ({
 }: Props) => {
 
     const handleDelete = async () => {
-        try {
-            console.log("Xóa rạp chiếu:", selectedCinema?.id);
-            const res = await axiosClient.delete(`${API.deleteCinema}/${selectedCinema?.id}`);
-            console.log("Xóa thành công:", res.data);
-            Alert.alert("Thành công", "Xóa rạp chiếu thành công");
-        } catch (error) {
-            console.error("Lỗi khi xóa rạp chiếu:", error);
-            Alert.alert("Lỗi", "Không thể xóa rạp chiếu");
-        }
+        // try {
+        //     const response = await axiosClient.delete(`${API.deleteCinema}/${selectedCinema?.id}`);
+        //     if (response.status !== 200) {
+        //         throw new Error("Failed to delete cinema");
+        //     }
+        //     Alert.alert("Thành công", "Xóa rạp chiếu thành công");
+        // } catch (error) {
+        //     console.error("Lỗi khi xóa rạp chiếu:", error);
+        //     Alert.alert("Lỗi", "Không thể xóa rạp chiếu");
+        // }
 
         if (selectedCinema) {
             const updatedList = cinemaList.filter(item => item.id !== selectedCinema.id);

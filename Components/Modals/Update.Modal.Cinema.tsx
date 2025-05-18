@@ -2,7 +2,7 @@ import { Alert, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInpu
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useEffect, useState } from "react";
 import ImagePickerScreen from "../Camera/ImagePicker";
-import { Cinema } from "@/constants/cinema";
+import { Cinema, LocationType } from "@/constants/cinema";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 
@@ -32,7 +32,6 @@ const UpdateModalCinema = ({
   const [cinemaAvatar, setCinemaAvatar] = useState('');
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
-  const [id, setId] = useState('');
 
   useEffect(() => {
     if (selectedCinema) {
@@ -45,31 +44,77 @@ const UpdateModalCinema = ({
       setCinemaAvatar(selectedCinema.avatar || '');
       setLongitude(String(selectedCinema.location.coordinates[0] || ''));
       setLatitude(String(selectedCinema.location.coordinates[1] || ''));
-      setId(selectedCinema.id || '');
     }
   }, [selectedCinema]);
 
   const handleAfterUpdate = () => {
-    setCinemaName('');
-    setCinemaPhone('');
-    setCity('');
-    setDistrict('');
-    setStreet('');
-    setWard('');
-    setCinemaAvatar('');
-    setLongitude('');
-    setLatitude('');
-    setId('');
+    setCinemaName(cinemaName);
+    setCinemaPhone(cinemaPhone);
+    setCity(city);
+    setDistrict(district);
+    setStreet(street);
+    setWard(ward);
+    setCinemaAvatar(cinemaAvatar);
+    setLongitude(longitude);
+    setLatitude(latitude);
     setSelectedCinema(null);
     setModalCinemaVisible(false);
   };
 
   const handleUpdateCinema = async () => {
-    if (!cinemaName || !cinemaPhone || !cinemaAvatar || !id) {
+    if (!cinemaName || !cinemaPhone || !cinemaAvatar) {
       Alert.alert("Vui lòng nhập đủ thông tin");
       return;
     }
 
+    try {
+      // const response = await axiosClient.put(`${API.updateCinema}/${id}`, {
+      //   name: cinemaName,
+      //   phone: cinemaPhone,
+      //   address: {
+      //     street,
+      //     ward,
+      //     district,
+      //     city,
+      //     full: `${street}, ${ward}, ${district}, ${city}`
+      //   },
+      //   location: {
+      //     type: "Point",
+      //     coordinates: [parseFloat(longitude), parseFloat(latitude)]
+      //   },
+      //   avatar: cinemaAvatar
+      // });
+      // if (response.status !== 200) {
+      //   Alert.alert("Có lỗi xảy ra khi cập nhật rạp phim");
+      //   return;
+      // }
+      const updatedCinema: Cinema = {
+        id: selectedCinema?.id || '',
+        name: cinemaName,
+        phone: cinemaPhone,
+        address: {
+          street,
+          ward,
+          district,
+          city,
+          full: `${street}, ${ward}, ${district}, ${city}`
+        },
+        location: {
+          type: LocationType.Point,
+          coordinates: [parseFloat(longitude), parseFloat(latitude)]
+        },
+        avatar: cinemaAvatar
+      };
+      const updatedCinemaList = cinemaList.map(cinema => 
+        cinema.id === selectedCinema?.id ? updatedCinema : cinema
+      );
+      setCinemaList(updatedCinemaList);
+      handleAfterUpdate();
+
+    } catch (error) {
+      console.error("Error updating cinema:", error);
+      Alert.alert("Có lỗi xảy ra khi cập nhật rạp phim");
+    }
     
   };
 

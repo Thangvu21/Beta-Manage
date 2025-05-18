@@ -118,6 +118,41 @@ export const sampleCinemas: Cinema[] = [
       coordinates: [106.6967, 10.7769],
     },
     avatar: 'https://i.imgur.com/k7NVFbt.jpeg',
-  }
+  },
+  {
+    id: 'cinema-005',
+    name: 'BHD Star Bitexco',
+    address: {
+      street: '2 Hải Triềung',
+      ward: 'Bến Nghé',
+      district: 'Quận 1',
+      city: 'TP.HCM',
+      full: '2 Hải Triều, Bến Nghé, Quận 1, TP.HCM',
+    },
+    phone: '0901234567',
+    location: {
+      type: LocationType.Point,
+      coordinates: [106.6955, 10.7722],
+    },
+    avatar: 'https://i.imgur.com/2nCt3Sb.jpg',
+  },
+  {
+    id: 'cinema-006',
+    name: 'Galaxy Nguyễn Huệ',
+    address: {
+      street: '68 Nguyễn Huệ',
+      ward: 'Bến Nghé',
+      district: 'Quận 1',
+      city: 'TP.HCM',
+      full: '68 Nguyễn Huệ, Bến Nghé, Quận 1, TP.HCM',
+    },
+    phone: '0909876543',
+    location: {
+      type: LocationType.Point,
+      coordinates: [106.6955, 10.7769],
+    },
+    avatar: 'https://i.imgur.com/2nCt3Sb.jpg',
+  },
+
 ];
 

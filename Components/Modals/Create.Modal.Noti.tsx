@@ -5,7 +5,9 @@ import {
 import React, { useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Notification, NotificationType } from "@/constants/notification";
-
+import axiosClient from "@/constants/axiosClient";
+import { API, API_URL } from "@/constants/api";
+import { Picker } from '@react-native-picker/picker';
 
 interface Props {
   modalVisible: boolean;
@@ -24,32 +26,13 @@ const CreateModalNotification = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<NotificationType>(NotificationType.BOOKING);
+  const [data, setData] = useState({});
   const [cinemaId, setCinemaId] = useState('');
   const [filmId, setFilmId] = useState('');
   const [showTime, setShowTime] = useState('');
 
-  const handleCreateNotification = () => {
-    if (!title || !description || !type) {
-      Alert.alert("Please fill all fields");
-      return;
-    }
-
-    const newNotification = {
-      id: `notif-${Math.random().toString(36).substring(2, 10)}`,
-      title,
-      description,
-      type,
-      data: {
-        ...(type === NotificationType.BOOKING && {
-          cinemaId,
-          filmId,
-          showTime
-        }),
-      }
-    };
-
-    setNotificationList([...notificationList, newNotification]);
-
+  const handleAfterUpdate = () => {
+    // Handle any actions after updating the notification
     setTitle('');
     setDescription('');
     setType(NotificationType.BOOKING);
@@ -57,6 +40,54 @@ const CreateModalNotification = ({
     setFilmId('');
     setShowTime('');
     setModalVisible(false);
+  }
+
+  const handleCreateNotification = () => {
+    if (!title || !description || !type) {
+      Alert.alert("Please fill all fields");
+      return;
+    }
+
+    // try {
+    //   const response = await axiosClient.post(`${API.createNotification}`, {
+    //     title,
+    //     description,
+    //     type,
+    //     data
+    //   })
+
+    //   if (response.status !== 200) {
+    //     Alert.alert("Error creating notification");
+    //     return;
+    //   }
+
+    //   const newNotification : Notification = {
+    //     id: ,
+    //     title,
+    //     description,
+    //     type,
+    //     data
+    //   }
+    //   setNotificationList([...notificationList, newNotification]);
+
+
+
+    // } catch (error) {
+    //   Alert.alert("Error creating notification");
+    //   console.error(error);
+    // }
+    const newNotification: Notification = {
+      id: 'notif-' + Math.random().toString(36).substr(2, 9),
+      title,
+      description,
+      type,
+      data
+    }
+    setNotificationList([...notificationList, newNotification]);
+
+
+    handleAfterUpdate();
+
   };
 
   return (
@@ -94,47 +125,19 @@ const CreateModalNotification = ({
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>📂 Type</Text>
-              <TextInput
-                value={type}
-                onChangeText={(text) => setType(text as NotificationType)}
-                style={styles.textInput}
-                placeholder="BOOKING | SYSTEM | PROMOTION"
-              />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={type}
+                  onValueChange={(itemValue) => setType(itemValue as NotificationType)}
+                  style={styles.picker}
+                >
+                  {Object.values(NotificationType).map((value) => (
+                    <Picker.Item key={value} label={value} value={value} />
+                  ))}
+                </Picker>
+              </View>
             </View>
 
-            {type === NotificationType.BOOKING && (
-              <>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🏢 Cinema ID</Text>
-                  <TextInput
-                    value={cinemaId}
-                    onChangeText={setCinemaId}
-                    style={styles.textInput}
-                    placeholder="cinema-001"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🎞️ Film ID</Text>
-                  <TextInput
-                    value={filmId}
-                    onChangeText={setFilmId}
-                    style={styles.textInput}
-                    placeholder="film-001"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>🕒 Show Time</Text>
-                  <TextInput
-                    value={showTime}
-                    onChangeText={setShowTime}
-                    style={styles.textInput}
-                    placeholder="e.g., 2025-05-18T19:00:00Z"
-                  />
-                </View>
-              </>
-            )}
           </ScrollView>
 
           <TouchableOpacity style={styles.createButton} onPress={handleCreateNotification}>
@@ -195,6 +198,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  picker: {
+    height: 50,
   },
 });
 
