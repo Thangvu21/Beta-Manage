@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Modal,
     View,
@@ -38,6 +38,17 @@ const DeleteTimeModal = ({
     setListShowTime,
     indexArray,
 }: Props) => {
+
+    const [hour, sethour] = useState<number>();
+    const [minute, setminute] = useState<number>();
+
+    useEffect(() => {
+
+        console.log("showtime", showtime)
+        sethour(showtime.hour);
+        setminute(showtime.minute);
+    }, [showtime]);
+
     const handleDelete = () => {
         // Xóa thời gian chiếu
         try {
@@ -82,10 +93,10 @@ const DeleteTimeModal = ({
                     </View>
 
                     {/* Nội dung */}
-                    <Text style={styles.message}>
+                    {<Text style={styles.message}>
                         Bạn có chắc muốn xóa thời gian chiếu của rạp {cinemaName} vào ngày {date} lúc{' '}
-                        {new Date(showtime.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} không?
-                    </Text>
+                        {`${hour}:${minute}`} không?
+                    </Text>}
 
                     {/* Footer */}
                     <View style={styles.footer}>

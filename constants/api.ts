@@ -1,6 +1,5 @@
 import Constants from 'expo-constants';
-import { create } from 'react-test-renderer';
-export const API_URL = 'http://10.0.2.2'
+;export const API_URL = 'http://10.0.2.2'
 
 export const API = {
     login: `${API_URL}/auth/admin/login`,
@@ -23,7 +22,7 @@ export const API = {
     getUser: `${API_URL}/user`,
 
     // cinema
-    getAllCinema: `${API_URL}/cinema`,
+    getAllCinema: `${API_URL}/cinema/`,
     getCinemaDetail: `${API_URL}/cinema/`,
     createCinema: `${API_URL}/cinema/admin/`,
     updateCinema: `${API_URL}/cinema/admin/`,
