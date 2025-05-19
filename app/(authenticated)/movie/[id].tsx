@@ -22,7 +22,7 @@ const Details = () => {
     // id film
     const { id, title, posterUrl } = useLocalSearchParams<{ id: string, title: string, posterUrl: string }>();
 
-    const [listShowDate, setListShowDate] = useState<Date[]>();
+    const [listShowDate, setListShowDate] = useState<Date[]>([]);
     const [listShowTime, setListShowTime] = useState<ShowTimes[]>();
 
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -31,12 +31,26 @@ const Details = () => {
     const [modalCreateShowTime, setModalCreateShowTime] = useState(false);
     const [modalEditShowTime, setModalEditShowTime] = useState(false);
     const [modalDeleteShowTime, setModalDeleteShowTime] = useState(false);
-    
+
     const [timeSeleted, setTimeSelected] = useState<ShowTime>({} as ShowTime);
-    const [dateSelected, setDateSelected] = useState<Date>();
+    const [dateSelected, setDateSelected] = useState<Date>(new Date());
     const [betaSelected, setBetaSelected] = useState('');
 
     // chọn ngày trước
+    const createListDate = () => {
+        const dates: Date[] = [];
+        const today = new Date();
+
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(); // luôn khởi tạo mới
+            date.setDate(today.getDate() + i);
+            dates.push(date);
+        }
+
+        return dates;
+    };
+
+
     const chooseDate = (date: Date) => {
         setDateSelected(date)
     }
@@ -111,7 +125,7 @@ const Details = () => {
         //     return dateA.getTime() - dateB.getTime();
         // }));
         setListShowTime(sampleShowTimes);
-        setListShowDate(sampleShowDate);
+        setListShowDate(createListDate());
         setDateSelected(sampleShowDate[0]);
 
         if (title) {
@@ -122,7 +136,7 @@ const Details = () => {
     }, [id, navigation]);
 
     useEffect(() => {
-        
+
     }, []);
 
     return (
@@ -218,7 +232,7 @@ const Details = () => {
 
             <View>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 10 }}>Cinemas</Text>
-                { listShowTime && listShowTime.map((cinema, index) => {
+                {listShowTime && listShowTime.map((cinema, index) => {
                     const cinemaName = Object.keys(cinema)[0];
 
                     return (
@@ -269,10 +283,7 @@ const Details = () => {
                                     <View style={styles.showtimeContainer} key={timeIndex}>
                                         <TouchableOpacity style={styles.timeButton}>
                                             <Text style={styles.timeText}>
-                                                {new Date(timeCinema.time).toLocaleTimeString([], {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
+                                                {timeCinema.time.substring(11, 16)}
                                             </Text>
                                         </TouchableOpacity>
 
@@ -287,7 +298,7 @@ const Details = () => {
                                                     }}>
                                                 <Text style={styles.iconButton}>✏️</Text>
                                             </TouchableOpacity>
-                                            
+
 
                                             <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
                                                 onPress={() => {
@@ -298,7 +309,7 @@ const Details = () => {
                                                 }}>
                                                 <Text style={styles.iconButton}>🗑️</Text>
                                             </TouchableOpacity>
-                                        
+
                                         </View>
                                     </View>
                                 ))}
@@ -316,6 +327,7 @@ const Details = () => {
                         modalCreateShowTime={modalCreateShowTime}
                         setModalCreateShowTime={setModalCreateShowTime}
                         cinemaName={betaSelected}
+                        showtimeSelected={timeSeleted}
                         date={getDate(dateSelected).toString()}
                         indexArray={selectedIndexCinema}
                     />

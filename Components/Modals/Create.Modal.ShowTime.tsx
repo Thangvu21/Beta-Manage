@@ -9,6 +9,7 @@ interface props {
     setModalCreateShowTime: (value: boolean) => void;
     cinemaName: string;
     date: string;
+    showtimeSelected: ShowTime;
     listShowTime: ShowTimes[];
     setListShowTime: (value: ShowTimes[]) => void;
     indexArray: number; // để lấy ra thứ tự của rạp chiếu phim
@@ -22,6 +23,7 @@ const CreateTimeModal = ({
     listShowTime,
     setListShowTime,
     indexArray,
+    showtimeSelected,
 }: props) => {
 
     const [showTimePicker, setShowTimePicker] = useState(false);
@@ -37,10 +39,14 @@ const CreateTimeModal = ({
 
 
         try {
-
-            const newTime = new Date(date)
-            newTime.setHours(tempTime.getHours());
-            newTime.setMinutes(tempTime.getMinutes());
+            console.log("date", date)
+            const newTime = new Date(Date.UTC(
+                new Date(showtimeSelected.time).getFullYear(),
+                new Date(showtimeSelected.time).getMonth(),
+                parseInt(date),
+                tempTime.getHours(),
+                tempTime.getMinutes()
+            ));
             const newShowTime = {
                 id: Math.random().toString(36).substring(2, 15),
                 hour: newTime.getHours(),

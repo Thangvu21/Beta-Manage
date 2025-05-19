@@ -39,10 +39,49 @@ const Statistics = () => {
         datasets: [{ data: dataValues }],
     };
 
+    const data = {
+        labels: ["January", "February", "March", "April", "May", "June"],
+        datasets: [
+            {
+                data: [20, 45, 28, 80, 99, 43]
+            }
+        ]
+    };
+
     return (
         <SafeAreaView className='flex-1 bg-white'>
             <ScrollView className="flex-1 bg-white p-4" contentContainerStyle={{ paddingBottom: 90 }} >
                 <Text className="text-2xl font-bold mb-4">📊 Báo cáo doanh thu</Text>
+
+
+                <BarChart
+                    
+                    width={Dimensions.get('window').width - 32} // padding horizontal
+                    height={280}
+                    data={data}
+                    fromZero
+                    
+                    yAxisSuffix=" triệu"
+                    yAxisLabel="$"
+                    chartConfig={{
+                        backgroundColor: '#1cc910',
+                        backgroundGradientFrom: '#eff3ff',
+                        backgroundGradientTo: '#efefef',
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16,
+                        },
+                        propsForDots: {
+                            r: '6',
+                            strokeWidth: '2',
+                            stroke: '#ffa726',
+                        },
+                    }}
+                    
+                    verticalLabelRotation={30}
+                />
 
                 {/* Line Chart */}
                 <LineChart
