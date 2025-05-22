@@ -19,10 +19,10 @@ interface Props {
     cinemaName: string;
 
     date: string;
-       
+
     showtimeSelected: ShowTime;
     setShowTimeSelected: (value: ShowTime) => void;
-    
+
     listShowTime: ShowTimes[];
     setListShowTime: (value: ShowTimes[]) => void;
 
@@ -41,11 +41,11 @@ const UpdateTimeModal = ({
     date,
 }: Props) => {
     const [showTimePicker, setShowTimePicker] = useState(false);
-    const [tempTime, setTempTime] = useState<Date>(new Date()) ;
+    const [tempTime, setTempTime] = useState<Date>(new Date());
 
 
     useEffect(() => {
-        setTempTime(new Date(showtimeSelected.time));
+        setTempTime(new Date(new Date(showtimeSelected.time).getTime() - 7 * 60 * 60 * 1000)); // Chuyển đổi thời gian từ UTC+7 sang UTC+0
     }, [showtimeSelected]);
 
     const handleConfirm = () => {
@@ -54,33 +54,38 @@ const UpdateTimeModal = ({
     };
 
     const handleUpdate = () => {
-        const newTime = new Date(showtimeSelected.time);
-        newTime.setHours(tempTime.getHours());
-        newTime.setMinutes(tempTime.getMinutes());
+        const newTime = new Date(Date.UTC(
+                new Date(showtimeSelected.time).getFullYear(),
+                new Date(showtimeSelected.time).getMonth(),
+                new Date(showtimeSelected.time).getDate(),
+                tempTime.getHours(),
+                tempTime.getMinutes()
+            ));
 
         const updatedShowTime = {
-            id: Math.random().toString(36).substring(2, 15),
+            id: showtimeSelected.id,
             hour: newTime.getHours(),
             minute: newTime.getMinutes(),
             time: newTime.toISOString(),
         };
+        // console.log("updatedShowTime", updatedShowTime);
 
         const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName];
-        const newArrayTimeCinemaDate = arrayTimeCinemaDate.map(item => {
-            if (item.id === showtimeSelected.id) {
-                return updatedShowTime;
-            }
-            return item;
-        });
+        const newArrayTimeCinemaDate = arrayTimeCinemaDate.map(item =>
+            item.id === updatedShowTime.id ? updatedShowTime : item
+        );
         const newListShowTime = listShowTime.map((item, index) => {
             if (index === indexArray) {
                 return {
-                    ...item, // giữ lại các rạp khác
-                    [cinemaName]: newArrayTimeCinemaDate, // cập nhật rạp này
+                    ...item,
+                    [cinemaName]: newArrayTimeCinemaDate, // <-- SAI
+                    // Sửa thành:
+                    [cinemaName]: newArrayTimeCinemaDate,
                 };
             }
             return item;
         });
+
         setListShowTime(newListShowTime);
         setShowTimeSelected(updatedShowTime);
         handleConfirm();

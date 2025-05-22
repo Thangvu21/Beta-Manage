@@ -1,5 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ShowTime, ShowTimes } from "@/constants/dateTime";
@@ -13,6 +13,7 @@ interface props {
     listShowTime: ShowTimes[];
     setListShowTime: (value: ShowTimes[]) => void;
     indexArray: number; // để lấy ra thứ tự của rạp chiếu phim
+    dateSelected: Date;
 }
 
 const CreateTimeModal = ({
@@ -24,11 +25,22 @@ const CreateTimeModal = ({
     setListShowTime,
     indexArray,
     showtimeSelected,
+    dateSelected,
 }: props) => {
 
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [tempTime, setTempTime] = useState(new Date());
+    const [showtime, setShowtime] = useState<ShowTime>();
 
+    useEffect(() => {
+        const initShowTime : ShowTime = {
+            id: '1',
+            hour: dateSelected.getHours(),
+            minute: dateSelected.getMinutes(),
+            time: dateSelected.toISOString(),
+        }
+        setShowtime(initShowTime);
+    }, []);
 
     const handleConfirm = () => {
         setTempTime(new Date());
@@ -39,14 +51,14 @@ const CreateTimeModal = ({
 
 
         try {
-            console.log("date", date)
             const newTime = new Date(Date.UTC(
                 new Date(showtimeSelected.time).getFullYear(),
                 new Date(showtimeSelected.time).getMonth(),
-                parseInt(date),
+                new Date(showtimeSelected.time).getDate(),
                 tempTime.getHours(),
                 tempTime.getMinutes()
             ));
+            // console.log("newTime", newTime)
             const newShowTime = {
                 id: Math.random().toString(36).substring(2, 15),
                 hour: newTime.getHours(),
@@ -54,9 +66,8 @@ const CreateTimeModal = ({
                 time: newTime.toISOString(),
             }
             const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName]
-            console.log("Mảng giờ cũ", arrayTimeCinemaDate)
             const newArrayTimeCinemaDate = [...arrayTimeCinemaDate, newShowTime]
-            console.log("Mảng giờ mới", newArrayTimeCinemaDate)
+            // console.log("Mảng giờ mới", newArrayTimeCinemaDate)
             const newListShowTime = listShowTime.map((item, index) => {
                 if (index === indexArray) {
                     return {
