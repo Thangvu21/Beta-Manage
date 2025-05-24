@@ -17,14 +17,16 @@ interface Props {
 
     cinemaName: string;
     date: string;
+    dateSelected: Date;
 
-    showtime: ShowTime;
+    showtimeSelected: ShowTime;
     setShowTime: (value: ShowTime) => void;
 
     listShowTime: ShowTimes[];
     setListShowTime: (value: ShowTimes[]) => void;
 
     indexArray: number; // để lấy ra thứ tự của rạp chiếu phim
+    indexSelected: number; // để lấy ra thứ tự của thời gian chiếu
 }
 
 const DeleteTimeModal = ({
@@ -32,29 +34,27 @@ const DeleteTimeModal = ({
     setModalDeleteShowTime,
     cinemaName,
     date,
-    showtime,
+    showtimeSelected,
     setShowTime,
     listShowTime,
     setListShowTime,
     indexArray,
+    indexSelected,
+    dateSelected
 }: Props) => {
 
-    const [hour, sethour] = useState<number>();
-    const [minute, setminute] = useState<number>();
+    const [tempTime, setTempTime] = useState<Date>(new Date());
 
     useEffect(() => {
-
-        console.log("showtime", showtime)
-        sethour(showtime.hour);
-        setminute(showtime.minute);
-    }, [showtime]);
+        setTempTime(new Date(new Date(showtimeSelected.time).getTime() - 7 * 60 * 60 * 1000)); // Chuyển đổi thời gian từ UTC+7 sang UTC+0
+    }, [showtimeSelected]);
 
     const handleDelete = () => {
         // Xóa thời gian chiếu
         try {
 
             const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName]
-            const newArrayTimeCinemaDate = arrayTimeCinemaDate.filter(item => item.id !== showtime.id);
+            const newArrayTimeCinemaDate = arrayTimeCinemaDate.filter(item => item.id !== showtimeSelected.id);
 
             const newListShowTime = listShowTime.map((item, index) => {
                 if (index === indexArray) {
@@ -65,7 +65,14 @@ const DeleteTimeModal = ({
                 }
                 return item;
             });
-
+            // xóa xong cập nhật lại selectedshowtimeSelected để mấy cái khác còn lấy được
+            const initShowTime: ShowTime = {
+                id: '1',
+                hour: dateSelected.getHours(),
+                minute: dateSelected.getMinutes(),
+                time: dateSelected.toISOString(),
+            }
+            setShowTime(initShowTime);
             setListShowTime(newListShowTime);
 
 
@@ -93,9 +100,9 @@ const DeleteTimeModal = ({
                     </View>
 
                     {/* Nội dung */}
-                    {<Text style={styles.message}>
+                    {tempTime && <Text style={styles.message}>
                         Bạn có chắc muốn xóa thời gian chiếu của rạp {cinemaName} vào ngày {date} lúc{' '}
-                        {`${hour}:${minute}`} không?
+                        {tempTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} không?
                     </Text>}
 
                     {/* Footer */}

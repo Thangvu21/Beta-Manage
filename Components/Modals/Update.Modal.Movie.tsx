@@ -152,7 +152,7 @@ const UpdateModalMovie = ({
                 ageRating: ageRating,
                 director: director,
                 actors: actors,
-                posterUrl: imagesUrl.img2,
+                posterUrl: posterUrl,
                 trailerUrl: trailerUrl,
                 status: status,
             })
@@ -190,6 +190,11 @@ const UpdateModalMovie = ({
                         <Pressable onPress={() => setModalUpdateVisible(false)}>
                             <AntDesign name="close" size={24} color="black" />
                         </Pressable>
+                        <TouchableOpacity
+                            style={{ padding: 10 }}
+                            onPress={() => setModalUpdateVisible(false)}>
+                            <AntDesign name="close" size={24} color="black" />
+                        </TouchableOpacity>
                     </View>
 
                     {/* Body */}
@@ -385,7 +390,17 @@ const UpdateModalMovie = ({
                             />
                         </View>
                         {/* Image */}
-                        <ImagePickerScreen imageUri={posterUrl} setImageUri={setPosterUrl} />
+                        {/* <ImagePickerScreen imageUri={posterUrl} setImageUri={setPosterUrl} /> */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>📸 Movie Poster URL</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder="Enter movie poster URL"
+                                placeholderTextColor="#888"
+                                value={posterUrl}
+                                onChangeText={setPosterUrl}
+                            />
+                        </View>
 
                     </ScrollView>
 

@@ -1,6 +1,8 @@
 
 import { useAuthContext } from '@/Components/Context/AuthProvider';
+import { useUser } from '@/Components/Context/UserProvider';
 import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
 import { images } from '@/constants/image';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
@@ -11,37 +13,49 @@ import { SafeAreaView, View, Text, ScrollView, Image, TextInput, TouchableOpacit
 const SignIn = () => {
 
     const  { login } = useAuthContext();
+    const { user, setUser } = useUser();
+
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    // const handleLogin = async () => {
-    //     if (!username || !password) {
-    //         alert("Please enter valid credentials");
-    //         return;
-    //     }
+    const handleLogin = async () => {
+        if (!username || !password) {
+            alert("Please enter valid credentials");
+            return;
+        }
 
-    //     try {
+        try {
 
-    //         const res = await axios.post(API.login, {
-    //             email: username,
-    //             password,
-    //         });
+            const res = await axios.post(API.login, {
+                email: username,
+                password,
+            });
 
-    //         const { accessToken, refreshToken } = res.data.data;
-    //         if (res.status === 200) {
-    //             await login(accessToken, refreshToken);
-    //             router.replace('/(authenticated)/(tabs)');
-    //         } 
-    //     } catch (error) {
-    //         Alert.alert("Mật khẩu hoặc tài khoản không đúng");
-    //         console.log(error);
-    //     }
-    // };
+            const { accessToken, refreshToken } = res.data.data;
+            try {
+                const userResponse = await axiosClient.get(API.getUser)
+                console.log("User data fetched successfully:", userResponse.data);
+                setUser(userResponse.data);
+                
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                Alert.alert("Error", "Không thể lấy thông tin người dùng");
+            }
+            if (res.status === 200) {
+                await login(accessToken, refreshToken);
+                router.replace('/(authenticated)/(tabs)');
+            } 
+            
+        } catch (error) {
+            Alert.alert("Mật khẩu hoặc tài khoản không đúng");
+            console.log(error);
+        }
+    };
 
-    const handleLogin = () => {
-        router.replace('/(authenticated)/(tabs)');
-    }
+    // const handleLogin = () => {
+    //     router.replace('/(authenticated)/(tabs)');
+    // }
 
 
     return (

@@ -53,6 +53,26 @@ const Layout = () => {
                 ),
                 headerTintColor: '#fff',
             }} />
+            <Stack.Screen name="profile" options={{
+                title: "Hồ sơ",
+                headerBackground: () => (
+                    <LinearGradient
+                        colors={["#1e6fa8", "#70c6e5"]}
+                        style={{ flex: 1 }}
+                    />
+                ),
+                headerTintColor: '#fff',
+            }} />
+            <Stack.Screen name="createAccountAdmin" options={{
+                title: "Tạo tài khoản admin",
+                headerBackground: () => (
+                    <LinearGradient
+                        colors={["#1e6fa8", "#70c6e5"]}
+                        style={{ flex: 1 }}
+                    />
+                ),
+                headerTintColor: '#fff',
+            }} />
         </Stack>
 
     )

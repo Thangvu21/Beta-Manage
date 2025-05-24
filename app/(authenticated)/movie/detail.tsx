@@ -50,8 +50,8 @@ const Details = () => {
             }
         }
 
-        // fetchFilmDetails();
-        setFilmDetail(MovieDetailData);
+        fetchFilmDetails();
+        // setFilmDetail(MovieDetailData);
 
         if (title) {
             navigation.setOptions({

@@ -11,10 +11,11 @@ export default function AuthenticatedLayout() {
 
   return (
     <MovieProvider>
-      <UserProvider>
+      <>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="movie" options={{ headerShown: false }} />
+          <Stack.Screen name='message' options={{ headerShown: false }} />
           <Stack.Screen
             name="scanner"
             options={{
@@ -35,7 +36,7 @@ export default function AuthenticatedLayout() {
             }}
           />
         </Stack>
-      </UserProvider>
+      </>
     </MovieProvider>
   );
 }

@@ -62,6 +62,8 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
+            const imageResponseUrl = response.data.imageUrl;
+
             if (response.status === 200 || response.status === 201) {
                 Alert.alert("Success", "Tạo món ăn thành công");
                 setFoodList([
@@ -70,7 +72,7 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
                         id: response.data.id, // lấy id trực tiếp từ response
                         name: title,
                         price: price,
-                        image: response.data.image,
+                        image: imageResponseUrl,
                     }
                 ]);
                 // Reset form và đóng modal chỉ khi thành công

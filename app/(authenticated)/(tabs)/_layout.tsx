@@ -79,6 +79,14 @@ const _Layout = () => {
 
 
             <Tabs.Screen
+                name="(chat)"
+                options={{
+                    headerShown: false
+                    , tabBarIcon: ({ color }) => <AntDesign name="message1" size={30} color={color} />
+                }}
+            />
+
+            <Tabs.Screen
                 name="(other)"
                 options={{
                     headerShown: false,
@@ -86,13 +94,7 @@ const _Layout = () => {
                 }}
             />
 
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    title: "Profile", headerShown: false
-                    , tabBarIcon: ({ color }) => <AntDesign name="profile" size={30} color={color} />
-                }}
-            />
+            
         </Tabs>
     );
 }

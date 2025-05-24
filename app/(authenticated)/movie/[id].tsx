@@ -57,6 +57,7 @@ const Details = () => {
 
     const chooseIndex = (index: number) => {
         setSelectedIndex(index);
+        console.log('Index đã chọn trong mảng show time:', index);
     }
 
     // chọn rạp
@@ -65,17 +66,27 @@ const Details = () => {
         setBetaSelected(beta);
     }
 
+    const initCreateShowTime = () => {
+        const initShowTime : ShowTime = {
+            id: '1',
+            hour: dateSelected.getHours(),
+            minute: dateSelected.getMinutes(),
+            time: dateSelected.toISOString(),
+        }
+        setTimeSelected(initShowTime);
+    }
+
     // chọn thời gian
     const handleSelectedTime = (showtime: ShowTime) => {
         console.log('Thời gian đã chọn:', showtime);
         setTimeSelected(showtime);
     }
 
-    const handleEditShowTime = (cinemaName: string) => {
+    const handleEditShowTime = () => {
         setModalEditShowTime(true);
     };
 
-    const handleDeleteShowTime = (cinemaName: string) => {
+    const handleDeleteShowTime = () => {
         setModalDeleteShowTime(true);
     };
 
@@ -260,9 +271,11 @@ const Details = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => {
+                                        initCreateShowTime();
                                         handleSelectedBeta(cinemaName);
                                         setSelectedIndexCinema(index);
                                         setModalCreateShowTime(true);
+                                        // setTimeSelected(cinema[cinemaName][selectedIndex]);
                                     }}
                                     style={{
                                         backgroundColor: colors.primary,
@@ -283,7 +296,8 @@ const Details = () => {
                                     <View style={styles.showtimeContainer} key={timeIndex}>
                                         <TouchableOpacity style={styles.timeButton}>
                                             <Text style={styles.timeText}>
-                                                {timeCinema.time.substring(11, 16)}
+                                                {new Date(timeCinema.time).toISOString().substring(11, 16)}
+                                                {/* {new Date(timeCinema.time).toLocaleTimeString()} */}
                                             </Text>
                                         </TouchableOpacity>
 
@@ -293,8 +307,9 @@ const Details = () => {
                                                     () => {
                                                         handleSelectedBeta(cinemaName)
                                                         handleSelectedTime(timeCinema)
-                                                        handleEditShowTime(cinemaName)
+                                                        handleEditShowTime()
                                                         setSelectedIndexCinema(index);
+                                                        setSelectedIndex(timeIndex)
                                                     }}>
                                                 <Text style={styles.iconButton}>✏️</Text>
                                             </TouchableOpacity>
@@ -304,8 +319,9 @@ const Details = () => {
                                                 onPress={() => {
                                                     handleSelectedBeta(cinemaName)
                                                     handleSelectedTime(timeCinema)
-                                                    handleDeleteShowTime(cinemaName)
+                                                    handleDeleteShowTime()
                                                     setSelectedIndexCinema(index);
+                                                    setSelectedIndex(timeIndex)
                                                 }}>
                                                 <Text style={styles.iconButton}>🗑️</Text>
                                             </TouchableOpacity>
@@ -330,6 +346,7 @@ const Details = () => {
                         showtimeSelected={timeSeleted}
                         date={getDate(dateSelected).toString()}
                         indexArray={selectedIndexCinema}
+                        dateSelected={dateSelected}
                     />
                 )
             }
@@ -351,15 +368,19 @@ const Details = () => {
             {
                 dateSelected && listShowTime && timeSeleted && (
                     <DeleteTimeModal
+
                         listShowTime={listShowTime}
                         setListShowTime={setListShowTime}
                         modalDeleteShowTime={modalDeleteShowTime}
                         setModalDeleteShowTime={setModalDeleteShowTime}
                         cinemaName={betaSelected}
                         date={getDate(dateSelected).toString()}
-                        showtime={timeSeleted}
+                        dateSelected={dateSelected}
+                        showtimeSelected={timeSeleted}
+                        indexSelected={selectedIndex}
                         setShowTime={setTimeSelected}
                         indexArray={selectedIndexCinema}
+
                     />
                 )
             }
