@@ -56,6 +56,7 @@ const CreateModalCinema = ({ modalCinemaVisible, setModalCinemaVisible, cinemaLi
         handleAfterUpdate();
 
         try {
+            // dùng raw ảnh là url
             const formData = new FormData();
             formData.append('avatar', {
                 uri: cinemaAvatar,

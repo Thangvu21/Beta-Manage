@@ -52,8 +52,16 @@ const UpdateModalNotification = ({
         data: {}
       };
 
-      // const response = await axiosClient.put(API.updateNotification, {
-      //   ...updatedNotification,
+      const updatedListNotification = {
+        title,
+        description,
+        type,
+        data: {}
+      };
+
+
+      // const response = await axiosClient.patch(`${API.updateNotification}/${cinemaId}`, {
+      //   ...updatedListNotification,
       // })
       // if (response.status !== 200) {
       //   throw new Error("Failed to update notification");

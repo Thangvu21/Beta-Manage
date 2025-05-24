@@ -17,9 +17,10 @@ export const API = {
     updateFood: `${API_URL}/booking/item/admin`,
     updateFoodImage: `${API_URL}/booking/item/admin/image`,
     deleteFood: `${API_URL}/booking/item/admin`,
-    // user
-    changeAvatar: `${API_URL}/user`,
-    getUser: `${API_URL}/user`,
+    // get info and change avatar admin
+    changeAvatar: `${API_URL}/admin`,
+    getUser: `${API_URL}/admin`,
+    createAdmin: `${API_URL}/admin/`,
 
     // cinema
     getAllCinema: `${API_URL}/cinema/`,
@@ -28,11 +29,11 @@ export const API = {
     updateCinema: `${API_URL}/cinema/admin/`,
     deleteCinema: `${API_URL}/cinema/admin/`,
     // notification
-    getAllNotification: `${API_URL}/notification`,
+    getAllNotification: `${API_URL}/notification/admin`,
     getNotificationDetail: `${API_URL}/notification/`,
-    createNotification: `${API_URL}/notification/admin/`,
-    updateNotification: `${API_URL}/notification/admin/`,
-    deleteNotification: `${API_URL}/notification/admin/`,
+    createNotification: `${API_URL}/notification/admin`,
+    updateNotification: `${API_URL}/notification/admin`,
+    deleteNotification: `${API_URL}/notification/admin`,
 
     // showtime
     getAllShowtime: `${API_URL}/showtime`,
@@ -44,5 +45,10 @@ export const API = {
     // scan boking
     scanBooking: `${API_URL}/booking/scan`,
     
+    // conversation
+    getAllConver: `${API_URL}/chat/conversation/admin`,
+    //message
+    getAllMessage: `${API_URL}/chat/message/admin`,
+    sendMessage: `${API_URL}/chat/message/admin`,
 
 };

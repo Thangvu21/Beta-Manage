@@ -16,7 +16,7 @@ export default function Other() {
 
 
     return (
-        <SafeAreaView style={{flex: 1, paddingTop: 40}}>
+        <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
             <View style={styles.container}>
                 <View style={styles.grid}>
                     <TouchableOpacity
@@ -39,8 +39,23 @@ export default function Other() {
                         style={[styles.card, { backgroundColor: '#ffe7d9' }]}
                         onPress={() => router.push('/food')}
                     >
-                        <Ionicons name="notifications-outline" size={32} color="#333" />
+                        <Ionicons name="pizza-outline" size={32} color="#333" />
                         <Text style={styles.cardText}>Đồ ăn</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.card, { backgroundColor: '#ffe7d9' }]}
+                        onPress={() => router.push('/profile')}
+                    >
+                        <Ionicons name="person-circle-outline" size={32} color="#333" />
+                        <Text style={styles.cardText}>Hồ sơ</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.card, { backgroundColor: '#ffe7d9' }]}
+                        onPress={() => router.push('/createAccountAdmin')}
+                    >
+                        <Ionicons name="add-circle-outline" size={32} color="#333" />
+                        <Text style={styles.cardText}>Tạo tài khoản admin</Text>
                     </TouchableOpacity>
                 </View>
             </View>
