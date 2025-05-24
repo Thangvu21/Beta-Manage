@@ -25,11 +25,11 @@ const UpdateImageModalFood = ({
     setFoodList
 }: props) => {
 
-    const [image, setImage] = useState<string>(food?.image || imagesUrl.img5);
+    const [image, setImage] = useState<string>(food?.image || imagesUrl.default);
 
     useEffect(() => {
-        setImage(food?.image || imagesUrl.img5);
-    }, [food]);
+        setImage(food.image || imagesUrl.default);
+    }, [food.id]);
 
     const handleUpdateImageItem = async () => {
         if (!image) {
@@ -51,16 +51,19 @@ const UpdateImageModalFood = ({
                 name: fileName,
                 type: `image/${fileType}`,
             } as any);
-            
+
             const response = await axiosClient.patch(`${API.updateFoodImage}/${food?.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            if (response.status === 200 || response.status === 201) {
-                Alert.alert("Success", "Cập nhật ảnh món ăn thành công");
-                setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: response.data.imageUrl } : item));
-            }
+
+            const imageResponseUrl = response.data.imageUrl;
+            Alert.alert("Success", "Cập nhật ảnh món ăn thành công");
+            setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: imageResponseUrl } : item));
+            setModalUpdateVisible(false);
+            setImage(imageResponseUrl);
+
         } catch (error: any) {
             console.error("Lỗi khi cập nhật ảnh món ăn:", error);
             Alert.alert("Error", "Không thể cập nhật ảnh món ăn");

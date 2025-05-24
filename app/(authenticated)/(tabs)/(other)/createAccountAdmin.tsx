@@ -20,22 +20,28 @@ export default function createAccountAdmin() {
     };
 
     const handleSubmit = async () => {
-        console.log('Tạo tài khoản admin với thông tin:', form);
+        const formData = new URLSearchParams();
+        for (const key in form) {
+            formData.append('email', form.email);
+            formData.append('phone', form.phone);
+            formData.append('password', form.password);
+            formData.append('name', form.name);
+            formData.append('role', form.role);
+        }
         // Gửi form đến backend tại đây
-        // try {
-        //     const response = await axiosClient.post(API.createAdmin, {
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded'
-        //         },
-        //         body: form
-        //     });
-        //     console.log('Tạo tài khoản admin thành công:', response.data);
-        //     Alert.alert('Thành công', 'Tài khoản admin đã được tạo thành công.');
-        // } catch (error) {
-        //     console.error('Lỗi khi tạo tài khoản admin:', error);
-        //     // Xử lý lỗi nếu cần
-        //     Alert.alert('Lỗi', 'Không thể tạo tài khoản admin. Vui lòng thử lại sau.');
-        // }
+        try {
+            const response = await axiosClient.post(API.createAdmin, formData.toString(), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+            });
+            console.log('Tạo tài khoản admin thành công:', response.data);
+            Alert.alert('Thành công', 'Tài khoản admin đã được tạo thành công.');
+        } catch (error) {
+            console.error('Lỗi khi tạo tài khoản admin:', error);
+            // Xử lý lỗi nếu cần
+            Alert.alert('Lỗi', 'Không thể tạo tài khoản admin. Vui lòng thử lại sau.');
+        }
         setForm({
             email: '',
             phone: '',

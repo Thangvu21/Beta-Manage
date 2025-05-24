@@ -1,9 +1,7 @@
 import { FoodItem } from "@/constants/food";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Alert, Button, ImageURISource, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import ImagePickerScreen from "../Camera/ImagePicker";
-import { imagesUrl } from "@/constants/image";
+import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 
@@ -31,7 +29,6 @@ const UpdateModalFood = ({
     const [price, setPrice] = useState<string>(food?.price.toString() || '');
 
     useEffect(() => {
-        // setImage(food?.image || imagesUrl.img5);
         setTitle(food?.name || '');
         setPrice(food?.price.toString() || '');
     }, [food]);

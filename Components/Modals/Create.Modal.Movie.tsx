@@ -94,7 +94,7 @@ const CreateModalMovie = ({
             id: id,
             title: title,
             ageRating: ageRating,
-            posterUrl: imagesUrl.img1,
+            posterUrl: posterUrl,
             releaseDate: releaseDate,
         }
 
@@ -119,7 +119,7 @@ const CreateModalMovie = ({
                 ageRating: ageRating,
                 director: director,
                 actors: actors,
-                posterUrl: imagesUrl.img1,
+                posterUrl: posterUrl,
                 trailerUrl: trailerUrl,
                 status: status,
             })
@@ -156,9 +156,17 @@ const CreateModalMovie = ({
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>Create Movie</Text>
-                        <Pressable onPress={() => setModalCreateVisible(false)}>
+                        <Pressable onPress={() => {
+                            setModalCreateVisible(false)
+                            resetForm();
+                        }}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
+                        <TouchableOpacity
+                            style={{ padding: 10 }}
+                            onPress={() => setModalCreateVisible(false)}>
+                            <AntDesign name="close" size={24} color="black" />
+                        </TouchableOpacity>
                     </View>
 
                     <ScrollView contentContainerStyle={styles.body}>
@@ -350,7 +358,17 @@ const CreateModalMovie = ({
                             />
                         </View>
                         {/* Image */}
-                        <ImagePickerScreen imageUri={posterUrl} setImageUri={setPosterUrl} />
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>🎬 Movie Poster URL</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder="Enter movie poster URL"
+                                placeholderTextColor="#888"
+                                value={posterUrl}
+                                onChangeText={setPosterUrl}
+                            />
+                        </View>
+                        {/* <ImagePickerScreen imageUri={posterUrl} setImageUri={setPosterUrl} /> */}
 
                     </ScrollView>
                     <View style={styles.footer}>

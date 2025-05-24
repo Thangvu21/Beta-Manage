@@ -1,12 +1,10 @@
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { foodData, FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
 import UpdateModalFood from "@/Components/Modals/Update.Modal.Food";
-import Feather from '@expo/vector-icons/Feather';
 import DeleteModalFood from "@/Components/Modals/Delete.Modal.Food";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
@@ -70,8 +68,8 @@ const Food = () => {
             }
         }
 
-        // fetchFoodList();
-        setFoodList(foodData)
+        fetchFoodList();
+        // setFoodList(foodData)
     }, [])
 
 

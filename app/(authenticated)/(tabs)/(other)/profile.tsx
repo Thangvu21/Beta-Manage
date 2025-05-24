@@ -1,5 +1,5 @@
 // SettingScreen.tsx
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,6 +7,9 @@ import { router } from 'expo-router';
 import { FONT_FAMILY } from '@/constants/font';
 import { useUser } from '@/Components/Context/UserProvider';
 import { useAuthContext } from '@/Components/Context/AuthProvider';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
+import { imagesUrl } from '@/constants/image';
 
 export default function ProfileScreen() {
 
@@ -14,7 +17,7 @@ export default function ProfileScreen() {
 
   const { logout } = useAuthContext();
 
-  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || '');
+  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || imagesUrl.default);
 
   const pickImage = async () => {
 
@@ -36,9 +39,45 @@ export default function ProfileScreen() {
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setImageUri(uri);
+      updateProfilePicture();
 
     }
   }
+
+  const updateProfilePicture = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        name: 'profile.jpg',
+        type: 'image/jpeg',
+      } as any);
+
+      const response = await axiosClient.patch(API.changeAvatar, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      const newUrl = response.data.url; // ← URL ảnh public sau khi upload xong
+
+      // setImageUri(newUrl); // ✅ cập nhật ảnh mới để hiển thị ngay
+
+      setUser(prevUser => ({
+        ...prevUser,
+        profilePictureUrl: newUrl // ✅ dùng ảnh đã upload lên server
+      }));
+    }
+    catch (error) {
+      console.error("Error updating profile picture:", error);
+    }
+  }
+  // Để tạm đây chưa có nút bấm đổi
+  useEffect(() => {
+    if (user.profilePictureUrl) {
+      setImageUri(user.profilePictureUrl);
+    }
+  }, [user.profilePictureUrl]);
 
   const handleLogout = async () => {
     try {
@@ -92,16 +131,17 @@ const styles = StyleSheet.create({
   },
   itemText: { fontSize: 18 },
   button: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    paddingVertical: 15, 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
     paddingHorizontal: 10,
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: '#fff',
     marginVertical: 5,
   },
-  buttonText: { fontSize: 18, 
+  buttonText: {
+    fontSize: 18,
     fontFamily: FONT_FAMILY,
     fontWeight: 'bold'
   },

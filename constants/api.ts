@@ -6,7 +6,7 @@ export const API = {
     refreshToken: `${API_URL}/auth/admin/refresh`,
 
     // film
-    getAllFilm: `${API_URL}/film`,
+    getAllFilm: `${API_URL}/film/`,
     getFilmDetail: `${API_URL}/film/`,
     createFilm: `${API_URL}/film/admin/`,
     updateFilm: `${API_URL}/film/admin/`,
@@ -18,9 +18,9 @@ export const API = {
     updateFoodImage: `${API_URL}/booking/item/admin/image`,
     deleteFood: `${API_URL}/booking/item/admin`,
     // get info and change avatar admin
-    changeAvatar: `${API_URL}/admin`,
+    changeAvatar: `${API_URL}/admin/avatar`,
     getUser: `${API_URL}/admin`,
-    createAdmin: `${API_URL}/admin/`,
+    createAdmin: `${API_URL}/admin`,
 
     // cinema
     getAllCinema: `${API_URL}/cinema/`,

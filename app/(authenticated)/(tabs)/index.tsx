@@ -14,7 +14,6 @@ import CreateModalMovie from "@/Components/Modals/Create.Modal.Movie";
 import ConfirmDeleteModal from "@/Components/Modals/Delete.Modal.Movie";
 import SelectActionModal from "@/Components/Modals/Select.Action.Modal";
 import Swiper from 'react-native-swiper'
-import { imageBaseUrl } from "@/constants/image";
 import { useMovieContext } from "@/Components/Context/MoiveProvider";
 import { useUser } from "@/Components/Context/UserProvider";
 import axiosClient from "@/constants/axiosClient";
@@ -54,9 +53,6 @@ export default function Index() {
   }
 
   useEffect(() => {
-    const fetchUser = async () => {
-      
-    }
 
     const fetchMovies = async () => {
       try {
@@ -69,8 +65,8 @@ export default function Index() {
       }
     };
 
-    setListMovie(FilmData);
-    // fetchMovies();
+    // setListMovie(FilmData);
+    fetchMovies();
   }, []);
 
 
@@ -97,9 +93,9 @@ export default function Index() {
                   dotStyle={styles.dot}
                   activeDotStyle={styles.activeDot}
                 >
-                  {imageBaseUrl.map((item, index) => (
+                  {listMovie.map((item, index) => (
                     <View key={index} style={styles.slide}>
-                      <Image source={{ uri: item }} style={styles.sliderImage} />
+                      <Image source={{ uri: item.posterUrl }} style={styles.sliderImage} />
                       {/* <Text style={styles.sliderTitle}>{item.title}</Text> */}
                     </View>
                   ))}
