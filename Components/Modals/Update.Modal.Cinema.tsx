@@ -32,9 +32,11 @@ const UpdateModalCinema = ({
   const [cinemaAvatar, setCinemaAvatar] = useState('');
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
+  const [id, setId] = useState<string>('');
 
   useEffect(() => {
     if (selectedCinema) {
+      setId(selectedCinema.id || '');
       setCinemaName(selectedCinema.name || '');
       setCinemaPhone(selectedCinema.phone || '');
       setCity(selectedCinema.address.city || '');
@@ -62,32 +64,37 @@ const UpdateModalCinema = ({
   };
 
   const handleUpdateCinema = async () => {
-    if (!cinemaName || !cinemaPhone || !cinemaAvatar) {
+    if (!cinemaName || !cinemaPhone || !cinemaAvatar
+      || !street || !ward || !district || !city
+      || !longitude || !latitude
+    ) {
       Alert.alert("Vui lòng nhập đủ thông tin");
       return;
     }
 
     try {
-      // const response = await axiosClient.put(`${API.updateCinema}/${id}`, {
-      //   name: cinemaName,
-      //   phone: cinemaPhone,
-      //   address: {
-      //     street,
-      //     ward,
-      //     district,
-      //     city,
-      //     full: `${street}, ${ward}, ${district}, ${city}`
-      //   },
-      //   location: {
-      //     type: "Point",
-      //     coordinates: [parseFloat(longitude), parseFloat(latitude)]
-      //   },
-      //   avatar: cinemaAvatar
-      // });
-      // if (response.status !== 200) {
-      //   Alert.alert("Có lỗi xảy ra khi cập nhật rạp phim");
-      //   return;
-      // }
+      const response = await axiosClient.patch(`${API.updateCinema}/${id}`, JSON.stringify(
+        {
+          name: cinemaName,
+          phone: cinemaPhone,
+          address: {
+            street,
+            ward,
+            district,
+            city,
+            full: `${street}, ${ward}, ${district}, ${city}`
+          },
+          location: {
+            type: "Point",
+            coordinates: [parseFloat(longitude), parseFloat(latitude)]
+          },
+          avatar: cinemaAvatar
+        }
+      ));
+      if (response.status !== 200) {
+        Alert.alert("Có lỗi xảy ra khi cập nhật rạp phim");
+        return;
+      }
       const updatedCinema: Cinema = {
         id: selectedCinema?.id || '',
         name: cinemaName,
@@ -105,7 +112,8 @@ const UpdateModalCinema = ({
         },
         avatar: cinemaAvatar
       };
-      const updatedCinemaList = cinemaList.map(cinema => 
+
+      const updatedCinemaList = cinemaList.map(cinema =>
         cinema.id === selectedCinema?.id ? updatedCinema : cinema
       );
       setCinemaList(updatedCinemaList);
@@ -115,7 +123,7 @@ const UpdateModalCinema = ({
       console.error("Error updating cinema:", error);
       Alert.alert("Có lỗi xảy ra khi cập nhật rạp phim");
     }
-    
+
   };
 
   return (

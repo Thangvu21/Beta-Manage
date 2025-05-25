@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { Notification, sampleNotifications, NotificationType } from '@/constants/notification';
@@ -7,6 +7,8 @@ import CreateModalNotification from '@/Components/Modals/Create.Modal.Noti';
 import UpdateModalNotification from '@/Components/Modals/Update.Modal.Noti';
 import DeleteModalNotification from '@/Components/Modals/Delete.Modal.Noti';
 import { colors } from '@/constants/color';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -23,7 +25,7 @@ const getIcon = (type: string) => {
 };
 
 export default function NotificationScreen() {
-  const [notifications, setNotifications] = useState<Notification[]>(sampleNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [modalCreateVisible, setModalCreateVisible] = useState(false);
   const [modalEditVisible, setModalEditVisible] = useState(false);
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
@@ -48,6 +50,23 @@ export default function NotificationScreen() {
       setModalDeleteVisible(true);
     }
   };
+
+  useEffect(() => {
+    // Simulate fetching notifications from an API
+    const fetchNotifications = async () => {
+      try {
+        // Replace with actual API call
+        const response = await axiosClient.get(API.getAllNotification);
+        console.log('Fetched notifications:', response.data);
+        setNotifications(response.data);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        Alert.alert('Error', 'Failed to fetch notifications. Please try again later.');
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   return (
     <>

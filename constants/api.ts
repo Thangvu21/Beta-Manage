@@ -31,12 +31,12 @@ export const API = {
     // notification
     getAllNotification: `${API_URL}/notification/admin`,
     getNotificationDetail: `${API_URL}/notification/`,
-    createNotification: `${API_URL}/notification/admin`,
+    createNotification: `${API_URL}/notification/admin/`,
     updateNotification: `${API_URL}/notification/admin`,
     deleteNotification: `${API_URL}/notification/admin`,
 
     // showtime
-    getAllShowtime: `${API_URL}/showtime`,
+    getAllShowtime: `${API_URL}/showtime/admin`,
     getShowtimeDetail: `${API_URL}/showtime/`,
     createShowtime: `${API_URL}/showtime/admin/`,
     updateShowtime: `${API_URL}/showtime/admin/`,

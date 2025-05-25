@@ -10,12 +10,16 @@ import {
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { ShowTime, ShowTimes } from '@/constants/dateTime';
+import { Cinema } from '@/constants/cinema';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
 
 interface Props {
     modalDeleteShowTime: boolean;
     setModalDeleteShowTime: (value: boolean) => void;
 
-    cinemaName: string;
+    cinemaSelected: Cinema;
+
     date: string;
     dateSelected: Date;
 
@@ -32,14 +36,12 @@ interface Props {
 const DeleteTimeModal = ({
     modalDeleteShowTime,
     setModalDeleteShowTime,
-    cinemaName,
+    cinemaSelected,
     date,
     showtimeSelected,
     setShowTime,
     listShowTime,
     setListShowTime,
-    indexArray,
-    indexSelected,
     dateSelected
 }: Props) => {
 
@@ -49,18 +51,20 @@ const DeleteTimeModal = ({
         setTempTime(new Date(new Date(showtimeSelected.time).getTime() - 7 * 60 * 60 * 1000)); // Chuyển đổi thời gian từ UTC+7 sang UTC+0
     }, [showtimeSelected]);
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         // Xóa thời gian chiếu
         try {
-
-            const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName]
+            const response = await axiosClient.delete(`${API.deleteShowtime}/${showtimeSelected.id}`);
+            const data = response.data;
+            console.log("Delete response:", data);
+            const arrayTimeCinemaDate: ShowTime[] = listShowTime.find(item => Object.keys(item)[0] === cinemaSelected.name)?.[cinemaSelected.name] ?? [];
             const newArrayTimeCinemaDate = arrayTimeCinemaDate.filter(item => item.id !== showtimeSelected.id);
 
-            const newListShowTime = listShowTime.map((item, index) => {
-                if (index === indexArray) {
+            const newListShowTime = listShowTime.map((item) => {
+                if (Object.keys(item)[0] === cinemaSelected.name) {
                     return {
                         ...item,
-                        [cinemaName]: newArrayTimeCinemaDate
+                        [cinemaSelected.name]: newArrayTimeCinemaDate
                     };
                 }
                 return item;
@@ -101,7 +105,7 @@ const DeleteTimeModal = ({
 
                     {/* Nội dung */}
                     {tempTime && <Text style={styles.message}>
-                        Bạn có chắc muốn xóa thời gian chiếu của rạp {cinemaName} vào ngày {date} lúc{' '}
+                        Bạn có chắc muốn xóa thời gian chiếu của rạp {cinemaSelected.name} vào ngày {date} lúc{' '}
                         {tempTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} không?
                     </Text>}
 

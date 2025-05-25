@@ -56,34 +56,36 @@ const CreateModalCinema = ({ modalCinemaVisible, setModalCinemaVisible, cinemaLi
         handleAfterUpdate();
 
         try {
-            // dùng raw ảnh là url
-            const formData = new FormData();
-            formData.append('avatar', {
-                uri: cinemaAvatar,
-                name: 'avatar.jpg',
-                type: 'image/jpeg',
-            } as any);
-            formData.append('name', cinemaName);
-            formData.append('phone', cinemaPhone);
-            formData.append('address', JSON.stringify({
-                full: getFullAddress(),
-                street,
-                ward,
-                district,
-                city,
-            }));
-            formData.append('location', JSON.stringify({
-                type: 'Point',
-                coordinates: [parseFloat(longitude), parseFloat(latitude)],
-            }));
-            // const response = await axiosClient.post(API.createCinema, formData, {
-            //     headers: { 'Content-Type': 'multipart/form-data' }
-            // });
+
+            const newCinema = {
+                name: cinemaName,
+                phone: cinemaPhone,
+                address: {
+                    street,
+                    ward,
+                    district,
+                    city,
+                    full: getFullAddress(),
+                },
+                location: {
+                    type: LocationType.Point,
+                    coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                },
+                avatar: cinemaAvatar,
+            }
+            const response = await axiosClient.post(API.createCinema, JSON.stringify(newCinema), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('Cinema created successfully:', response.data);
+            const idCinema = response.data.id;
+
             if (true) {
                 Alert.alert("Cinema created successfully");
                 const newCinema: Cinema = {
                     // id: response.data.id,
-                    id: 'notif-' + Math.random().toString(36).substr(2, 9),
+                    id: idCinema,
                     name: cinemaName,
                     phone: cinemaPhone,
                     address: {
@@ -233,7 +235,16 @@ const CreateModalCinema = ({ modalCinemaVisible, setModalCinemaVisible, cinemaLi
                         </View>
 
                         {/* Avatar Image Picker */}
-                        <ImagePickerScreen imageUri={cinemaAvatar} setImageUri={setCinemaAvatar} />
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>📸 Cinema Avatar</Text>
+                            <TextInput
+                                value={cinemaAvatar}
+                                onChangeText={setCinemaAvatar}
+                                style={styles.textInput}
+                                placeholder="Enter image URL or select from gallery"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
                     </ScrollView>
 
                     {/* Footer */}

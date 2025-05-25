@@ -1,11 +1,20 @@
 
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Modal, Alert } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUser } from '@/Components/Context/UserProvider';
 import { Conversation, sampleConversations } from '@/constants/conversation';
 import ModalFindChat from '@/Components/Modals/ModalFindChat';
+import { imagesUrl } from '@/constants/image';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
+
+interface User {
+    id: string;
+    name: string;
+    avatar: string;
+}
 
 export default function Other() {
 
@@ -14,11 +23,28 @@ export default function Other() {
     const router = useRouter();
 
     // Sau thay bằng user trên
-    const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || '');
+    const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || imagesUrl.default);
 
-    const [listConver, setListConver] = useState<Conversation[]>(sampleConversations)
+    const [listConver, setListConver] = useState<Conversation[]>([])
+
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchConversations = async () => {
+            try {
+                const response = await axiosClient.get(API.getAllConver)
+                console.log('Conversations:', response.data);
+                setListConver(response.data);
+
+            } catch (error) {
+                console.error('Error fetching conversations:', error);
+                Alert.alert('Error', 'Failed to load conversations. Please try again later.');
+            }
+        }
+        fetchConversations();
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
@@ -34,12 +60,16 @@ export default function Other() {
                         <TouchableOpacity
                             key={index}
                             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderBottomWidth: 1, borderColor: '#eee' }}
-                            onPress={() => router.push({
-                                pathname: '/message/[id]',
-                                params: { conversationId: item.id, userId: item.user.id }
-                            })}
+                            onPress={() => {
+                                setSelectedUser(item.user);
+                                router.push({
+                                    pathname: '/message/[id]',
+                                    params: { id: item.id, userId: item.user.id, userName: item.user.name, userAvatar: imagesUrl.default}// userAvatar: item.user.avatar }
+                                })
+                            }}
                         >
-                            <Image source={{ uri: item.user.avatar }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+                            {/* để mặc định */}
+                            <Image source={{ uri: imagesUrl.default }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
                             <View>
                                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item.user.name}</Text>
                                 <Text style={{ color: '#666' }}>Last message here...</Text>
@@ -48,8 +78,8 @@ export default function Other() {
                     ))}
                 </View>
             </View>
-            <ModalFindChat 
-            
+            <ModalFindChat
+
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
                 users={sampleConversations.map(conversation => conversation.user)}
