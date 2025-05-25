@@ -27,16 +27,12 @@ const DeleteModalNotification = ({
     if (!notification) return;
 
     try {
-      // const response = await axiosClient.delete(`${API.deleteNotification}/${notification.id}`);
-      if (true) {
-        const updatedList = notificationList.filter((item) => item.id !== notification.id);
-        setNotificationList(updatedList);
-        Alert.alert('Notification deleted successfully');
-        setModalDeleteVisible(false);
-      } else {
-        Alert.alert('Error', 'Failed to delete notification');
-      }
-
+      const response = await axiosClient.delete(`${API.deleteNotification}/${notification.id}`);
+      console.log('Delete response:', response.data);
+      const updatedList = notificationList.filter((item) => item.id !== notification.id);
+      setNotificationList(updatedList);
+      Alert.alert('Notification deleted successfully');
+      setModalDeleteVisible(false);
     } catch (error) {
       console.error('Error deleting notification:', error);
       Alert.alert('Error', 'Failed to delete notification');

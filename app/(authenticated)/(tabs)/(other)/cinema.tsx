@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { sampleCinemas } from '@/constants/cinema';
@@ -8,9 +8,11 @@ import CreateModalCinema from '@/Components/Modals/Create.Modal.Cinema';
 import UpdateModalCinema from '@/Components/Modals/Update.Modal.Cinema';
 import DeleteModalCinema from '@/Components/Modals/Delete.Modal.Cinema';
 import { colors } from '@/constants/color';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
 
 export default function CinemaScreen() {
-  const [cinemas, setCinemas] = useState<Cinema[]>(sampleCinemas);
+  const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -36,6 +38,26 @@ export default function CinemaScreen() {
     setIsCreateModalVisible(true);
   };
 
+  useEffect(() => {
+    const fetchCinemas = async () => {
+      try {
+        const response = await axiosClient.get(API.getAllCinema)
+        const listCinema: Cinema[] = []
+        for (const key in response.data) {
+            listCinema.push(... response.data[key])
+        }
+        setCinemas(listCinema);
+        } catch (error) {
+        
+        console.error('Error fetching cinemas:', error);
+        Alert.alert('Error', 'Failed to fetch cinemas. Please try again later.');
+      }
+    }
+    fetchCinemas();
+
+
+  }, [])
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.addButton} onPress={handleAdd} activeOpacity={0.7}>
@@ -57,16 +79,16 @@ export default function CinemaScreen() {
 
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Feather name="map-pin" size={14} color="#6b7280" style={{ marginRight: 5 }} />
-                  <Text 
-                  numberOfLines={3}
-                  style={styles.text}>{item.address.full}</Text>
+                  <Text
+                    numberOfLines={3}
+                    style={styles.text}>{item.address.full}</Text>
                 </View>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
                   <Feather name="phone" size={14} color="#10b981" style={{ marginRight: 4 }} />
-                  <Text 
-                  numberOfLines={3}
-                  style={styles.phone}>{item.phone}</Text>
+                  <Text
+                    numberOfLines={3}
+                    style={styles.phone}>{item.phone}</Text>
                 </View>
 
                 <View style={styles.iconButtonRow}>
@@ -187,12 +209,12 @@ const styles = StyleSheet.create({
 
 
   iconButtonRow: {
-        flexDirection: 'row',
-        marginTop: 4,
-        gap: 12,
-    },
+    flexDirection: 'row',
+    marginTop: 4,
+    gap: 12,
+  },
 
-    iconButton: {
-        padding: 4,
-    },
+  iconButton: {
+    padding: 4,
+  },
 });

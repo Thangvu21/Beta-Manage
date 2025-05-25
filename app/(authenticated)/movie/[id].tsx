@@ -1,18 +1,23 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Button, Linking } from "react-native";
+import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Button, Linking, Alert } from "react-native";
 import { FONT_FAMILY } from "@/constants/font";
 import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import { ShowTimes, sampleShowTimes, sampleShowDate, ShowTime } from "@/constants/dateTime";
-import { sampleCinemas, sampleNameCinemas } from "@/constants/cinema";
+import { Cinema, sampleCinemas, sampleNameCinemas } from "@/constants/cinema";
 import { colors } from "@/constants/color";
 import { Timestamp } from "react-native-reanimated/lib/typescript/commonTypes";
 import CreateTimeModal from "@/Components/Modals/Create.Modal.ShowTime";
 import UpdateTimeModal from "@/Components/Modals/Update.Modal.ShowTime";
 import DeleteTimeModal from "@/Components/Modals/Delete.Modal";
+
+// export interface CinemaShowTime {
+//     name: string;
+//     id: string;
+// }
 
 
 const Details = () => {
@@ -23,7 +28,7 @@ const Details = () => {
     const { id, title, posterUrl } = useLocalSearchParams<{ id: string, title: string, posterUrl: string }>();
 
     const [listShowDate, setListShowDate] = useState<Date[]>([]);
-    const [listShowTime, setListShowTime] = useState<ShowTimes[]>();
+    const [listShowTime, setListShowTime] = useState<ShowTimes[]>([]);
 
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
     const [selectedIndexCinema, setSelectedIndexCinema] = useState<number>(0);
@@ -34,7 +39,12 @@ const Details = () => {
 
     const [timeSeleted, setTimeSelected] = useState<ShowTime>({} as ShowTime);
     const [dateSelected, setDateSelected] = useState<Date>(new Date());
-    const [betaSelected, setBetaSelected] = useState('');
+    const [betaSelected, setBetaSelected] = useState<Cinema>({} as Cinema);
+
+    // hiển thị ra all cinema xong rồi mới chọn
+    // const [cinemaShowTImeList, setCinemaShowtimeList] = useState<CinemaShowTime[]>([]);
+    const [cinemaList, setCinemaList] = useState<Cinema[]>([]);
+
 
     // chọn ngày trước
     const createListDate = () => {
@@ -61,13 +71,13 @@ const Details = () => {
     }
 
     // chọn rạp
-    const handleSelectedBeta = (beta: string) => {
+    const handleSelectedBeta = (beta: Cinema) => {
         // console.log('Beta đã chọn:', beta);
         setBetaSelected(beta);
     }
 
     const initCreateShowTime = () => {
-        const initShowTime : ShowTime = {
+        const initShowTime: ShowTime = {
             id: '1',
             hour: dateSelected.getHours(),
             minute: dateSelected.getMinutes(),
@@ -113,31 +123,88 @@ const Details = () => {
         return `${month}-${dayName}`;
     }
 
+    const handleChooseDate = async (index: number) => {
+        try {
+            const response = await axiosClient.get(`${API.getAllShowtime}/${id}`, {
+                params: {
+                    page: index
+                }
+            })
+            const data = response.data;
+            // console.log('Showtimes data:', data);
+            const newShowTimes: ShowTimes[] = []
+            for (const cinemaName in data) {
+                newShowTimes.push({
+                    [cinemaName]: data[cinemaName].map((showtime: ShowTime) => ({
+                        id: showtime.id,
+                        hour: new Date(showtime.time).getHours(),
+                        minute: new Date(showtime.time).getMinutes(),
+                        time: showtime.time, // Giữ nguyên định dạng ISO
+                    }))
+                })
+            }
+            setListShowTime(newShowTimes);
+            // Từ film data nhận được thì set lại title các thứ
+            // console.log("List showtime:", JSON.stringify(listShowTime, null, 2));
+
+        } catch (error) {
+            console.error("Error fetching film details:", error);
+        }
+    }
 
 
 
     useEffect(() => {
         const fetchFilmShowTime = async () => {
             try {
-                const response = await axiosClient.get(`${API.getFilmDetail}/${id}`)
+                const response = await axiosClient.get(`${API.getAllShowtime}/${id}`, {
+                    params: {
+                        page: 0
+                    }
+                })
                 const data = response.data;
-
+                // console.log('Showtimes data:', data);
+                const newShowTimes: ShowTimes[] = []
+                for (const cinemaName in data) {
+                    newShowTimes.push({
+                        [cinemaName]: data[cinemaName].map((showtime: ShowTime) => ({
+                            id: showtime.id,
+                            hour: new Date(showtime.time).getHours(),
+                            minute: new Date(showtime.time).getMinutes(),
+                            time: showtime.time, // Giữ nguyên định dạng ISO
+                        }))
+                    })
+                }
+                setListShowTime(newShowTimes);
                 // Từ film data nhận được thì set lại title các thứ
+                // console.log("List showtime:", JSON.stringify(listShowTime, null, 2));
+
             } catch (error) {
                 console.error("Error fetching film details:", error);
             }
         }
 
-        // fetchFilmShowTime();
+        const fetchCinemaList = async () => {
+            try {
+                const response = await axiosClient.get(API.getAllCinema)
+                const listCinema: Cinema[] = []
+                for (const key in response.data) {
+                    listCinema.push(...response.data[key])
+                }
+                setCinemaList(listCinema);
+                // console.log('Cinema list:', cinemaList);
+            } catch (error) {
+                Alert.alert("Error", "Failed to fetch cinema list. Please try again later.");
+                console.error("Error fetching cinema list:", error);
+            }
+        }
 
-        // setListShowTime(sampleShowTimes.sort((a, b) => {
-        //     const dateA = new Date(a.date);
-        //     const dateB = new Date(b.date);
-        //     return dateA.getTime() - dateB.getTime();
-        // }));
-        setListShowTime(sampleShowTimes);
+        fetchFilmShowTime();
+        fetchCinemaList();
+
+        // khi lấy ra time phải sort 
         setListShowDate(createListDate());
-        setDateSelected(sampleShowDate[0]);
+        setDateSelected(new Date());
 
         if (title) {
             navigation.setOptions({
@@ -145,10 +212,6 @@ const Details = () => {
             });
         }
     }, [id, navigation]);
-
-    useEffect(() => {
-
-    }, []);
 
     return (
 
@@ -203,6 +266,7 @@ const Details = () => {
                                 onPress={() => {
                                     chooseDate(item);
                                     chooseIndex(index);
+                                    handleChooseDate(index)
                                 }}
                                 activeOpacity={0.8}
                             >
@@ -243,137 +307,146 @@ const Details = () => {
 
             <View>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', margin: 10 }}>Cinemas</Text>
-                {listShowTime && listShowTime.map((cinema, index) => {
-                    const cinemaName = Object.keys(cinema)[0];
 
+                {cinemaList && cinemaList.map((cinema, index) => {
+
+                    const showTimes =
+                        listShowTime.find(item => Object.keys(item)[0] === cinema.name)?.[cinema.name] ?? [];
                     return (
-                        <View
-                            key={index}
-                            style={{
-                                backgroundColor: '#f9f9f9',
-                                borderRadius: 10,
-                                marginHorizontal: 10,
-                                marginVertical: 5,
-                                padding: 10,
-                                shadowColor: '#000',
-                                shadowOpacity: 0.1,
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowRadius: 4,
-                                elevation: 2,
-                            }}
-                        >
+                        <>
+                            <View
+                                key={cinema.id}
+                                style={{
+                                    backgroundColor: '#f9f9f9',
+                                    borderRadius: 10,
+                                    marginHorizontal: 10,
+                                    marginVertical: 5,
+                                    padding: 10,
+                                    shadowColor: '#000',
+                                    shadowOpacity: 0.1,
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowRadius: 4,
+                                    elevation: 2,
+                                }}
+                            >
 
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <TouchableOpacity onPress={() => {/* xử lý lọc */ }}>
-                                    <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
-                                        {cinemaName}
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        initCreateShowTime();
-                                        handleSelectedBeta(cinemaName);
-                                        setSelectedIndexCinema(index);
-                                        setModalCreateShowTime(true);
-                                        // setTimeSelected(cinema[cinemaName][selectedIndex]);
-                                    }}
-                                    style={{
-                                        backgroundColor: colors.primary,
-                                        paddingVertical: 2,
-                                        paddingHorizontal: 2,
-                                        borderRadius: 25,
-                                    }}
-                                >
-                                    <Ionicons name="add" size={28} color="#fff" />
-                                </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <TouchableOpacity onPress={() => {/* xử lý lọc */ }}>
+                                        <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
+                                            {cinema.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            initCreateShowTime();
+                                            handleSelectedBeta(cinema);
+                                            setSelectedIndexCinema(index);
+                                            setModalCreateShowTime(true);
+                                            // setTimeSelected(cinema[cinemaName][selectedIndex]);
+                                        }}
+                                        style={{
+                                            backgroundColor: colors.primary,
+                                            paddingVertical: 2,
+                                            paddingHorizontal: 2,
+                                            borderRadius: 25,
+                                        }}
+                                    >
+                                        <Ionicons name="add" size={28} color="#fff" />
+                                    </TouchableOpacity>
 
 
-                            </View>
+                                </View>
 
-                            {/* Hiển thị danh sách khung giờ chiếu */}
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
-                                {cinema[cinemaName].map((timeCinema, timeIndex) => (
-                                    <View style={styles.showtimeContainer} key={timeIndex}>
-                                        <TouchableOpacity style={styles.timeButton}>
-                                            <Text style={styles.timeText}>
-                                                {new Date(timeCinema.time).toISOString().substring(11, 16)}
-                                                {/* {new Date(timeCinema.time).toLocaleTimeString()} */}
-                                            </Text>
-                                        </TouchableOpacity>
+                                {/* Hiển thị danh sách khung giờ chiếu */}
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
+                                    {showTimes.map((timeCinema, timeIndex) => (
+                                        <View style={styles.showtimeContainer} key={timeCinema.id}>
+                                            <TouchableOpacity style={styles.timeButton}>
+                                                <Text style={styles.timeText}>
+                                                    {new Date(timeCinema.time).toISOString().substring(11, 16)}
+                                                    {/* {new Date(timeCinema.time).toLocaleTimeString()} */}
+                                                </Text>
+                                            </TouchableOpacity>
 
-                                        <View style={styles.iconButtonRow}>
-                                            <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
-                                                onPress={
-                                                    () => {
-                                                        handleSelectedBeta(cinemaName)
+                                            <View style={styles.iconButtonRow}>
+                                                {/* <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
+                                                        onPress={
+                                                            () => {
+                                                                handleSelectedBeta(cinema)
+                                                                handleSelectedTime(timeCinema)
+                                                                handleEditShowTime()
+                                                                setSelectedIndexCinema(index);
+                                                                setSelectedIndex(timeIndex)
+                                                            }}>
+                                                        <Text style={styles.iconButton}>✏️</Text>
+                                                    </TouchableOpacity> */}
+
+
+                                                <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
+                                                    onPress={() => {
+                                                        handleSelectedBeta(cinema)
                                                         handleSelectedTime(timeCinema)
-                                                        handleEditShowTime()
+                                                        handleDeleteShowTime()
                                                         setSelectedIndexCinema(index);
                                                         setSelectedIndex(timeIndex)
                                                     }}>
-                                                <Text style={styles.iconButton}>✏️</Text>
-                                            </TouchableOpacity>
+                                                    <Text style={styles.iconButton}>🗑️</Text>
+                                                </TouchableOpacity>
 
-
-                                            <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }}
-                                                onPress={() => {
-                                                    handleSelectedBeta(cinemaName)
-                                                    handleSelectedTime(timeCinema)
-                                                    handleDeleteShowTime()
-                                                    setSelectedIndexCinema(index);
-                                                    setSelectedIndex(timeIndex)
-                                                }}>
-                                                <Text style={styles.iconButton}>🗑️</Text>
-                                            </TouchableOpacity>
-
+                                            </View>
                                         </View>
-                                    </View>
-                                ))}
-                            </ScrollView>
-                        </View>
+                                    ))
+                                    }
+                                </ScrollView>
+                            </View>
+                        </>
                     )
-                })}
+                })
+
+                }
             </View>
 
             {
-                dateSelected && listShowTime && (
+                dateSelected && listShowTime && betaSelected && (
                     <CreateTimeModal
                         listShowTime={listShowTime}
                         setListShowTime={setListShowTime}
                         modalCreateShowTime={modalCreateShowTime}
                         setModalCreateShowTime={setModalCreateShowTime}
-                        cinemaName={betaSelected}
+                        cinemaSelected={betaSelected}
                         showtimeSelected={timeSeleted}
                         date={getDate(dateSelected).toString()}
                         indexArray={selectedIndexCinema}
                         dateSelected={dateSelected}
+                        idFilm={id}
                     />
                 )
             }
-            {
-                dateSelected && listShowTime && timeSeleted && (
+            {/* {
+                dateSelected && listShowTime && timeSeleted && betaSelected && (
                     <UpdateTimeModal
                         listShowTime={listShowTime}
                         setListShowTime={setListShowTime}
                         modalUpdateShowTime={modalEditShowTime}
                         setModalUpdateShowTime={setModalEditShowTime}
-                        cinemaName={betaSelected}
+                        cinemaSelected={betaSelected}
                         date={getDate(dateSelected).toString()}
                         showtimeSelected={timeSeleted}
                         setShowTimeSelected={setTimeSelected}
                         indexArray={selectedIndexCinema}
+                        idFilm={id}
                     />
                 )
-            }
+            } */}
             {
-                dateSelected && listShowTime && timeSeleted && (
+                dateSelected && listShowTime && timeSeleted && betaSelected && (
                     <DeleteTimeModal
 
                         listShowTime={listShowTime}
                         setListShowTime={setListShowTime}
                         modalDeleteShowTime={modalDeleteShowTime}
                         setModalDeleteShowTime={setModalDeleteShowTime}
-                        cinemaName={betaSelected}
+                        cinemaSelected={betaSelected}
                         date={getDate(dateSelected).toString()}
                         dateSelected={dateSelected}
                         showtimeSelected={timeSeleted}

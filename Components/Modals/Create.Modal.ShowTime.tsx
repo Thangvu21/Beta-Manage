@@ -3,37 +3,50 @@ import { useEffect, useState } from "react";
 import { Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ShowTime, ShowTimes } from "@/constants/dateTime";
+import axiosClient from "@/constants/axiosClient";
+import { API } from "@/constants/api";
+import { Cinema } from "@/constants/cinema";
+export enum TypeShowTime {
+    D2 = '2D',
+    D3 = '3D',
+}
+
 
 interface props {
     modalCreateShowTime: boolean;
     setModalCreateShowTime: (value: boolean) => void;
-    cinemaName: string;
+    cinemaSelected: Cinema;
+
     date: string;
     showtimeSelected: ShowTime;
     listShowTime: ShowTimes[];
+
     setListShowTime: (value: ShowTimes[]) => void;
     indexArray: number; // để lấy ra thứ tự của rạp chiếu phim
     dateSelected: Date;
+
+    idFilm: string;
 }
 
 const CreateTimeModal = ({
     modalCreateShowTime,
     setModalCreateShowTime,
-    cinemaName,
+    cinemaSelected,
     date,
     listShowTime,
     setListShowTime,
-    indexArray,
     showtimeSelected,
     dateSelected,
+    idFilm
 }: props) => {
 
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [tempTime, setTempTime] = useState(new Date());
     const [showtime, setShowtime] = useState<ShowTime>();
+    const [type, setType] = useState<TypeShowTime>(TypeShowTime.D2);
 
     useEffect(() => {
-        const initShowTime : ShowTime = {
+        const initShowTime: ShowTime = {
             id: '1',
             hour: dateSelected.getHours(),
             minute: dateSelected.getMinutes(),
@@ -47,7 +60,7 @@ const CreateTimeModal = ({
         setModalCreateShowTime(false);
     };
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
 
 
         try {
@@ -58,25 +71,41 @@ const CreateTimeModal = ({
                 tempTime.getHours(),
                 tempTime.getMinutes()
             ));
+
+            const response = await axiosClient.post(`${API.createShowtime}`, JSON.stringify({
+                cinemaId: cinemaSelected.id,
+                filmId: idFilm,
+                time: newTime.toISOString(),
+                type: type,
+            }));
+            const data = response.data;
+            console.log("Response from server:", data);
+
             // console.log("newTime", newTime)
             const newShowTime = {
-                id: Math.random().toString(36).substring(2, 15),
+                id: data.id,
                 hour: newTime.getHours(),
                 minute: newTime.getMinutes(),
                 time: newTime.toISOString(),
+                type: type,
             }
-            const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName]
+            const arrayTimeCinemaDate: ShowTime[] = listShowTime.find(item => Object.keys(item)[0] === cinemaSelected.name)?.[cinemaSelected.name] ?? [];
+
             const newArrayTimeCinemaDate = [...arrayTimeCinemaDate, newShowTime]
-            // console.log("Mảng giờ mới", newArrayTimeCinemaDate)
-            const newListShowTime = listShowTime.map((item, index) => {
-                if (index === indexArray) {
+            let found = false;
+            const newListShowTime = listShowTime.map(item => {
+                if (Object.keys(item)[0] === cinemaSelected.name) {
+                    found = true;
                     return {
-                        ...item, // giữ lại các rạp khác
-                        [cinemaName]: newArrayTimeCinemaDate // cập nhật rạp này
+                        ...item,
+                        [cinemaSelected.name]: newArrayTimeCinemaDate
                     };
                 }
                 return item;
             });
+            if (!found) {
+                newListShowTime.push({ [cinemaSelected.name]: [newShowTime] });
+            }
             setListShowTime(newListShowTime);
 
 
@@ -102,7 +131,7 @@ const CreateTimeModal = ({
                         {/* Header */}
                         <View style={styles.header}>
                             <Text style={styles.headerTitle}>
-                                🎬 Tạo thời gian cho rạp {cinemaName} vào ngày {date}
+                                🎬 Tạo thời gian cho rạp {cinemaSelected.name} vào ngày {date}
                             </Text>
                             <Pressable onPress={() => setModalCreateShowTime(false)}>
                                 <AntDesign name="closecircleo" size={24} color="#555" />
@@ -130,7 +159,48 @@ const CreateTimeModal = ({
                             <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
                                 <Text style={styles.timeButtonText}>🕒 Chọn giờ chiếu</Text>
                             </TouchableOpacity>
+                            {/* Chọn định dạng */}
+                            <View style={{ marginTop: 20 }}>
+                                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 10 }}>
+                                    Chọn loại định dạng:
+                                </Text>
 
+                                <View style={{ flexDirection: 'row', gap: 20 }}>
+                                    <TouchableOpacity
+                                        onPress={() => setType(TypeShowTime.D2)}
+                                        style={{
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 16,
+                                            borderRadius: 8,
+                                            backgroundColor: type === TypeShowTime.D2 ? '#e0f2fe' : '#f0f0f0',
+                                        }}
+                                    >
+                                        <Text style={{
+                                            color: type === TypeShowTime.D2 ? '#0ea5e9' : '#555',
+                                            fontWeight: type === TypeShowTime.D2 ? '700' : '400',
+                                        }}>
+                                            2D
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        onPress={() => setType(TypeShowTime.D3)}
+                                        style={{
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 16,
+                                            borderRadius: 8,
+                                            backgroundColor: type === TypeShowTime.D3 ? '#e0f2fe' : '#f0f0f0',
+                                        }}
+                                    >
+                                        <Text style={{
+                                            color: type === TypeShowTime.D3 ? '#0ea5e9' : '#555',
+                                            fontWeight: type === TypeShowTime.D3 ? '700' : '400',
+                                        }}>
+                                            3D
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </ScrollView>
 
                         {/* Footer */}

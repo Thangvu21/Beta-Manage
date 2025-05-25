@@ -44,15 +44,8 @@ const UpdateModalNotification = ({
       return;
     }
     try {
+
       const updatedNotification = {
-        id: cinemaId,
-        title,
-        description,
-        type,
-        data: {}
-      };
-
-      const updatedListNotification = {
         title,
         description,
         type,
@@ -60,15 +53,14 @@ const UpdateModalNotification = ({
       };
 
 
-      // const response = await axiosClient.patch(`${API.updateNotification}/${cinemaId}`, {
-      //   ...updatedListNotification,
-      // })
-      // if (response.status !== 200) {
-      //   throw new Error("Failed to update notification");
-      // }
+      const response = await axiosClient.patch(`${API.updateNotification}/${cinemaId}`, {
+        ...updatedNotification,
+      })
+      console.log("Notification updated successfully:", response.data);
+
 
       const updatedList = notificationList.map((notif) =>
-        notif.id === notificationToEdit?.id ? updatedNotification : notif
+        notif.id === notificationToEdit?.id ? {... updatedNotification, id: notificationToEdit.id }: notif
       );
       setNotificationList(updatedList);
     } catch (error) {

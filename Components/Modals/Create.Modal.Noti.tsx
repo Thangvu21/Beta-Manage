@@ -42,50 +42,37 @@ const CreateModalNotification = ({
     setModalVisible(false);
   }
 
-  const handleCreateNotification = () => {
-    if (!title || !description || !type) {
+  const handleCreateNotification = async () => {
+    if (!title || !description || !type ) {
       Alert.alert("Please fill all fields");
       return;
     }
 
-    // try {
-    //   const response = await axiosClient.post(`${API.createNotification}`, {
-    //     title,
-    //     description,
-    //     type,
-    //     data
-    //   })
+    try {
+      const response = await axiosClient.post(`${API.createNotification}`, JSON.stringify({
+        title,
+        description,
+        type,
+        data
+      }))
 
-    //   if (response.status !== 200) {
-    //     Alert.alert("Error creating notification");
-    //     return;
-    //   }
+      console.log("Notification created successfully:", response.data);
 
-    //   const newNotification : Notification = {
-    //     id: ,
-    //     title,
-    //     description,
-    //     type,
-    //     data
-    //   }
-    //   setNotificationList([...notificationList, newNotification]);
+      const newNotification : Notification = {
+        id: response.data.id,
+        title,
+        description,
+        type,
+        data
+      }
+      setNotificationList([...notificationList, newNotification]);
 
 
 
-    // } catch (error) {
-    //   Alert.alert("Error creating notification");
-    //   console.error(error);
-    // }
-    const newNotification: Notification = {
-      id: 'notif-' + Math.random().toString(36).substr(2, 9),
-      title,
-      description,
-      type,
-      data
+    } catch (error) {
+      Alert.alert("Error creating notification");
+      console.error(error);
     }
-    setNotificationList([...notificationList, newNotification]);
-
-
     handleAfterUpdate();
 
   };

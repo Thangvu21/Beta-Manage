@@ -1,48 +1,76 @@
 import ChatHeader from "@/Components/Headers/ChatHeader";
+import { API } from "@/constants/api";
+import axiosClient from "@/constants/axiosClient";
 import { Message, mockMessages } from "@/constants/chat";
+import { imagesUrl } from "@/constants/image";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 
 const chatDetail = () => {
 
-    const { conversationId, userId } = useLocalSearchParams();
+    const { id, userId, userName, userAvatar } = useLocalSearchParams();
     const navigation = useNavigation();
 
     const router = useRouter();
     const [messages, setMessages] = useState<Message[]>(mockMessages);
     const [newMessage, setNewMessage] = useState('');
 
-    const handleSend = () => {
-        if (!newMessage.trim()) return;
-        const newMsg: Message = {
-            id: Math.random().toString(36).substring(7), // Generate a random ID for the message
-            conversation: conversationId as string,
-            sender: 'user',
-            text: newMessage
-        };
-        setMessages([...messages, newMsg]);
-        setNewMessage('');
+    const handleSend = async () => {
+        try {
+            const response = await axiosClient.post(API.sendMessage, JSON.stringify({
+                conversationId: id,
+                text: newMessage
+            }))
+
+            console.log('Message sent:', response.data);
+
+
+            if (!newMessage.trim()) return;
+            const newMsg: Message = {
+                id: response.data.id, // Assuming the API returns the new message ID
+                conversationId: id as string,
+                sender: 'admin',
+                text: newMessage
+            };
+            setMessages([...messages, newMsg]);
+            setNewMessage('');
+        } catch (error) {
+            console.error('Error sending message:', error);
+            Alert.alert('Error', 'Failed to send message. Please try again later.');
+        }
     };
 
     useEffect(() => {
-        // You can use conversationId and userId to fetch chat details or perform other actions
+        const fetchMessages = async () => {
 
+            try {
+                // Simulate fetching messages from an API
+                // Replace with actual API call if needed
+                const response = await axiosClient.get(`${API.getAllMessage}/${id}`);
+                console.log('Fetched messages:', response.data);
+                setMessages(response.data);
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+
+        fetchMessages();
         navigation.setOptions({
             header: () => {
                 return (
                     <ChatHeader
-                        name="Nguyễn Văn A"
-                        avatar="https://files.betacorp.vn/media%2fimages%2f2025%2f05%2f18%2fbeta%2D400x633%2D192849%2D180525%2D39.png"
+                        name={userName as string}
+                        avatar={userAvatar as string}
                     />
                 )
             }
         });
 
-    }, [conversationId, userId]);
+    }, [id]);
 
     return (
         <>
@@ -57,18 +85,34 @@ const chatDetail = () => {
                     {/* Messages */}
                     <FlatList
                         data={messages}
-                        keyExtractor={item => item.id}
+                        keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.chatContainer}
-                        renderItem={({ item }) => (
-                            <View
-                                style={[
-                                    styles.messageBubble,
-                                    item.sender === 'user' ? styles.userBubble : styles.adminBubble
-                                ]}
-                            >
-                                <Text style={styles.messageText}>{item.text}</Text>
-                            </View>
-                        )}
+                        renderItem={({ item }) => {
+                            const isAdmin = item.sender === 'admin';
+                            return (
+                                <View
+                                    style={[
+                                        { flexDirection: isAdmin ? 'row-reverse' : 'row', alignItems: 'flex-end', marginBottom: 12 },
+                                    ]}
+                                >
+                                    <Image
+                                        source={{ uri: isAdmin ? (userAvatar as string) : imagesUrl.default }}
+                                        style={[
+                                            styles.avatar,
+                                            isAdmin ? { marginLeft: 8 } : { marginRight: 8 },
+                                        ]}
+                                    />
+                                    <View
+                                        style={[
+                                            styles.messageBubble,
+                                            isAdmin ? styles.userBubble : styles.adminBubble,
+                                        ]}
+                                    >
+                                        <Text style={styles.messageText}>{item.text}</Text>
+                                    </View>
+                                </View>
+                            );
+                        }}
                     />
 
                     {/* Input */}
@@ -76,16 +120,18 @@ const chatDetail = () => {
                         <TextInput
                             style={styles.input}
                             placeholder="Nhập tin nhắn..."
+                            placeholderTextColor="#999"
                             value={newMessage}
                             onChangeText={setNewMessage}
                         />
-                        <LinearGradient
-                            colors={['#1e6fa8', '#70c6e5']}
-                            style={styles.sendButton}>
-                            <TouchableOpacity onPress={handleSend}>
+                        <TouchableOpacity onPress={handleSend}>
+                            <LinearGradient
+                                colors={['#1e6fa8', '#70c6e5']}
+                                style={styles.sendButton}
+                            >
                                 <Ionicons name="send" size={20} color="white" />
-                            </TouchableOpacity>
-                        </LinearGradient>
+                            </LinearGradient>
+                        </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>
@@ -94,72 +140,71 @@ const chatDetail = () => {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ccc',
+        paddingTop: Platform.OS === 'android' ? 20 : 0, // Adjust for Android status bar
+    },
     safe: {
         flex: 1,
-        backgroundColor: '#f9f9f9',
-    },
-    container: {
-        flex: 1
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderColor: '#eee'
-    },
-    headerText: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginLeft: 12
+        backgroundColor: '#f2f2f2',
     },
     chatContainer: {
         padding: 16,
-        flexGrow: 1
+        flexGrow: 1,
+        justifyContent: 'flex-end',
+    },
+    avatar: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
     },
     messageBubble: {
-        maxWidth: '80%',
+        maxWidth: '75%',
         padding: 12,
-        marginBottom: 10,
-        borderRadius: 16
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     userBubble: {
         backgroundColor: '#DCF8C6',
-        alignSelf: 'flex-end'
+        alignSelf: 'flex-end',
     },
     adminBubble: {
-        backgroundColor: '#eee',
-        alignSelf: 'flex-start'
+        backgroundColor: '#FFFFFF',
+        alignSelf: 'flex-start',
     },
     messageText: {
         fontSize: 15,
-        color: '#333'
+        color: '#333',
     },
     inputContainer: {
         flexDirection: 'row',
         padding: 10,
         backgroundColor: '#fff',
         borderTopWidth: 1,
-        borderColor: '#eee',
+        borderColor: '#ddd',
         alignItems: 'center',
-        justifyContent: 'space-between'
     },
     input: {
         flex: 1,
         fontSize: 16,
-        paddingHorizontal: 12,
-        backgroundColor: '#f2f2f2',
-        borderRadius: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 24,
         marginRight: 10,
     },
     sendButton: {
-        backgroundColor: '#007AFF',
-        padding: 12,
-        borderRadius: 30,
+        padding: 10,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
 });
+
 
 export default chatDetail;

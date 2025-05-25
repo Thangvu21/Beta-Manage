@@ -8,15 +8,22 @@ import {
     StyleSheet,
     ScrollView,
     Platform,
+    Alert,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { ShowTime, ShowTimes } from '@/constants/dateTime';
+import { Cinema } from '@/constants/cinema';
+import axios from 'axios';
+import axiosClient from '@/constants/axiosClient';
+import { API } from '@/constants/api';
+import { TypeShowTime } from './Create.Modal.ShowTime';
+
 
 interface Props {
     modalUpdateShowTime: boolean;
     setModalUpdateShowTime: (value: boolean) => void;
-    cinemaName: string;
+    cinemaSelected: Cinema;
 
     date: string;
 
@@ -27,22 +34,23 @@ interface Props {
     setListShowTime: (value: ShowTimes[]) => void;
 
     indexArray: number; // để lấy ra thứ tự của rạp chiếu phim
+    idFilm: string;
 }
 
 const UpdateTimeModal = ({
     modalUpdateShowTime,
     setModalUpdateShowTime,
-    cinemaName,
+    cinemaSelected,
     showtimeSelected,
     setShowTimeSelected,
     listShowTime,
     setListShowTime,
-    indexArray,
     date,
+    idFilm
 }: Props) => {
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [tempTime, setTempTime] = useState<Date>(new Date());
-
+    const [type, setType] = useState<TypeShowTime>(TypeShowTime.D2);
 
     useEffect(() => {
         setTempTime(new Date(new Date(showtimeSelected.time).getTime() - 7 * 60 * 60 * 1000)); // Chuyển đổi thời gian từ UTC+7 sang UTC+0
@@ -53,41 +61,54 @@ const UpdateTimeModal = ({
         setModalUpdateShowTime(false);
     };
 
-    const handleUpdate = () => {
-        const newTime = new Date(Date.UTC(
-                new Date(showtimeSelected.time).getFullYear(),
-                new Date(showtimeSelected.time).getMonth(),
-                new Date(showtimeSelected.time).getDate(),
-                tempTime.getHours(),
-                tempTime.getMinutes()
-            ));
+    const handleUpdate = async () => {
+        try {
+            const newTime = new Date(showtimeSelected.time);
+            newTime.setHours(tempTime.getHours());
+            newTime.setMinutes(tempTime.getMinutes());
+            const response = await axiosClient.patch(`${API.updateShowtime}/${showtimeSelected.id}`, JSON.stringify({
+                cinemaId: cinemaSelected.id,
+                filmId: idFilm,
+                time: newTime.toISOString(),
+                type: type
+            }))
+            const data = response.data;
+            console.log("Update showtime response:", data);
 
-        const updatedShowTime = {
-            id: showtimeSelected.id,
-            hour: newTime.getHours(),
-            minute: newTime.getMinutes(),
-            time: newTime.toISOString(),
-        };
-        // console.log("updatedShowTime", updatedShowTime);
+            const updatedShowTime = {
+                id: showtimeSelected.id,
+                hour: newTime.getHours(),
+                minute: newTime.getMinutes(),
+                time: newTime.toISOString(),
+                type: type,
+            };
+            // console.log("updatedShowTime", updatedShowTime);
 
-        const arrayTimeCinemaDate: ShowTime[] = listShowTime[indexArray][cinemaName];
-        const newArrayTimeCinemaDate = arrayTimeCinemaDate.map(item =>
-            item.id === updatedShowTime.id ? updatedShowTime : item
-        );
-        const newListShowTime = listShowTime.map((item, index) => {
-            if (index === indexArray) {
-                return {
-                    ...item,
-                    [cinemaName]: newArrayTimeCinemaDate, // <-- SAI
-                    // Sửa thành:
-                    [cinemaName]: newArrayTimeCinemaDate,
-                };
-            }
-            return item;
-        });
+            // không nên dùng id mà nên tim lấy tên
+            const arrayTimeCinemaDate: ShowTime[] = listShowTime.find(item => Object.keys(item)[0] === cinemaSelected.name)?.[cinemaSelected.name] ?? [];
+            const newArrayTimeCinemaDate = arrayTimeCinemaDate.map(item =>
+                item.id === updatedShowTime.id ? updatedShowTime : item
+            );
+            const newListShowTime = listShowTime.map((item, index) => {
+                if (Object.keys(item)[0] === cinemaSelected.name) {
+                    return {
+                        ...item,
+                        [cinemaSelected.name]: newArrayTimeCinemaDate, // <-- SAI
+                        // Sửa thành:
+                        [cinemaSelected.name]: newArrayTimeCinemaDate,
+                    };
+                }
+                return item;
+            });
 
-        setListShowTime(newListShowTime);
-        setShowTimeSelected(updatedShowTime);
+            setListShowTime(newListShowTime);
+            setShowTimeSelected(updatedShowTime);
+        } catch (error) {
+            console.error('Error updating show time:', error);
+            Alert.alert('Lỗi cập nhật',);
+        }
+
+
         handleConfirm();
     }
 
@@ -103,7 +124,7 @@ const UpdateTimeModal = ({
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>
-                            🛠 Cập nhật thời gian cho rạp {cinemaName} ngày {date}
+                            🛠 Cập nhật thời gian cho rạp {cinemaSelected.name} ngày {date}
                         </Text>
                         <Pressable onPress={() => setModalUpdateShowTime(false)}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
