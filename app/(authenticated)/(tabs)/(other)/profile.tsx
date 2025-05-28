@@ -1,6 +1,6 @@
 // SettingScreen.tsx
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
@@ -9,7 +9,19 @@ import { useUser } from '@/Components/Context/UserProvider';
 import { useAuthContext } from '@/Components/Context/AuthProvider';
 import axiosClient from '@/constants/axiosClient';
 import { API } from '@/constants/api';
-import { imagesUrl } from '@/constants/image';
+import * as FileSystem from 'expo-file-system';
+
+function convertLocalhost(url: string) {
+  if (!url) return '';
+
+  // Kiểm tra nếu URL bắt đầu bằng http://localhost
+  const localhostPrefix = 'http://localhost';
+  if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+    return API.hostImage + url.substring(localhostPrefix.length);
+  }
+
+  return url;
+}
 
 export default function ProfileScreen() {
 
@@ -17,7 +29,7 @@ export default function ProfileScreen() {
 
   const { logout } = useAuthContext();
 
-  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || imagesUrl.default);
+  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl);
 
   const pickImage = async () => {
 
@@ -38,46 +50,58 @@ export default function ProfileScreen() {
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
+
       setImageUri(uri);
-      updateProfilePicture();
+      updateProfilePicture(); // Gọi hàm cập nhật ảnh đại diện sau khi chọn ảnh mới
 
     }
   }
 
   const updateProfilePicture = async () => {
     try {
+      // Chỉ kiểm tra file local, không kiểm tra URL
+      if (imageUri.startsWith('file://')) {
+        const fileInfo = await FileSystem.getInfoAsync(imageUri);
+        if (!fileInfo.exists) {
+          Alert.alert("File không tồn tại!");
+          return;
+        }
+      }
+
+      const fileName = imageUri.split('/').pop() || 'photo.jpg';
+      const fileType = fileName.split('.').pop();
+
       const formData = new FormData();
       formData.append('image', {
         uri: imageUri,
-        name: 'profile.jpg',
-        type: 'image/jpeg',
+        name: fileName,
+        type: `image/${fileType}`,
       } as any);
 
       const response = await axiosClient.patch(API.changeAvatar, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      })
+      });
 
-      const newUrl = response.data.url; // ← URL ảnh public sau khi upload xong
-
-      // setImageUri(newUrl); // ✅ cập nhật ảnh mới để hiển thị ngay
+      const newUrl = convertLocalhost(response.data.url);
 
       setUser(prevUser => ({
         ...prevUser,
-        profilePictureUrl: newUrl // ✅ dùng ảnh đã upload lên server
+        profilePictureUrl: newUrl
       }));
+
+      setImageUri(newUrl);
     }
     catch (error) {
       console.error("Error updating profile picture:", error);
     }
   }
-  // Để tạm đây chưa có nút bấm đổi
-  useEffect(() => {
-    if (user.profilePictureUrl) {
-      setImageUri(user.profilePictureUrl);
-    }
-  }, [user.profilePictureUrl]);
+  // useEffect(() => {
+  //   if (user.profilePictureUrl) {
+  //     setImageUri(user.profilePictureUrl);
+  //   }
+  // }, [user.profilePictureUrl]);
 
   const handleLogout = async () => {
     try {

@@ -26,11 +26,11 @@ const UpdateModalFood = ({
 
     // const [image, setImage] = useState<string>(food?.image || imagesUrl.img5);
     const [title, setTitle] = useState<string>(food?.name || '');
-    const [price, setPrice] = useState<string>(food?.price.toString() || '');
+    const [price, setPrice] = useState<string>(food?.price || '');
 
     useEffect(() => {
         setTitle(food?.name || '');
-        setPrice(food?.price.toString() || '');
+        setPrice(food?.price || '');
     }, [food]);
 
 

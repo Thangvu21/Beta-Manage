@@ -8,6 +8,18 @@ import * as FileSystem from 'expo-file-system';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 
+function convertLocalhost(url: string) {
+    if (!url) return '';
+
+    // Kiểm tra nếu URL bắt đầu bằng http://localhost
+    const localhostPrefix = 'http://localhost';
+    if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+        return API.hostImage + url.substring(localhostPrefix.length);
+    }
+
+    return url;
+}
+
 interface Props {
     modalCreateVisible: boolean,
     setModalCreateVisible: (visible: boolean) => void,
@@ -62,7 +74,7 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            const imageResponseUrl = response.data.imageUrl;
+            const imageResponseUrl = convertLocalhost(response.data.imageUrl);
 
             if (response.status === 200 || response.status === 201) {
                 Alert.alert("Success", "Tạo món ăn thành công");
@@ -72,7 +84,7 @@ const CreateModalFood = ({ modalCreateVisible, setModalCreateVisible, foodList, 
                         id: response.data.id, // lấy id trực tiếp từ response
                         name: title,
                         price: price,
-                        image: imageResponseUrl,
+                        imageUrl: imageResponseUrl,
                     }
                 ]);
                 // Reset form và đóng modal chỉ khi thành công

@@ -43,13 +43,13 @@ export default function Dashboard() {
             <Text style={styles.cardText}>Đơn hàng</Text>
           </TouchableOpacity> */}
 
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={[styles.card, { backgroundColor: '#dcfce7' }]}
-            onPress={() => router.push('/products')}
+            onPress={() => router.push('/revenue')}
           >
             <Ionicons name="analytics-outline" size={32} color="#1f2937" />
             <Text style={styles.cardText}>Phân tích sản phẩm</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

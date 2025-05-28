@@ -1,175 +1,134 @@
-import React from 'react';
-import { View, Text, Dimensions, ScrollView, SafeAreaView } from 'react-native';
-import { LineChart, PieChart, BarChart } from 'react-native-chart-kit';
+import { API } from '@/constants/api';
+import axiosClient from '@/constants/axiosClient';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    Dimensions,
+    ScrollView,
+    SafeAreaView,
+    TouchableOpacity,
+    ScrollView as ScrollViewHorizontal
+} from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width;
 
 const Statistics = () => {
-
-    const revenueData = {
-        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-        datasets: [
-            {
-                data: [500, 700, 800, 650, 1000, 1200],
-                strokeWidth: 2,
-            },
-        ],
-    };
-
-    const pieData = [
-        { name: 'Đồ uống', population: 5000, color: '#F00', legendFontColor: '#7F7F7F', legendFontSize: 14 },
-        { name: 'Đồ ăn vặt', population: 2000, color: '#0F0', legendFontColor: '#7F7F7F', legendFontSize: 14 },
-        { name: 'Khác', population: 3000, color: '#00F', legendFontColor: '#7F7F7F', legendFontSize: 14 },
-    ];
-
     const movieSales = [
-        { title: 'Avatar 2', ticketsSold: 320 },
-        { title: 'Endgame', ticketsSold: 280 },
-        { title: 'Fast X', ticketsSold: 220 },
-        { title: 'Barbie', ticketsSold: 150 },
-        { title: 'Oppenheimer', ticketsSold: 180 },
-        { title: 'Mario', ticketsSold: 100 },
+        { title: 'Avatar 2', price: 320 },
+        { title: 'Endgame', price: 280 },
+        { title: 'Fast X', price: 220 },
+        { title: 'Barbie', price: 150 },
+        { title: 'Oppenheimer', price: 180 },
+        { title: 'Mario', price: 100 },
+        { title: 'Avengers', price: 350 },
+        { title: 'Dune 2', price: 270 },
     ];
 
-    const labels = movieSales.map(item => item.title);
-    const dataValues = movieSales.map(item => item.ticketsSold);
+    const labels = movieSales.map((item) => item.title);
+    const dataValues = movieSales.map((item) => item.price);
 
     const chartData = {
         labels,
         datasets: [{ data: dataValues }],
     };
 
-    const data = {
-        labels: ["January", "February", "March", "April", "May", "June"],
-        datasets: [
-            {
-                data: [20, 45, 28, 80, 99, 43]
+    const years = ['2020', '2021', '2022', '2023', '2024', '2025'];
+    const months = [
+        'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+    ];
+
+    const [selectedYear, setSelectedYear] = useState<string>('2025');
+    const [selectedMonth, setSelectedMonth] = useState<string>('Tháng 1');
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosClient.get(API.getAnalystRevenue, {
+                    params: {
+                        year: selectedYear, // Thay đổi năm nếu cần
+                    },
+                })
+            } catch (error) {
+                console.error('Error fetching revenue data:', error);
+
             }
-        ]
-    };
+        }
+    }, [selectedYear]);
 
     return (
-        <SafeAreaView className='flex-1 bg-white'>
-            <ScrollView className="flex-1 bg-white p-4" contentContainerStyle={{ paddingBottom: 90 }} >
+        <SafeAreaView className="flex-1 bg-white">
+            <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 90 }}>
                 <Text className="text-2xl font-bold mb-4">📊 Báo cáo doanh thu</Text>
 
+                {/* Horizontal Scrollable Chart */}
+                <ScrollViewHorizontal horizontal showsHorizontalScrollIndicator={false}>
+                    <BarChart
+                        data={chartData}
+                        width={700} // Each bar ~60px
+                        height={280}
+                        fromZero
 
-                <BarChart
-                    
-                    width={Dimensions.get('window').width - 32} // padding horizontal
-                    height={280}
-                    data={data}
-                    fromZero
-                    
-                    yAxisSuffix=" triệu"
-                    yAxisLabel="$"
-                    chartConfig={{
-                        backgroundColor: '#1cc910',
-                        backgroundGradientFrom: '#eff3ff',
-                        backgroundGradientTo: '#efefef',
-                        decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        style: {
+                        yAxisSuffix=" vnd"
+                        yAxisLabel=''
+                        chartConfig={{
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                            labelColor: () => '#333',
+                            barPercentage: 0.6,
+                            style: {
+                                borderRadius: 16,
+                            },
+                        }}
+                        style={{
+                            marginVertical: 8,
                             borderRadius: 16,
-                        },
-                        propsForDots: {
-                            r: '6',
-                            strokeWidth: '2',
-                            stroke: '#ffa726',
-                        },
-                    }}
-                    
-                    verticalLabelRotation={30}
-                />
+                        }}
+                        verticalLabelRotation={20}
+                    />
+                </ScrollViewHorizontal>
 
-                {/* Line Chart */}
-                <LineChart
-                    data={revenueData}
-                    width={screenWidth - 32}
-                    height={220}
-                    chartConfig={{
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        color: () => '#FF5722',
-                        labelColor: () => '#333',
-                        decimalPlaces: 0,
-                    }}
-                    bezier
-                    style={{ borderRadius: 8, marginBottom: 16 }}
-                />
+                {/* Bộ lọc thời gian */}
+                <View className="mt-6 space-y-4">
+                    <View className="bg-gray-100 p-3 rounded-lg">
+                        <Text className="text-base font-medium text-gray-600 mb-1">Chọn năm</Text>
+                        <Picker
+                            selectedValue={selectedYear}
+                            onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                            mode="dropdown"
+                        >
+                            {years.map((year, index) => (
+                                <Picker.Item key={index} label={year} value={year} />
+                            ))}
+                        </Picker>
+                    </View>
 
-                {/* Summary Box */}
-                <View className="flex-row justify-between bg-gray-100 p-4 rounded-lg mb-4">
-                    <View>
-                        <Text className="text-gray-500">Tổng doanh thu</Text>
-                        <Text className="text-xl font-bold text-green-700">15.500.000đ</Text>
+                    <View className="bg-gray-100 p-3 rounded-lg">
+                        <Text className="text-base font-medium text-gray-600 mb-1">Chọn tháng</Text>
+                        <Picker
+                            selectedValue={selectedMonth}
+                            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                            mode="dropdown"
+                        >
+                            {months.map((month, index) => (
+                                <Picker.Item key={index} label={month} value={month} />
+                            ))}
+                        </Picker>
                     </View>
-                    <View>
-                        <Text className="text-gray-500">Tổng đơn hàng</Text>
-                        <Text className="text-xl font-bold text-blue-700">320</Text>
-                    </View>
+
+                    <TouchableOpacity className="bg-blue-600 p-3 rounded-lg items-center">
+                        <Text className="text-white font-semibold text-base">🔍 Tìm theo thời gian</Text>
+                    </TouchableOpacity>
                 </View>
-
-                {/* Pie Chart */}
-                <PieChart
-                    data={pieData}
-                    width={screenWidth - 32}
-                    height={220}
-                    accessor="population"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    absolute
-                    chartConfig={{
-                        color: () => '#000',
-                    }}
-                />
-
-                {/* Top Products */}
-                <Text className="text-lg font-semibold mt-6 mb-2">🔥 Top sản phẩm</Text>
-                <View className="space-y-2">
-                    <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
-                        <Text>🥤 Trà đào</Text>
-                        <Text className="text-green-600 font-semibold">2.500.000đ</Text>
-                    </View>
-                    <View className="flex-row justify-between items-center bg-gray-100 p-3 rounded-md">
-                        <Text>🍟 Khoai tây chiên</Text>
-                        <Text className="text-green-600 font-semibold">1.800.000đ</Text>
-                    </View>
-                </View>
-
-                <BarChart
-                    data={chartData}
-                    width={Dimensions.get('window').width - 32} // padding horizontal
-                    height={280}
-                    fromZero
-                    yAxisSuffix=" vé"
-                    chartConfig={{
-                        backgroundColor: '#1cc910',
-                        backgroundGradientFrom: '#eff3ff',
-                        backgroundGradientTo: '#efefef',
-                        decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        style: {
-                            borderRadius: 16,
-                        },
-                        propsForDots: {
-                            r: '6',
-                            strokeWidth: '2',
-                            stroke: '#ffa726',
-                        },
-                    }}
-                    xAxisLabel=''
-                    yAxisLabel=''
-                    style={{
-                        marginVertical: 8,
-                        borderRadius: 16,
-                    }}
-                />
             </ScrollView>
         </SafeAreaView>
-    )
-}
+    );
+};
 
 export default Statistics;

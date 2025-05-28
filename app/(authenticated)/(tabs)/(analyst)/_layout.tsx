@@ -33,6 +33,16 @@ const Layout = () => {
                 ),
                 headerTintColor: '#fff',
             }} />
+            <Stack.Screen name="revenue" options={{
+                title: "Revenue",
+                headerBackground: () => (
+                    <LinearGradient
+                        colors={["#1e6fa8", "#70c6e5"]}
+                        style={{ flex: 1 }}
+                    />
+                ),
+                headerTintColor: '#fff',
+            }} />
         </Stack>
 
     )
