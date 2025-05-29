@@ -10,6 +10,7 @@ import { useAuthContext } from '@/Components/Context/AuthProvider';
 import axiosClient from '@/constants/axiosClient';
 import { API } from '@/constants/api';
 import * as FileSystem from 'expo-file-system';
+import { imagesUrl } from '@/constants/image';
 
 function convertLocalhost(url: string) {
   if (!url) return '';
@@ -29,7 +30,7 @@ export default function ProfileScreen() {
 
   const { logout } = useAuthContext();
 
-  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl);
+  const [imageUri, setImageUri] = useState<string>(user.profilePictureUrl || imagesUrl.default);
 
   const pickImage = async () => {
 
@@ -49,31 +50,32 @@ export default function ProfileScreen() {
     )
 
     if (!result.canceled) {
+      // console.log("Image selected:", result.assets[0]);
       const uri = result.assets[0].uri;
-
+      // console.log("Selected image URI:", uri);
       setImageUri(uri);
-      updateProfilePicture(); // Gọi hàm cập nhật ảnh đại diện sau khi chọn ảnh mới
+      updateProfilePicture(uri); // Gọi hàm cập nhật ảnh đại diện sau khi chọn ảnh mới
 
     }
   }
 
-  const updateProfilePicture = async () => {
+  const updateProfilePicture = async (uri: string) => {
     try {
       // Chỉ kiểm tra file local, không kiểm tra URL
-      if (imageUri.startsWith('file://')) {
-        const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      if (uri && uri.startsWith('file://')) {
+        const fileInfo = await FileSystem.getInfoAsync(uri);
         if (!fileInfo.exists) {
           Alert.alert("File không tồn tại!");
           return;
         }
       }
 
-      const fileName = imageUri.split('/').pop() || 'photo.jpg';
+      const fileName = uri.split('/').pop() || 'photo.jpg';
       const fileType = fileName.split('.').pop();
 
       const formData = new FormData();
       formData.append('image', {
-        uri: imageUri,
+        uri: uri,
         name: fileName,
         type: `image/${fileType}`,
       } as any);
@@ -90,8 +92,6 @@ export default function ProfileScreen() {
         ...prevUser,
         profilePictureUrl: newUrl
       }));
-
-      setImageUri(newUrl);
     }
     catch (error) {
       console.error("Error updating profile picture:", error);

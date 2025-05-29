@@ -163,25 +163,32 @@ const chatDetail = () => {
     }, [id]);
 
     // lắng nghe thằng khác nó gửi tin nhắn đến
+    const [socketReady, setSocketReady] = useState(false);
+
     useEffect(() => {
         if (socketRef.current) {
-            socketRef.current.on('newMessage', (message: Message) => {
-                console.log('New message received:', message);
-                // Kiểm tra nếu messageRef.current đã có message này rồi thì không thêm nữa
-                if (messageRef.current.some(msg => msg.id === message.id)) return;
-                // Thêm message mới vào mảng messageRef.current
-                messageRef.current.push(message);
-                // Cập nhật state messages
-                setMessages([...messageRef.current]);
-            });
-        }
-        // Cleanup khi component unmount
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.off('newMessage');
-            }
+            setSocketReady(true);
         }
     }, [socketRef.current]);
+
+    useEffect(() => {
+        if (!socketReady || !socketRef.current) return;
+
+        const socket = socketRef.current;
+
+        const handleNewMessage = (message: Message) => {
+            console.log('New message received:', message);
+            if (messageRef.current.some(msg => msg.id === message.id)) return;
+            messageRef.current.push(message);
+            setMessages([...messageRef.current]);
+        };
+
+        socket.on('newMessage', handleNewMessage);
+
+        return () => {
+            socket.off('newMessage', handleNewMessage);
+        };
+    }, [socketReady]);
 
     return (
         <>

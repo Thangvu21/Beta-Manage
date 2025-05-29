@@ -2,7 +2,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Button, Linking, Alert } from "react-native";
 import { FONT_FAMILY } from "@/constants/font";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
@@ -262,7 +262,7 @@ const Details = () => {
 
                         return (
                             <TouchableOpacity
-                                key={index}
+                                key={item.toISOString()}
                                 onPress={() => {
                                     chooseDate(item);
                                     chooseIndex(index);
@@ -313,7 +313,7 @@ const Details = () => {
                     const showTimes =
                         listShowTime.find(item => Object.keys(item)[0] === cinema.name)?.[cinema.name] ?? [];
                     return (
-                        <>
+                        <React.Fragment key={cinema.id}>
                             <View
                                 key={cinema.id}
                                 style={{
@@ -399,7 +399,7 @@ const Details = () => {
                                     }
                                 </ScrollView>
                             </View>
-                        </>
+                        </React.Fragment>
                     )
                 })
 

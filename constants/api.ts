@@ -58,7 +58,7 @@ export const API = {
 
     // analyst 
     // query: month, year
-    getAnalystRevenue: `${API_URL}/booking/admin/movie/price`,
+    getAnalystRevenue: `${API_URL}/booking/admin/film/price`,
     // query: year
     getAnalystFilm: `${API_URL}/booking/admin/month/price`,
 };
