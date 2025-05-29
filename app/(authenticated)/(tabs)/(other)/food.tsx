@@ -12,6 +12,18 @@ import UpdateImageModalFood from "@/Components/Modals/Update.Modal.Image.Food";
 import SelectActionItemModal from "@/Components/Modals/Select.Action.Item.Modal";
 import { colors } from "@/constants/color";
 
+function convertLocalhost(url: string) {
+    if (!url) return '';
+
+    // Kiểm tra nếu URL bắt đầu bằng http://localhost
+    const localhostPrefix = 'http://localhost';
+    if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+        return API.hostImage + url.substring(localhostPrefix.length);
+    }
+
+    return url;
+}
+
 const Food = () => {
 
     const [foodList, setFoodList] = useState<FoodItem[]>([]);
@@ -54,15 +66,22 @@ const Food = () => {
         setModalDeleteVisible(true);
     }
 
+
+
     useEffect(() => {
         const fetchFoodList = async () => {
             try {
                 const response = await axiosClient.get(API.getAllFood);
 
-                // console.log("response", response.data);
+                console.log("response", response.data[1].imageUrl);
                 if (response.status === 200) {
                     setFoodList(response.data);
                 }
+                const foodUpdateUrl = response.data.map((item: FoodItem) => ({
+                    ...item,
+                    imageUrl: convertLocalhost(item.imageUrl) // Chuyển đổi localhost nếu cần
+                }));
+                setFoodList(foodUpdateUrl);
             } catch (error) {
                 Alert.alert("Error", "Không thể lấy danh sách món ăn");
             }
@@ -82,33 +101,35 @@ const Food = () => {
 
 
                 {/* List món ăn */}
-                <FlatList
-                    data={foodList}
-                    numColumns={2}
-                    keyExtractor={(item) => item.id.toString()}
-                    columnWrapperStyle={{ justifyContent: 'space-between' }}
-                    renderItem={({ item }) => (
-                        <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
-                            <Image source={{ uri: item.image }} className="w-full h-28 rounded-lg mb-2" resizeMode="cover" />
-                            <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
-                            <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
-                            <View className="flex-row justify-between">
+                {foodList && (
+                    <FlatList
+                        data={foodList}
+                        numColumns={2}
+                        keyExtractor={(item) => item.id}
+                        columnWrapperStyle={{ justifyContent: 'space-between' }}
+                        renderItem={({ item }) => (
+                            <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
+                                <Image source={{ uri: item.imageUrl }} className="w-28 h-28 rounded-lg mb-2" resizeMode="cover" />
+                                <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
+                                <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
+                                <View className="flex-row justify-between">
 
-                                <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
-                                    handleUpdateFood(item);
-                                }}>
-                                    <Text style={{ padding: 4, }}>✏️</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
+                                        handleUpdateFood(item);
+                                    }}>
+                                        <Text style={{ padding: 4, }}>✏️</Text>
+                                    </TouchableOpacity>
 
-                                <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
-                                    handleDeleteFood(item);
-                                }}>
-                                    <Text style={{ padding: 4, }}>🗑️</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity style={{ borderColor: colors.primary, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignContent: 'center' }} onPress={() => {
+                                        handleDeleteFood(item);
+                                    }}>
+                                        <Text style={{ padding: 4, }}>🗑️</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
-                    )}
-                />
+                        )}
+                    />
+                )}
 
                 {foodList && <CreateModalFood
                     setModalCreateVisible={setModalCreateVisible}

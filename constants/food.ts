@@ -6,7 +6,7 @@ export interface FoodItem {
     id: string;
     name: string;
     price: string;
-    image: string;
+    imageUrl: string;
     
 }
 
@@ -15,13 +15,13 @@ export const foodData: FoodItem[] = [
         id: "1",
         name: "Mỳ",
         price: "25.000đ",
-        image: imagesUrl.img1
+        imageUrl: imagesUrl.img1
     },
     {
         id: '2',
         name: "Coffee",
         price: "15.000đ",
-        image: imagesUrl.img2
+        imageUrl: imagesUrl.img2
     },
  
 ];

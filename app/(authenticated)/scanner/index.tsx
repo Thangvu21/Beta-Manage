@@ -7,10 +7,12 @@ import * as ImagePicker from 'expo-image-picker';
 // import { BarCodeScanner} from "expo-barcode-scanner";
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
+import { useRouter } from "expo-router";
 
 export default function HomeScanner() {
 
     const qrLock = useRef(false);
+    const router = useRouter();
     const appState = useRef(AppState.currentState);
     const [imageUri, setImageUri] = useState<string | null>(null);
 
@@ -60,14 +62,11 @@ export default function HomeScanner() {
     
             try {
                 console.log("QR Data:", data);
-                const response = await axiosClient.get(`${API.scanBooking}`, {
-                    params: {
-                        code: data
-                    }
+                router.push({
+                    pathname: "/(authenticated)/scanner/afterScanner",
+                    params: { data: data }
                 })
-
-                const result = response.data;
-                console.log("Result:", result);
+                // console.log("Result:", result);
             } catch (error) {
                 console.error("Error:", error);
                 Alert.alert("Lỗi", "Không thể xử lý mã QR.");
@@ -103,13 +102,13 @@ export default function HomeScanner() {
                     onBarcodeScanned={handleScanCode}
                     barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                 />
-                <View style={styles.imageStorage}>
+                {/* <View style={styles.imageStorage}>
                     <TouchableOpacity style={styles.buttonStorage} onPress={pickerImage}>
                         <View>
                             <Feather name="image" size={28} color='#fff' />
                         </View>
                     </TouchableOpacity>
-                </View>
+                </View> */}
                 <Overlay />
 
             </View>

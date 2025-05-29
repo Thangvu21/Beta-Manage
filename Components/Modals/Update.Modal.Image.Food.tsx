@@ -8,6 +8,17 @@ import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import * as FileSystem from 'expo-file-system';
 
+function convertLocalhost(url: string) {
+    if (!url) return '';
+
+    // Kiểm tra nếu URL bắt đầu bằng http://localhost
+    const localhostPrefix = 'http://localhost';
+    if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+        return API.hostImage + url.substring(localhostPrefix.length);
+    }
+
+    return url;
+}
 
 interface props {
     modalUpdateVisible: boolean,
@@ -25,10 +36,10 @@ const UpdateImageModalFood = ({
     setFoodList
 }: props) => {
 
-    const [image, setImage] = useState<string>(food?.image || imagesUrl.default);
+    const [image, setImage] = useState<string>(food.imageUrl || imagesUrl.default);
 
     useEffect(() => {
-        setImage(food.image || imagesUrl.default);
+        setImage(food.imageUrl || imagesUrl.default);
     }, [food.id]);
 
     const handleUpdateImageItem = async () => {
@@ -58,7 +69,7 @@ const UpdateImageModalFood = ({
                 },
             });
 
-            const imageResponseUrl = response.data.imageUrl;
+            const imageResponseUrl = convertLocalhost(response.data.imageUrl);
             Alert.alert("Success", "Cập nhật ảnh món ăn thành công");
             setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: imageResponseUrl } : item));
             setModalUpdateVisible(false);

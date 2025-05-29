@@ -2,6 +2,11 @@ import Constants from 'expo-constants';
 ;export const API_URL = 'http://10.0.2.2'
 
 export const API = {
+
+    hostImage: `${API_URL}`,
+    // socket
+    host: `${API_URL}:3012`,
+
     login: `${API_URL}/auth/admin/login`,
     refreshToken: `${API_URL}/auth/admin/refresh`,
 
@@ -42,13 +47,18 @@ export const API = {
     updateShowtime: `${API_URL}/showtime/admin/`,
     deleteShowtime: `${API_URL}/showtime/admin/`,
 
-    // scan boking
-    scanBooking: `${API_URL}/booking/scan`,
+    // scan booking
+    scanBooking: `${API_URL}/booking/admin`,
     
     // conversation
     getAllConver: `${API_URL}/chat/conversation/admin`,
-    //message
+    // message
     getAllMessage: `${API_URL}/chat/message/admin`,
     sendMessage: `${API_URL}/chat/message/admin`,
 
+    // analyst 
+    // query: month, year
+    getAnalystRevenue: `${API_URL}/booking/admin/film/price`,
+    // query: year
+    getAnalystFilm: `${API_URL}/booking/admin/month/price`,
 };

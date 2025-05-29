@@ -6,18 +6,76 @@ import { imagesUrl } from "@/constants/image";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, FlatList, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-
+import socketIOClient from "socket.io-client";
 
 const chatDetail = () => {
 
     const { id, userId, userName, userAvatar } = useLocalSearchParams();
     const navigation = useNavigation();
+    const socketRef = useRef<any>(null);
 
     const router = useRouter();
-    const [messages, setMessages] = useState<Message[]>(mockMessages);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
+    // để lưu thông tin khi socket nhận được không rerender lại nhiều lần
+    const messageRef = useRef<Message[]>([]);
+
+    // để đặt thanh scoll về cuối khi lần đầu tiên hay chỉ kéo xuống 1 tí
+    const [isFirstRender, setIsFirstRender] = useState(true);
+
+    // scroll 
+    const flatListRef = useRef<FlatList>(null);
+    // tránh fetch nhiều lần khi kéo lên
+    const [loadingMore, setLoadingMore] = useState(false);
+
+
+    const handleScroll = ({ nativeEvent }: any) => {
+        if (nativeEvent.contentOffset.y > 50) return;
+        if (!loadingMore) {
+            setLoadingMore(true);
+            fetchMessages(messageRef.current.length).then(() => {
+                setLoadingMore(false);
+            });
+        }
+    };
+
+    const setScrollToBottom = () => {
+        if (!flatListRef.current || messageRef.current.length === 0) return;
+
+        if (isFirstRender) {
+            flatListRef.current.scrollToEnd({ animated: true });
+            setIsFirstRender(false);
+        } else {
+            const targetIndex = Math.max(0, messageRef.current.length - 1 - 200);
+            flatListRef.current.scrollToIndex({
+                index: targetIndex,
+                animated: true,
+                viewPosition: 0.5,
+            });
+        }
+    };
+
+    const fetchMessages = async (offset = 0) => {
+
+        try {
+            // Simulate fetching messages from an API
+            // Replace with actual API call if needed
+            const response = await axiosClient.get(`${API.getAllMessage}/${id}`, {
+                params: {
+                    offset
+                }
+            });
+            const messagesFetch = response.data.reverse();
+            // console.log('Fetched messages:', response.data);
+            messageRef.current = [...messagesFetch, ...messageRef.current]
+
+            setMessages([...messageRef.current]);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    }
 
     const handleSend = async () => {
         try {
@@ -36,7 +94,8 @@ const chatDetail = () => {
                 sender: 'admin',
                 text: newMessage
             };
-            setMessages([...messages, newMsg]);
+            messageRef.current.push(newMsg);
+            setMessages([...messageRef.current]);
             setNewMessage('');
         } catch (error) {
             console.error('Error sending message:', error);
@@ -44,20 +103,46 @@ const chatDetail = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchMessages = async () => {
+    const connectSocket = async () => {
+        console.log("connectSocket called");
+        try {
+            // id là conversationId
+            const channelId = id;
 
-            try {
-                // Simulate fetching messages from an API
-                // Replace with actual API call if needed
-                const response = await axiosClient.get(`${API.getAllMessage}/${id}`);
-                console.log('Fetched messages:', response.data);
-                setMessages(response.data);
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
+            socketRef.current = socketIOClient(API.host, {
+                query: { channelId },
+            });
+
+
+            socketRef.current.on("connect", () => {
+                socketRef.current.emit("message", "Hello from react");
+            });
+
+            // Xử lý sự kiện ngắt kết nối
+            socketRef.current.on("disconnect", () => {
+                console.log("Disconnected from server");
+            });
+
+            // Xử lý sự kiện kết nối lại thất bại
+            socketRef.current.on("reconnect_failed", () => {
+                console.log("Failed to reconnect to server");
+            });
+
         }
+        catch (error) {
+            console.error('Error connecting to chat service:', error);
+        }
+    }
 
+    // lắng nghe sự kiện thi fetch thêm tin nhắn hoặc tin nhắn lần đầu
+    useEffect(() => {
+        // Đặt scroll về cuối khi lần đầu tiên render
+        setScrollToBottom();
+    }, [messageRef.current.length]);
+
+    // hiển thị lần đầu
+    useEffect(() => {
+        connectSocket();
         fetchMessages();
         navigation.setOptions({
             header: () => {
@@ -69,8 +154,41 @@ const chatDetail = () => {
                 )
             }
         });
-
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+        }
     }, [id]);
+
+    // lắng nghe thằng khác nó gửi tin nhắn đến
+    const [socketReady, setSocketReady] = useState(false);
+
+    useEffect(() => {
+        if (socketRef.current) {
+            setSocketReady(true);
+        }
+    }, [socketRef.current]);
+
+    useEffect(() => {
+        if (!socketReady || !socketRef.current) return;
+
+        const socket = socketRef.current;
+
+        const handleNewMessage = (message: Message) => {
+            console.log('New message received:', message);
+            if (messageRef.current.some(msg => msg.id === message.id)) return;
+            messageRef.current.push(message);
+            setMessages([...messageRef.current]);
+        };
+
+        socket.on('newMessage', handleNewMessage);
+
+        return () => {
+            socket.off('newMessage', handleNewMessage);
+        };
+    }, [socketReady]);
 
     return (
         <>
@@ -84,6 +202,9 @@ const chatDetail = () => {
 
                     {/* Messages */}
                     <FlatList
+                        ref={flatListRef}
+                        onScroll={handleScroll}
+                        onContentSizeChange={setScrollToBottom}
                         data={messages}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.chatContainer}
