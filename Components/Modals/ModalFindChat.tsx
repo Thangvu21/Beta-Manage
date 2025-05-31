@@ -5,8 +5,8 @@ import { FlatList, Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View 
 interface props {
     modalVisible: boolean;
     setModalVisible: (visible: boolean) => void;
-    users: { id: string; name: string }[];
-    onSelectUser: (user: { id: string; name: string }) => void;
+    users: { idConver: string; name: string; avatar: string }[];
+    onSelectUser: (user: { idConver: string; name: string; avatar: string }) => void;
 }
 
 export default function ModalFindChat({
@@ -21,9 +21,10 @@ export default function ModalFindChat({
         user.name.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    const handleSelectUser = (user: { id: string; name: string }) => {
+    const handleSelectUser = (user: { idConver: string; name: string; avatar: string }) => {
         onSelectUser(user);
         setModalVisible(false);
+
     };
 
     return (
@@ -50,9 +51,9 @@ export default function ModalFindChat({
                 {/* Gợi ý tìm kiếm */}
                 <FlatList
                     data={filteredUsers}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.idConver}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => handleSelectUser(item)}>
+                        <TouchableOpacity onPress={() => handleSelectUser({ idConver: item.idConver, name: item.name, avatar: item.avatar })}>
                             <View style={{ padding: 12, borderBottomWidth: 0.5, borderColor: '#ddd' }}>
                                 <Text>{item.name}</Text>
                             </View>

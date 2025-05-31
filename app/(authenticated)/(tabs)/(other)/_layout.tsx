@@ -62,6 +62,7 @@ const Layout = () => {
                     />
                 ),
                 headerTintColor: '#fff',
+                headerBackVisible: true,
             }} />
             <Stack.Screen name="createAccountAdmin" options={{
                 title: "Tạo tài khoản admin",

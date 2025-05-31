@@ -64,7 +64,7 @@ export default function Other() {
                                 setSelectedUser(item.user);
                                 router.push({
                                     pathname: '/message/[id]',
-                                    params: { id: item.id, userId: item.user.id, userName: item.user.name, userAvatar: imagesUrl.default}// userAvatar: item.user.avatar }
+                                    params: { id: item.id, userName: item.user.name, userAvatar: imagesUrl.default}// userAvatar: item.user.avatar }
                                 })
                             }}
                         >
@@ -82,10 +82,13 @@ export default function Other() {
 
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
-                users={sampleConversations.map(conversation => conversation.user)}
+                users={listConver.map(conversation => {return { idConver: conversation.id, name: conversation.user.name, avatar: conversation.user.avatar }})}
                 onSelectUser={(user) => {
                     // Handle user selection
-                    console.log('Selected user:', user);
+                    router.push({
+                        pathname: '/message/[id]',
+                        params: { id: user.idConver, userName: user.name, userAvatar: imagesUrl.default }
+                    })
                     setModalVisible(false);
                 }}
             />

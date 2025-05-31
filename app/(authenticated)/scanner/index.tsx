@@ -14,62 +14,24 @@ export default function HomeScanner() {
     const qrLock = useRef(false);
     const router = useRouter();
     const appState = useRef(AppState.currentState);
-    const [imageUri, setImageUri] = useState<string | null>(null);
-
-    const pickerImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== "granted") {
-            alert("Sorry, we need camera permissions to make this work!");
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync(
-            {
-                mediaTypes: 'images',
-                allowsEditing: true,
-                quality: 1,
-            }
-        )
-
-        if (!result.canceled) {
-            const uri = result.assets[0].uri;
-            setImageUri(uri);
-            // xử lý image đấy luôn
-            // try {
-            //     // Quét mã QR từ ảnh
-            //     const scanResult = await BarCodeScanner.scanFromURLAsync(uri);
-            //     if (scanResult.length > 0) {
-            //         const qrData = scanResult[0].data;
-            //         console.log("QR Data:", qrData);
-    
-            //         // Xử lý dữ liệu quét được
-            //         handleScanCode({ data: qrData });
-            //     } else {
-            //         Alert.alert("Không tìm thấy mã QR trong ảnh.");
-            //     }
-            // } catch (error) {
-            //     console.error("Lỗi khi quét mã QR từ ảnh:", error);
-            //     Alert.alert("Lỗi", "Không thể quét mã QR từ ảnh.");
-            // }
-        }
-
-    }
 
     const handleScanCode = async ({ data }: { data: string }) => {
         if (data && !qrLock.current) {
             qrLock.current = true;
-    
+
             try {
-                console.log("QR Data:", data);
+                const parsedData = JSON.parse(JSON.parse(data));
+
+                console.log("Parsed QR Data:", parsedData);
+
                 router.push({
                     pathname: "/(authenticated)/scanner/afterScanner",
-                    params: { data: data }
+                    params: { bookingId: parsedData.bookingId }
                 })
-                // console.log("Result:", result);
             } catch (error) {
                 console.error("Error:", error);
                 Alert.alert("Lỗi", "Không thể xử lý mã QR.");
+                qrLock.current = false;
             }
         }
     };
@@ -94,7 +56,7 @@ export default function HomeScanner() {
 
     return (
         <>
-            <View style={StyleSheet.absoluteFill}>
+            <View style={[StyleSheet.absoluteFill, ]}>
                 {Platform.OS === "android" ? <StatusBar hidden /> : null}
                 <CameraView
                     style={StyleSheet.absoluteFillObject}
@@ -102,13 +64,6 @@ export default function HomeScanner() {
                     onBarcodeScanned={handleScanCode}
                     barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                 />
-                {/* <View style={styles.imageStorage}>
-                    <TouchableOpacity style={styles.buttonStorage} onPress={pickerImage}>
-                        <View>
-                            <Feather name="image" size={28} color='#fff' />
-                        </View>
-                    </TouchableOpacity>
-                </View> */}
                 <Overlay />
 
             </View>
