@@ -28,7 +28,8 @@ export const imagesUrl = {
   img6: 'https://files.betacorp.vn/media/images/2025/03/27/poster-minecraft-1-111444-270325-61.jpg',
   img7: 'https://files.betacorp.vn/media/images/2025/04/01/400wx633h-131833-010425-94.jpg',
   img8: 'https://files.betacorp.vn/media/images/2025/03/17/poster-ta-thuat-huyet-ngai-2-160232-170325-85.jpg',
-  default: 'https://files.betacorp.vn/media%2fimages%2f2025%2f05%2f18%2fbeta%2D400x633%2D192849%2D180525%2D39.png'
+  default: 'https://files.betacorp.vn/media%2fimages%2f2025%2f05%2f18%2fbeta%2D400x633%2D192849%2D180525%2D39.png',
+  avtAdmin: 'https://i.pinimg.com/736x/c1/30/ba/c130badd89d411bb0f8a3afc27941f85.jpg'
 }
 
 export const images = {

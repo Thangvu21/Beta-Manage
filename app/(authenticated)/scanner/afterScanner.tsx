@@ -7,12 +7,12 @@ import { Text, View } from "react-native";
 
 const AfterScanner = () => {
 
-    const { data } = useLocalSearchParams();
+    const { bookingId } = useLocalSearchParams();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axiosClient.get(`${API.scanBooking}/${data}`)
+                const response = await axiosClient.get(`${API.scanBooking}/${bookingId}`)
                 console.log("Response from AfterScanner:", response.data);
 
             } catch (error) {
@@ -26,6 +26,7 @@ const AfterScanner = () => {
         <View>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text>Quét mã thành công!</Text>
+                <Text>Booking {bookingId}</Text>
             </View>
         </View>
     )

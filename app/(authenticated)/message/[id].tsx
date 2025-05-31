@@ -7,12 +7,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, FlatList, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Image, InteractionManager, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import socketIOClient from "socket.io-client";
 
 const chatDetail = () => {
 
-    const { id, userId, userName, userAvatar } = useLocalSearchParams();
+    const { id, userName, userAvatar } = useLocalSearchParams();
     const navigation = useNavigation();
     const socketRef = useRef<any>(null);
 
@@ -32,27 +32,11 @@ const chatDetail = () => {
 
 
     const handleScroll = ({ nativeEvent }: any) => {
-        if (nativeEvent.contentOffset.y > 50) return;
+        if (nativeEvent.contentOffset.y < 20 || loadingMore) return;
         if (!loadingMore) {
             setLoadingMore(true);
             fetchMessages(messageRef.current.length).then(() => {
                 setLoadingMore(false);
-            });
-        }
-    };
-
-    const setScrollToBottom = () => {
-        if (!flatListRef.current || messageRef.current.length === 0) return;
-
-        if (isFirstRender) {
-            flatListRef.current.scrollToEnd({ animated: true });
-            setIsFirstRender(false);
-        } else {
-            const targetIndex = Math.max(0, messageRef.current.length - 1 - 200);
-            flatListRef.current.scrollToIndex({
-                index: targetIndex,
-                animated: true,
-                viewPosition: 0.5,
             });
         }
     };
@@ -84,18 +68,6 @@ const chatDetail = () => {
                 text: newMessage
             }))
 
-            console.log('Message sent:', response.data);
-
-
-            if (!newMessage.trim()) return;
-            const newMsg: Message = {
-                id: response.data.id, // Assuming the API returns the new message ID
-                conversationId: id as string,
-                sender: 'admin',
-                text: newMessage
-            };
-            messageRef.current.push(newMsg);
-            setMessages([...messageRef.current]);
             setNewMessage('');
         } catch (error) {
             console.error('Error sending message:', error);
@@ -103,7 +75,7 @@ const chatDetail = () => {
         }
     };
 
-    const connectSocket = async () => {
+    const connectSocket = () => {
         console.log("connectSocket called");
         try {
             // id là conversationId
@@ -113,9 +85,8 @@ const chatDetail = () => {
                 query: { channelId },
             });
 
-
             socketRef.current.on("connect", () => {
-                socketRef.current.emit("message", "Hello from react");
+                socketRef.current.emit("join", channelId);
             });
 
             // Xử lý sự kiện ngắt kết nối
@@ -134,16 +105,17 @@ const chatDetail = () => {
         }
     }
 
-    // lắng nghe sự kiện thi fetch thêm tin nhắn hoặc tin nhắn lần đầu
-    useEffect(() => {
-        // Đặt scroll về cuối khi lần đầu tiên render
-        setScrollToBottom();
-    }, [messageRef.current.length]);
-
     // hiển thị lần đầu
     useEffect(() => {
         connectSocket();
-        fetchMessages();
+        fetchMessages().then(() => {
+            if (isFirstRender && messages.length > 0) {
+                setTimeout(() => {
+                    flatListRef.current?.scrollToEnd({ animated: false });
+                    setIsFirstRender(false);
+                }, 100); // Delay 1 chút để đảm bảo FlatList đã render
+            }
+        });
         navigation.setOptions({
             header: () => {
                 return (
@@ -163,16 +135,9 @@ const chatDetail = () => {
     }, [id]);
 
     // lắng nghe thằng khác nó gửi tin nhắn đến
-    const [socketReady, setSocketReady] = useState(false);
 
     useEffect(() => {
-        if (socketRef.current) {
-            setSocketReady(true);
-        }
-    }, [socketRef.current]);
-
-    useEffect(() => {
-        if (!socketReady || !socketRef.current) return;
+        if (!socketRef.current) return;
 
         const socket = socketRef.current;
 
@@ -188,7 +153,7 @@ const chatDetail = () => {
         return () => {
             socket.off('newMessage', handleNewMessage);
         };
-    }, [socketReady]);
+    }, [socketRef.current]);
 
     return (
         <>
@@ -204,7 +169,12 @@ const chatDetail = () => {
                     <FlatList
                         ref={flatListRef}
                         onScroll={handleScroll}
-                        onContentSizeChange={setScrollToBottom}
+                        onContentSizeChange={() => {
+                            if (isFirstRender) {
+                                flatListRef.current?.scrollToEnd({ animated: false });
+                                setIsFirstRender(false);
+                            }
+                        }}
                         data={messages}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.chatContainer}

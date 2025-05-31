@@ -17,7 +17,10 @@ const LoginedStatus = ({ user, setUser }: Props) => {
     // fetch vai thoong tin cua user
 
     return (
-        <TouchableOpacity onPress={() => router.push('/(authenticated)/(tabs)/(other)/profile')}
+        <TouchableOpacity onPress={() => router.push({
+            pathname: '/(authenticated)/(tabs)/(other)',
+            
+        })}
             activeOpacity={0.7}
         >
             <View className="flex-row items-center p-2 justify-around">
