@@ -1,6 +1,6 @@
 import { CameraView } from "expo-camera";
 import { useEffect, useRef, useState } from "react";
-import { Alert, AppState, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, AppState, Button, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
@@ -65,7 +65,12 @@ export default function HomeScanner() {
                     barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                 />
                 <Overlay />
-
+                <Button title="Click here" onPress={() => {
+                    router.push({
+                    pathname: "/(authenticated)/scanner/afterScanner",
+                    params: { bookingId: 1 }
+                })
+                }}></Button>
             </View>
         </>
     )

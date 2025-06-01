@@ -64,12 +64,12 @@ export default function Other() {
                                 setSelectedUser(item.user);
                                 router.push({
                                     pathname: '/message/[id]',
-                                    params: { id: item.id, userName: item.user.name, userAvatar: imagesUrl.default}// userAvatar: item.user.avatar }
+                                    params: { id: item.id, userName: item.user.name, userAvatar: (item.user.avatar && item.user.avatar !== 'http://localhost:9000/user/default.png') ? item.user.avatar : imagesUrl.avtAdmin }
                                 })
                             }}
                         >
                             {/* để mặc định */}
-                            <Image source={{ uri: imagesUrl.default }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+                            <Image source={{ uri: (item.user.avatar && item.user.avatar !== 'http://localhost:9000/user/default.png') ? item.user.avatar : imagesUrl.avtAdmin }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
                             <View>
                                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item.user.name}</Text>
                                 <Text style={{ color: '#666' }}>Last message here...</Text>
