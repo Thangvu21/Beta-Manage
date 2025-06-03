@@ -1,6 +1,6 @@
 import { CameraView } from "expo-camera";
 import { useEffect, useRef, useState } from "react";
-import { Alert, AppState, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, AppState, Button, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import Overlay from "./Overlay";
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
@@ -8,6 +8,11 @@ import * as ImagePicker from 'expo-image-picker';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import { useRouter } from "expo-router";
+
+export interface QRData {
+    bookingId: string;
+    // Add other fields as necessary
+}
 
 export default function HomeScanner() {
 
@@ -20,7 +25,8 @@ export default function HomeScanner() {
             qrLock.current = true;
 
             try {
-                const parsedData = JSON.parse(JSON.parse(data));
+                console.log("QR Data:", data);
+                const parsedData: QRData = data ? JSON.parse(data) : null;
 
                 console.log("Parsed QR Data:", parsedData);
 
@@ -65,7 +71,6 @@ export default function HomeScanner() {
                     barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                 />
                 <Overlay />
-
             </View>
         </>
     )
