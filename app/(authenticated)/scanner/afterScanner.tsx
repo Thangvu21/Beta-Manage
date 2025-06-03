@@ -51,6 +51,22 @@ const AfterScanner = () => {
 
     const [bookingData, setBookingData] = useState<BookingResponse>();
 
+    const sampleBookingData: BookingResponse = {
+        userId: "user123",
+        showtimeId: "showtime456",
+        seats: [
+            { seatId: "seat1", name: "Ghế 1", type: SeatType.REGULAR, price: 100000 },
+            { seatId: "seat2", name: "Ghế 2", type: SeatType.VIP, price: 200000 },
+        ],
+        bonusItem: [
+            { itemId: "item1", name: "Bắp rang bơ", price: 30000, quantity: 2, image: "https://example.com/popcorn.jpg" },
+            { itemId: "item2", name: "Nước ngọt", price: 20000, quantity: 1, image: "https://example.com/drink.jpg" },
+        ],
+        totalPay: 400000,
+        status: BookingStatus.CONFIRMED,
+        method: PaymentMethod.COD,
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -61,7 +77,8 @@ const AfterScanner = () => {
                 console.error("Error in AfterScanner:", error);
             }
         }
-        fetchData();
+        // fetchData();
+        setBookingData(sampleBookingData); // Use sample data for testing
     }, []);
 
     const formatCurrency = (amount: number) =>

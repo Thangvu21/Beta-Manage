@@ -43,24 +43,24 @@ const Statistics = () => {
     const [revenueData, setRevenueData] = useState<MovieRevenue[]>([]);
 
     const fetchData = async (year: string, month: string) => {
-            try {
-                const response = await axiosClient.get(API.getAnalystRevenue, {
-                    params: {
-                        year: year, 
-                        month: month
-                    },
-                })
-                const data = response.data as MovieRevenue[];
-                if (data && data.length > 0) {
-                    setRevenueData(data);
-                } else {
-                    setRevenueData(movieSales); // Dữ liệu mẫu nếu không có dữ liệu từ server
-                }
-            } catch (error) {
-                console.error('Error fetching revenue data:', error);
-
+        try {
+            const response = await axiosClient.get(API.getAnalystRevenue, {
+                params: {
+                    year: year,
+                    month: month
+                },
+            })
+            const data = response.data as MovieRevenue[];
+            if (data && data.length > 0) {
+                setRevenueData(data);
+            } else {
+                setRevenueData(movieSales); // Dữ liệu mẫu nếu không có dữ liệu từ server
             }
+        } catch (error) {
+            console.error('Error fetching revenue data:', error);
+
         }
+    }
 
     const handleFindByTime = async () => {
         // Xử lý logic tìm kiếm theo thời gian nếu cần
@@ -70,7 +70,7 @@ const Statistics = () => {
 
 
     useEffect(() => {
-        
+
         fetchData(selectedYear, selectedMonth);
     }, []);
 
@@ -83,40 +83,45 @@ const Statistics = () => {
 
                 {/* Horizontal Scrollable Chart */}
                 <ScrollViewHorizontal horizontal showsHorizontalScrollIndicator={false}>
-                    <BarChart
-                        data={{
-                            labels: revenueData.map(item => item.title),
-                            datasets: [
-                                {
-                                    data: revenueData.map(item => item.price),
-                                    color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`, // Màu sắc của cột
-                                    strokeWidth: 2,
+                    {revenueData.length === 0 ? (
+                        <View style={{ width: 700, height: 280, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#888', fontSize: 16 }}>Dữ liệu chưa có tại thời điểm này</Text>
+                        </View>
+                    ) : (
+                        <BarChart
+                            data={{
+                                labels: revenueData.map(item => item.title),
+                                datasets: [
+                                    {
+                                        data: revenueData.map(item => item.price),
+                                        color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                                        strokeWidth: 2,
+                                    },
+                                ],
+                            }}
+                            width={700}
+                            height={280}
+                            fromZero
+                            yAxisSuffix=" vnd"
+                            yAxisLabel=''
+                            chartConfig={{
+                                backgroundGradientFrom: '#fff',
+                                backgroundGradientTo: '#fff',
+                                decimalPlaces: 0,
+                                color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
+                                labelColor: () => '#333',
+                                barPercentage: 0.6,
+                                style: {
+                                    borderRadius: 16,
                                 },
-                            ],
-                        }}
-                        width={700} // Each bar ~60px
-                        height={280}
-                        fromZero
-
-                        yAxisSuffix=" vnd"
-                        yAxisLabel=''
-                        chartConfig={{
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
-                            decimalPlaces: 0,
-                            color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
-                            labelColor: () => '#333',
-                            barPercentage: 0.6,
-                            style: {
+                            }}
+                            style={{
+                                marginVertical: 8,
                                 borderRadius: 16,
-                            },
-                        }}
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16,
-                        }}
-                        verticalLabelRotation={20}
-                    />
+                            }}
+                            verticalLabelRotation={20}
+                        />
+                    )}
                 </ScrollViewHorizontal>
 
                 {/* Bộ lọc thời gian */}

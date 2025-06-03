@@ -32,7 +32,7 @@ const chatDetail = () => {
 
 
     const handleScroll = ({ nativeEvent }: any) => {
-        if (nativeEvent.contentOffset.y < 20 || loadingMore) return;
+        if (nativeEvent.contentOffset.y > 20 || loadingMore) return;
         if (!loadingMore) {
             setLoadingMore(true);
             fetchMessages(messageRef.current.length).then(() => {

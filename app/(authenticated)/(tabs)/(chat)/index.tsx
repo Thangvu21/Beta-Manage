@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Modal, Alert } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useUser } from '@/Components/Context/UserProvider';
 import { Conversation, sampleConversations } from '@/constants/conversation';
 import ModalFindChat from '@/Components/Modals/ModalFindChat';
@@ -31,20 +31,19 @@ export default function Other() {
 
     const [modalVisible, setModalVisible] = useState<boolean>(false);
 
-    useEffect(() => {
-        const fetchConversations = async () => {
-            try {
-                const response = await axiosClient.get(API.getAllConver)
-                console.log('Conversations:', response.data);
-                setListConver(response.data);
-
-            } catch (error) {
-                console.error('Error fetching conversations:', error);
-                Alert.alert('Error', 'Failed to load conversations. Please try again later.');
-            }
-        }
-        fetchConversations();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchConversations = async () => {
+                try {
+                    const response = await axiosClient.get(API.getAllConver);
+                    setListConver(response.data);
+                } catch (error) {
+                    Alert.alert('Error', 'Failed to load conversations. Please try again later.');
+                }
+            };
+            fetchConversations();
+        }, [])
+    );
 
     return (
         <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
@@ -82,7 +81,7 @@ export default function Other() {
 
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
-                users={listConver.map(conversation => {return { idConver: conversation.id, name: conversation.user.name, avatar: conversation.user.avatar }})}
+                users={listConver.map(conversation => { return { idConver: conversation.id, name: conversation.user.name, avatar: conversation.user.avatar } })}
                 onSelectUser={(user) => {
                     // Handle user selection
                     router.push({

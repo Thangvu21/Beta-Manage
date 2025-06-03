@@ -9,6 +9,11 @@ import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import { useRouter } from "expo-router";
 
+export interface QRData {
+    bookingId: string;
+    // Add other fields as necessary
+}
+
 export default function HomeScanner() {
 
     const qrLock = useRef(false);
@@ -20,7 +25,8 @@ export default function HomeScanner() {
             qrLock.current = true;
 
             try {
-                const parsedData = JSON.parse(JSON.parse(data));
+                console.log("QR Data:", data);
+                const parsedData: QRData = data ? JSON.parse(data) : null;
 
                 console.log("Parsed QR Data:", parsedData);
 
@@ -65,12 +71,6 @@ export default function HomeScanner() {
                     barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
                 />
                 <Overlay />
-                <Button title="Click here" onPress={() => {
-                    router.push({
-                    pathname: "/(authenticated)/scanner/afterScanner",
-                    params: { bookingId: 1 }
-                })
-                }}></Button>
             </View>
         </>
     )
