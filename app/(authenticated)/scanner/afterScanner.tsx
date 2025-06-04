@@ -22,28 +22,42 @@ enum PaymentMethod {
     MOMO = "MOMO",
 }
 interface Seat {
-    seatId: string;
+    id: string;
     name: string;
     type: SeatType;
     price: number;
 }
 
 interface BonusItem {
-    itemId: string;
+    id: string;
     name: string;
     price: number;
     quantity: number;
     image: string;
 }
 interface BookingResponse {
-    userId: string;
-    showtimeId: string;
-    seats: Seat[];
-    bonusItem: BonusItem[],
-    totalPay: number,
-    status: BookingStatus,
-    method: PaymentMethod;
+    booking: {
+        user: string;
+        seats: Seat[];
+        bonusItems: BonusItem[];
+        totalPay: number;
+        status: BookingStatus;
+    };
+    film: {
+        title: string;
+        poster: string;
+    };
+    showtime: {
+        time: string;
+        type: string;
+    };
+    cinema: {
+        name: string;
+        address: string;
+    };
+    qrcode: string;
 }
+
 
 const AfterScanner = () => {
 
@@ -52,20 +66,36 @@ const AfterScanner = () => {
     const [bookingData, setBookingData] = useState<BookingResponse>();
 
     const sampleBookingData: BookingResponse = {
-        userId: "user123",
-        showtimeId: "showtime456",
-        seats: [
-            { seatId: "seat1", name: "Ghế 1", type: SeatType.REGULAR, price: 100000 },
-            { seatId: "seat2", name: "Ghế 2", type: SeatType.VIP, price: 200000 },
-        ],
-        bonusItem: [
-            { itemId: "item1", name: "Bắp rang bơ", price: 30000, quantity: 2, image: "https://example.com/popcorn.jpg" },
-            { itemId: "item2", name: "Nước ngọt", price: 20000, quantity: 1, image: "https://example.com/drink.jpg" },
-        ],
-        totalPay: 400000,
-        status: BookingStatus.CONFIRMED,
-        method: PaymentMethod.COD,
+        booking: {
+            user: "Pham Quan",
+            seats: [
+                {
+                    id: "683f0bded94e9b3f054d7f8c",
+                    name: "A1",
+                    type: SeatType.REGULAR,
+                    price: 70000,
+                }
+            ],
+            bonusItems: [],
+            totalPay: 70000,
+            status: BookingStatus.CONFIRMED
+        },
+        film: {
+            title: "Địa Đạo: Mặt Trời Trong Bóng Tối",
+            poster: "https://files.betacorp.vn/media%2fimages%2f2025%2f03%2f31%2f400x633%2D24%2D165808%2D310325%2D29.jpg"
+        },
+        showtime: {
+            time: "2025-06-03T23:30:00.000Z",
+            type: "2D"
+        },
+        cinema: {
+            name: "Beta Cinemas Xuân Thủy",
+            address: "Tầng 4, toà Aeon Xuân Thuỷ, 124 Đ. Xuân Thủy, phường Dịch Vọng Hậu, quận Cầu Giấy, Hà Nội"
+        },
+        qrcode: "https://example.com/qrcode.png"
     };
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -98,8 +128,16 @@ const AfterScanner = () => {
             <Text style={styles.bookingId}>Mã đặt vé: {bookingId}</Text>
 
             <View style={styles.section}>
+                <Image source={{ uri: bookingData.film.poster }} style={styles.poster} />
+                <Text style={styles.title}>{bookingData.film.title}</Text>
+                <Text>{bookingData.showtime.type} - {new Date(bookingData.showtime.time).toLocaleString('vi-VN')}</Text>
+                <Text>{bookingData.cinema.name}</Text>
+                <Text>{bookingData.cinema.address}</Text>
+            </View>
+
+            <View style={styles.section}>
                 <Text style={styles.sectionTitle}>🪑 Danh sách ghế:</Text>
-                {bookingData && bookingData.seats.map((seat, index) => (
+                {bookingData.booking.seats.map((seat, index) => (
                     <View key={index} style={styles.itemRow}>
                         <Text>{seat.name} ({seat.type.toUpperCase()})</Text>
                         <Text>{formatCurrency(seat.price)}</Text>
@@ -107,15 +145,16 @@ const AfterScanner = () => {
                 ))}
             </View>
 
-            {bookingData && bookingData.bonusItem.length > 0 && (
+            {bookingData.booking.bonusItems.length > 0 && (
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>🍿 Combo đi kèm:</Text>
-                    {bookingData.bonusItem.map((item, index) => (
+                    {bookingData.booking.bonusItems.map((item, index) => (
                         <View key={index} style={styles.bonusItem}>
                             <Image source={{ uri: item.image }} style={styles.itemImage} />
-                            <View style={styles.itemInfo}>
-                                <Text>{item.name} x{item.quantity}</Text>
-                                <Text>{formatCurrency(item.price)}</Text>
+                            <View>
+                                <Text>{item.name}</Text>
+                                <Text>Số lượng: {item.quantity}</Text>
+                                <Text>Giá: {formatCurrency(item.price)}</Text>
                             </View>
                         </View>
                     ))}
@@ -123,26 +162,16 @@ const AfterScanner = () => {
             )}
 
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>💰 Tổng thanh toán:</Text>
-                <Text style={styles.total}>{formatCurrency(bookingData.totalPay)}</Text>
+                <Text style={styles.sectionTitle}>💳 Tổng thanh toán:</Text>
+                <Text>{formatCurrency(bookingData.booking.totalPay)}</Text>
             </View>
 
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>💳 Phương thức thanh toán:</Text>
-                <Text>{bookingData.method}</Text>
-            </View>
-
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📌 Trạng thái:</Text>
-                {bookingData && bookingData.status && <Text style={{
-                    color: bookingData.status === BookingStatus.CONFIRMED ? 'green' : bookingData.status === BookingStatus.PENDING ? 'orange' : 'red',
-                    fontWeight: 'bold'
-                }}>
-                    {bookingData.status.toUpperCase()}
-                </Text>
-                }
+                <Text style={styles.sectionTitle}>📱 Mã QR:</Text>
+                <Image source={{ uri: bookingData.qrcode }} style={{ width: 200, height: 200 }} />
             </View>
         </ScrollView>
+
     )
 }
 
@@ -190,17 +219,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 6,
     },
-    bonusItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    itemImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 6,
-        marginRight: 10,
-    },
     itemInfo: {
         flex: 1,
     },
@@ -208,7 +226,31 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#e53935',
-    }
+    },
+    poster: {
+        width: 120,
+        height: 180,
+        borderRadius: 8,
+        alignSelf: 'center',
+        marginBottom: 10,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 5,
+    },
+    bonusItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 5,
+    },
+    itemImage: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+        borderRadius: 6,
+    },
 });
 
 

@@ -11,25 +11,243 @@ import {
     TouchableOpacity,
     ScrollView as ScrollViewHorizontal
 } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import Svg, { Rect, Text as SvgText, Line, G } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
 
 interface MovieRevenue {
-    title: string;
+    filmName: string;
     price: number;
+    seats: number;
+    bookings: number;
 }
+
+interface GroupedBarChartProps {
+    data: MovieRevenue[];
+    width: number;
+    height: number;
+}
+
+const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ data, width, height }) => {
+    const padding = 50;
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+    
+    // Tính toán giá trị max để scale
+    const maxPrice = Math.max(...data.map(d => d.price));
+    const maxSeats = Math.max(...data.map(d => d.seats));
+    const maxBookings = Math.max(...data.map(d => d.bookings));
+    const maxValue = Math.max(maxPrice, maxSeats, maxBookings);
+    
+    const barGroupWidth = chartWidth / data.length;
+    const barWidth = Math.max((barGroupWidth - 30) / 3, 15); // 3 bars per group, minimum 15px width
+    const colors = ['#22c55e', '#3b82f6', '#ea580c']; // Green, Blue, Orange
+    const labels = ['Doanh thu đơn vị nghìn đồng', 'Số ghế', 'Lượt đặt'];
+    
+    // Tạo grid lines
+    const gridLines = [];
+    for (let i = 0; i <= 5; i++) {
+        const ratio = i / 5;
+        const y = padding + chartHeight * ratio;
+        gridLines.push(
+            <Line
+                key={`grid-${i}`}
+                x1={padding}
+                y1={y}
+                x2={padding + chartWidth}
+                y2={y}
+                stroke="#e5e7eb"
+                strokeWidth="1"
+                opacity={0.5}
+            />
+        );
+    }
+    
+    // Tạo Y-axis labels
+    const yAxisLabels = [];
+    for (let i = 0; i <= 5; i++) {
+        const ratio = i / 5;
+        const value = Math.round(maxValue * ratio);
+        const y = padding + chartHeight * (1 - ratio);
+        yAxisLabels.push(
+            <SvgText
+                key={`y-label-${i}`}
+                x={padding - 10}
+                y={y + 5}
+                fontSize="12"
+                fill="#666"
+                textAnchor="end"
+            >
+                {value}
+            </SvgText>
+        );
+    }
+    
+    return (
+        <View>
+            <Svg width={width} height={height}>
+                {/* Background */}
+                <Rect
+                    x={0}
+                    y={0}
+                    width={width}
+                    height={height}
+                    fill="#ffffff"
+                />
+                
+                {/* Grid lines */}
+                {gridLines}
+                
+                {/* Y-axis */}
+                <Line
+                    x1={padding}
+                    y1={padding}
+                    x2={padding}
+                    y2={padding + chartHeight}
+                    stroke="#374151"
+                    strokeWidth="2"
+                />
+                
+                {/* X-axis */}
+                <Line
+                    x1={padding}
+                    y1={padding + chartHeight}
+                    x2={padding + chartWidth}
+                    y2={padding + chartHeight}
+                    stroke="#374151"
+                    strokeWidth="2"
+                />
+                
+                {/* Y-axis labels */}
+                {yAxisLabels}
+                
+                {/* Bars */}
+                {data.map((item, groupIndex) => {
+                    const groupX = padding + groupIndex * barGroupWidth;
+                    const groupCenterX = groupX + barGroupWidth / 2;
+                    const startX = groupCenterX - (3 * barWidth) / 2;
+                    
+                    const values = [item.price, item.seats, item.bookings];
+                    
+                    return (
+                        <G key={`group-${groupIndex}`}>
+                            {values.map((value, barIndex) => {
+                                const barHeight = maxValue > 0 ? (value / maxValue) * chartHeight : 0;
+                                const barX = startX + barIndex * barWidth + barIndex * 4; // 4px spacing between bars
+                                const barY = padding + chartHeight - barHeight;
+                                
+                                return (
+                                    <G key={`bar-${groupIndex}-${barIndex}`}>
+                                        <Rect
+                                            x={barX}
+                                            y={barY}
+                                            width={barWidth}
+                                            height={Math.max(barHeight, 1)}
+                                            fill={colors[barIndex]}
+                                            rx={3}
+                                            ry={3}
+                                        />
+                                        {/* Value labels on top of bars */}
+                                        {barHeight > 20 && (
+                                            <SvgText
+                                                x={barX + barWidth / 2}
+                                                y={barY - 5}
+                                                fontSize="10"
+                                                fill="#333"
+                                                textAnchor="middle"
+                                                fontWeight="bold"
+                                            >
+                                                {value}
+                                            </SvgText>
+                                        )}
+                                    </G>
+                                );
+                            })}
+                            
+                            {/* X-axis label (film name) */}
+                            <SvgText
+                                x={groupCenterX}
+                                y={height - 15}
+                                fontSize="11"
+                                fill="#333"
+                                textAnchor="middle"
+                                fontWeight="600"
+                                transform={`rotate(-15, ${groupCenterX}, ${height - 15})`}
+                            >
+                                {item.filmName}
+                            </SvgText>
+                        </G>
+                    );
+                })}
+                
+                {/* Chart title */}
+                <SvgText
+                    x={width / 2}
+                    y={25}
+                    fontSize="16"
+                    fill="#1f2937"
+                    textAnchor="middle"
+                    fontWeight="bold"
+                >
+                    Biểu đồ thống kê doanh thu phim
+                </SvgText>
+            </Svg>
+            
+            {/* Legend */}
+            <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'center', 
+                marginTop: 15,
+                paddingHorizontal: 20
+            }}>
+                {labels.map((label, index) => (
+                    <View 
+                        key={index} 
+                        style={{ 
+                            flexDirection: 'row', 
+                            alignItems: 'center', 
+                            marginHorizontal: 15,
+                            backgroundColor: '#f9fafb',
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            borderRadius: 15,
+                            borderWidth: 1,
+                            borderColor: '#e5e7eb'
+                        }}
+                    >
+                        <View 
+                            style={{ 
+                                width: 14, 
+                                height: 14, 
+                                backgroundColor: colors[index], 
+                                marginRight: 6,
+                                borderRadius: 3
+                            }} 
+                        />
+                        <Text style={{ 
+                            fontSize: 12, 
+                            color: '#374151',
+                            fontWeight: '600'
+                        }}>
+                            {label}
+                        </Text>
+                    </View>
+                ))}
+            </View>
+        </View>
+    );
+};
 
 const Statistics = () => {
     const movieSales = [
-        { title: 'Avatar 2', price: 320 },
-        { title: 'Endgame', price: 280 },
-        { title: 'Fast X', price: 220 },
-        { title: 'Barbie', price: 150 },
-        { title: 'Oppenheimer', price: 180 },
-        { title: 'Mario', price: 100 },
-        { title: 'Avengers', price: 350 },
-        { title: 'Dune 2', price: 270 },
+        { filmName: 'Avatar 2', price: 320, seats: 150, bookings: 50 },
+        { filmName: 'Endgame', price: 280, seats: 150, bookings: 50 },
+        { filmName: 'Fast X', price: 220, seats: 150, bookings: 50 },
+        { filmName: 'Barbie', price: 150, seats: 150, bookings: 50 },
+        { filmName: 'Oppenheimer', price: 180, seats: 150, bookings: 50 },
+        { filmName: 'Mario', price: 100, seats: 150, bookings: 50 },
+        { filmName: 'Avengers', price: 350, seats: 150, bookings: 50 },
+        { filmName: 'Dune 2', price: 270, seats: 150, bookings: 50 },
     ];
 
     const years = ['2020', '2021', '2022', '2023', '2024', '2025'];
@@ -58,23 +276,18 @@ const Statistics = () => {
             }
         } catch (error) {
             console.error('Error fetching revenue data:', error);
-
+            setRevenueData(movieSales); // Fallback to sample data
         }
     }
 
     const handleFindByTime = async () => {
-        // Xử lý logic tìm kiếm theo thời gian nếu cần
         console.log(`Tìm kiếm doanh thu cho năm ${selectedYear} và tháng ${selectedMonth}`);
         await fetchData(selectedYear, selectedMonth);
     }
 
-
     useEffect(() => {
-
-        fetchData(selectedYear, selectedMonth);
+        // setRevenueData(movieSales);
     }, []);
-
-
 
     return (
         <SafeAreaView className="flex-1 bg-white">
@@ -84,49 +297,21 @@ const Statistics = () => {
                 {/* Horizontal Scrollable Chart */}
                 <ScrollViewHorizontal horizontal showsHorizontalScrollIndicator={false}>
                     {revenueData.length === 0 ? (
-                        <View style={{ width: 700, height: 280, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ width: 700, height: 320, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#888', fontSize: 16 }}>Dữ liệu chưa có tại thời điểm này</Text>
                         </View>
                     ) : (
-                        <BarChart
-                            data={{
-                                labels: revenueData.map(item => item.title),
-                                datasets: [
-                                    {
-                                        data: revenueData.map(item => item.price),
-                                        color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
-                                        strokeWidth: 2,
-                                    },
-                                ],
-                            }}
-                            width={700}
-                            height={280}
-                            fromZero
-                            yAxisSuffix=" vnd"
-                            yAxisLabel=''
-                            chartConfig={{
-                                backgroundGradientFrom: '#fff',
-                                backgroundGradientTo: '#fff',
-                                decimalPlaces: 0,
-                                color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`,
-                                labelColor: () => '#333',
-                                barPercentage: 0.6,
-                                style: {
-                                    borderRadius: 16,
-                                },
-                            }}
-                            style={{
-                                marginVertical: 8,
-                                borderRadius: 16,
-                            }}
-                            verticalLabelRotation={20}
+                        <GroupedBarChart 
+                            data={revenueData} 
+                            width={Math.max(700, revenueData.length * 120)} 
+                            height={320} 
                         />
                     )}
                 </ScrollViewHorizontal>
 
                 {/* Bộ lọc thời gian */}
                 <View className="mt-6 space-y-4">
-                    <View className="bg-gray-100 p-3 rounded-lg">
+                    <View className="bg-gray-100 p-3 rounded-lg mb-2">
                         <Text className="text-base font-medium text-gray-600 mb-1">Chọn năm</Text>
                         <Picker
                             selectedValue={selectedYear}
@@ -139,7 +324,7 @@ const Statistics = () => {
                         </Picker>
                     </View>
 
-                    <View className="bg-gray-100 p-3 rounded-lg">
+                    <View className="bg-gray-100 p-3 rounded-lg mb-2">
                         <Text className="text-base font-medium text-gray-600 mb-1">Chọn tháng</Text>
                         <Picker
                             selectedValue={selectedMonth}
@@ -163,4 +348,3 @@ const Statistics = () => {
 };
 
 export default Statistics;
-
