@@ -286,7 +286,8 @@ const Statistics = () => {
     }
 
     useEffect(() => {
-        // setRevenueData(movieSales);
+        setRevenueData(movieSales);
+        // fetchData(selectedYear, selectedMonth);
     }, []);
 
     return (

@@ -236,7 +236,7 @@ const Revenue = () => {
     };
 
     useEffect(() => {
-        // fetchData(selectedYear);
+        fetchData(selectedYear);
     }, []);
 
     return (
