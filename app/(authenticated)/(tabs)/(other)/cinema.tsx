@@ -10,6 +10,7 @@ import DeleteModalCinema from '@/Components/Modals/Delete.Modal.Cinema';
 import { colors } from '@/constants/color';
 import axiosClient from '@/constants/axiosClient';
 import { API } from '@/constants/api';
+import { imageBaseUrl, images, imagesUrl } from '@/constants/image';
 
 export default function CinemaScreen() {
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
@@ -73,7 +74,10 @@ export default function CinemaScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Image source={{ uri: item.avatar }} style={styles.avatar} />
+              { item.avatar ? (
+                <Image source={{ uri: item.avatar }} style={styles.avatar} /> ) :
+                <Image source={{ uri: imagesUrl.rap }} style={styles.avatar} />
+              }
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{item.name}</Text>
 
