@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 
 const hostDT = 'http://192.168.137.1'
 const hostEmulator = 'http://10.0.2.2'
-export const API_URL = hostDT
+export const API_URL = hostEmulator
 
 export const API = {
 

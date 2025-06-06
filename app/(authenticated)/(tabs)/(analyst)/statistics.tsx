@@ -52,21 +52,21 @@ const EmptyRevenueChart = () => {
                         <Stop offset="100%" stopColor="#cbd5e1" stopOpacity="1" />
                     </LinearGradient>
                 </Defs>
-                
+
                 {/* Chart bars outline */}
                 <Rect x="15" y="50" width="12" height="25" fill="url(#emptyGrad)" rx="3" />
                 <Rect x="32" y="35" width="12" height="40" fill="url(#emptyGrad)" rx="3" />
                 <Rect x="49" y="45" width="12" height="30" fill="url(#emptyGrad)" rx="3" />
                 <Rect x="66" y="25" width="12" height="50" fill="url(#emptyGrad)" rx="3" />
                 <Rect x="83" y="55" width="12" height="20" fill="url(#emptyGrad)" rx="3" />
-                
+
                 {/* Base line */}
                 <Line x1="10" y1="75" x2="100" y2="75" stroke="#cbd5e1" strokeWidth="2" />
-                
+
                 {/* Trend line */}
                 <Line x1="21" y1="62" x2="89" y2="42" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="3,3" />
             </Svg>
-            
+
             <Text style={{
                 fontSize: 18,
                 fontWeight: '600',
@@ -77,7 +77,7 @@ const EmptyRevenueChart = () => {
             }}>
                 Chưa có dữ liệu doanh thu
             </Text>
-            
+
             <Text style={{
                 fontSize: 14,
                 color: '#64748b',
@@ -87,7 +87,7 @@ const EmptyRevenueChart = () => {
             }}>
                 Không có thông tin doanh thu{'\n'}cho năm đã chọn
             </Text>
-            
+
             <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -170,26 +170,48 @@ const Revenue = () => {
     const allYears = ['2020', '2021', '2022', '2023', '2024', '2025'];
 
     // lấy về từ server
-    const dataFromServer = {
-        year: 2025,
-        totalRevenue: 705,
-        totalBookings: 115,
-        months: {
-            'Tháng 1': { revenue: 135, bookings: 25 },
-            'Tháng 2': { revenue: 150, bookings: 15 },
-            'Tháng 3': { revenue: 200, bookings: 45 },
-            'Tháng 4': { revenue: 120, bookings: 10 },
-            'Tháng 5': { revenue: 100, bookings: 20 },
+    const dataFromServer: dataFromServerType[] = [
+        {
+            year: 2025,
+            totalRevenue: 131360,
+            totalBookings: 4885,
+            months: {
+                "Tháng 1": { "revenue": 20080, "bookings": 764 },
+                "Tháng 2": { "revenue": 21140, "bookings": 790 },
+                "Tháng 3": { "revenue": 23880, "bookings": 854 },
+                "Tháng 4": { "revenue": 20960, "bookings": 772 },
+                "Tháng 5": { "revenue": 21800, "bookings": 794 },
+                "Tháng 6": { "revenue": 24000, "bookings": 911 }
+            }
         },
-    };
+        {
+            year: 2024,
+            totalRevenue: 266480,
+            totalBookings: 10049,
+            months: {
+                "Tháng 1": { "revenue": 21530, "bookings": 831 },
+                "Tháng 2": { "revenue": 21100, "bookings": 808 },
+                "Tháng 3": { "revenue": 23000, "bookings": 849 },
+                "Tháng 4": { "revenue": 21610, "bookings": 819 },
+                "Tháng 5": { "revenue": 21090, "bookings": 815 },
+                "Tháng 6": { "revenue": 22280, "bookings": 837 },
+                "Tháng 7": { "revenue": 20930, "bookings": 823 },
+                "Tháng 8": { "revenue": 23020, "bookings": 870 },
+                "Tháng 9": { "revenue": 20940, "bookings": 801 },
+                "Tháng 10": { "revenue": 22000, "bookings": 828 },
+                "Tháng 11": { "revenue": 21590, "bookings": 816 },
+                "Tháng 12": { "revenue": 22390, "bookings": 832 }
+            }
+        }
+    ];
 
     const [selectedYear, setSelectedYear] = useState<string>("2025");
-    const [dataServer, setDataServer] = useState<dataFromServerType>(dataFromServer);
-    const [monthRevenueData, setMonthRevenueData] = useState<monthRevenueType>(dataFromServer.months);
+    const [dataServer, setDataServer] = useState<dataFromServerType>(dataFromServer[0]);
+    const [monthRevenueData, setMonthRevenueData] = useState<monthRevenueType>(dataFromServer[0].months);
     const [loading, setLoading] = useState<boolean>(false);
 
     // Tính toán dữ liệu cho chart
-    const monthLabels = Object.keys(monthRevenueData);
+
     const monthRevenue = Object.values(monthRevenueData).map(item => item.revenue);
     const hasRevenueData = monthRevenue.some(val => val > 0);
 
@@ -223,8 +245,8 @@ const Revenue = () => {
         } catch (error) {
             console.error('Error fetching revenue data:', error);
             // Fallback to demo data on error
-            setDataServer(dataFromServer);
-            setMonthRevenueData(dataFromServer.months);
+            // setDataServer(dataFromServer);
+            // setMonthRevenueData(dataFromServer.months);
         } finally {
             setLoading(false);
         }
@@ -232,19 +254,33 @@ const Revenue = () => {
 
     const handleSelectedYear = (year: string) => {
         setSelectedYear(year);
-        fetchData(year);
+        if (parseInt(year) >= 2024) {
+            const index = 2025 - parseInt(year);
+            setDataServer(dataFromServer[index]);
+            setMonthRevenueData(dataFromServer[index].months);
+        } else {
+            setDataServer({
+                year: parseInt(year),
+                totalRevenue: 0,
+                totalBookings: 0,
+                months: {}
+            });
+            setMonthRevenueData({});
+        }
+        // fetchData(year);
     };
 
     useEffect(() => {
-        fetchData(selectedYear);
+        // fetchData(selectedYear);
+        // setDataServer(dataFromServer);
     }, []);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f5f9' }}>
-            <ScrollView 
-                contentContainerStyle={{ 
-                    padding: 16, 
-                    paddingBottom: 100 
+            <ScrollView
+                contentContainerStyle={{
+                    padding: 16,
+                    paddingBottom: 100
                 }}
                 showsVerticalScrollIndicator={false}
             >
@@ -280,10 +316,10 @@ const Revenue = () => {
                 </View>
 
                 {/* Stats Cards */}
-                <View style={{ 
-                    flexDirection: 'row', 
-                    gap: 12, 
-                    marginBottom: 24 
+                <View style={{
+                    flexDirection: 'row',
+                    gap: 12,
+                    marginBottom: 24
                 }}>
                     <StatCard
                         title="Tổng doanh thu"
@@ -336,9 +372,9 @@ const Revenue = () => {
                             }}
                         >
                             {allYears.map((year, index) => (
-                                <Picker.Item 
-                                    key={index} 
-                                    label={`Năm ${year}`} 
+                                <Picker.Item
+                                    key={index}
+                                    label={`Năm ${year}`}
                                     value={year}
                                     style={{ fontSize: 16 }}
                                 />
@@ -396,13 +432,13 @@ const Revenue = () => {
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             <BarChart
                                 data={{
-                                    labels: monthLabels,
-                                    datasets: [{ 
+                                    labels: Object.keys(monthRevenueData),
+                                    datasets: [{
                                         data: monthRevenue,
                                         color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`
                                     }],
                                 }}
-                                width={Math.max(screenWidth - 64, monthLabels.length * 80)}
+                                width={Math.max(screenWidth - 64, Object.keys(monthRevenueData).length * 80)}
                                 height={260}
                                 yAxisSuffix=" tr"
                                 yAxisLabel=""
@@ -453,37 +489,37 @@ const Revenue = () => {
                         }}>
                             📊 Thống kê nhanh
                         </Text>
-                        
+
                         <View style={{ flexDirection: 'row', gap: 12 }}>
                             <View style={{ flex: 1 }}>
                                 <Text style={{ color: '#6b7280', fontSize: 14, marginBottom: 4 }}>
                                     Tháng cao nhất
                                 </Text>
-                                <Text style={{ 
-                                    fontSize: 16, 
-                                    fontWeight: 'bold', 
-                                    color: '#10b981' 
+                                <Text style={{
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                    color: '#10b981'
                                 }}>
-                                    {monthLabels[monthRevenue.indexOf(Math.max(...monthRevenue))]}
+                                    {Object.keys(monthRevenueData)[Object.values(monthRevenueData).map(item => item.revenue).indexOf(Math.max(...Object.values(monthRevenueData).map(item => item.revenue)))]}
                                 </Text>
-                                <Text style={{ 
-                                    fontSize: 14, 
-                                    color: '#6b7280' 
+                                <Text style={{
+                                    fontSize: 14,
+                                    color: '#6b7280'
                                 }}>
-                                    {formatCurrency(Math.max(...monthRevenue))} tr
+                                    {formatCurrency(Math.max(...Object.values(monthRevenueData).map(item => item.revenue)))} tr
                                 </Text>
                             </View>
-                            
+
                             <View style={{ flex: 1 }}>
                                 <Text style={{ color: '#6b7280', fontSize: 14, marginBottom: 4 }}>
                                     Trung bình/tháng
                                 </Text>
-                                <Text style={{ 
-                                    fontSize: 16, 
-                                    fontWeight: 'bold', 
-                                    color: '#3b82f6' 
+                                <Text style={{
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                    color: '#3b82f6'
                                 }}>
-                                    {formatCurrency(Math.round(monthRevenue.reduce((a, b) => a + b, 0) / monthRevenue.length))} tr
+                                    {formatCurrency(Math.round(Object.values(monthRevenueData).map(item => item.revenue).reduce((a, b) => a + b, 0) / Object.values(monthRevenueData).map(item => item.revenue).length))} tr
                                 </Text>
                             </View>
                         </View>

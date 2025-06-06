@@ -1,3 +1,4 @@
+import { data2024, data2025 } from '@/constants/analyst';
 import { API } from '@/constants/api';
 import axiosClient from '@/constants/axiosClient';
 import { Picker } from '@react-native-picker/picker';
@@ -15,7 +16,7 @@ import Svg, { Rect, Text as SvgText, Line, G } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
 
-interface MovieRevenue {
+export interface MovieRevenue {
     filmName: string;
     price: number;
     seats: number;
@@ -42,7 +43,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ data, width, height }
     const barGroupWidth = chartWidth / data.length;
     const barWidth = Math.max((barGroupWidth - 30) / 3, 15); // 3 bars per group, minimum 15px width
     const colors = ['#22c55e', '#3b82f6', '#ea580c']; // Green, Blue, Orange
-    const labels = ['Doanh thu đơn vị nghìn đồng', 'Số ghế', 'Lượt đặt'];
+    const labels = ['Doanh thu đơn vị chục triệu đồng', 'Số ghế', 'Lượt đặt'];
     
     // Tạo grid lines
     const gridLines = [];
@@ -250,6 +251,8 @@ const Statistics = () => {
         { filmName: 'Dune 2', price: 270, seats: 150, bookings: 50 },
     ];
 
+    
+
     const years = ['2020', '2021', '2022', '2023', '2024', '2025'];
     const months = [
         '1', '2', '3', '4', '5', '6',
@@ -257,7 +260,7 @@ const Statistics = () => {
     ];
 
     const [selectedYear, setSelectedYear] = useState<string>('2025');
-    const [selectedMonth, setSelectedMonth] = useState<string>('1');
+    const [selectedMonth, setSelectedMonth] = useState<string>('6');
     const [revenueData, setRevenueData] = useState<MovieRevenue[]>([]);
 
     const fetchData = async (year: string, month: string) => {
@@ -282,12 +285,25 @@ const Statistics = () => {
 
     const handleFindByTime = async () => {
         console.log(`Tìm kiếm doanh thu cho năm ${selectedYear} và tháng ${selectedMonth}`);
-        await fetchData(selectedYear, selectedMonth);
+        // await fetchData(selectedYear, selectedMonth);
+        if (selectedYear === '2025') {
+            setRevenueData(data2025[selectedMonth])
+        } else if (selectedYear === '2024') {
+            setRevenueData(data2024[selectedMonth])
+        } else {
+            setRevenueData([]); // Không có dữ liệu cho năm khác
+        }
     }
 
     useEffect(() => {
-        setRevenueData(movieSales);
-        // fetchData(selectedYear, selectedMonth);
+        // setRevenueData(movieSales);
+        if (selectedYear === '2025') {
+            setRevenueData(data2025[selectedMonth])
+        } else if (selectedYear === '2024') {
+            setRevenueData(data2024[selectedMonth])
+        } else {
+            setRevenueData([])
+        }
     }, []);
 
     return (

@@ -79,7 +79,22 @@ const AfterScanner = () => {
                     price: 70000,
                 }
             ],
-            bonusItems: [],
+            bonusItems: [
+                {
+                    id: "1",
+                    name: "Bắp rang bơ lớn",
+                    price: 50000,
+                    quantity: 1,
+                    image: "https://example.com/popcorn.jpg"
+                },
+                {
+                    id: "2",
+                    name: "Nước ngọt lớn",
+                    price: 30000,
+                    quantity: 2,
+                    image: "https://example.com/drink.jpg"
+                }
+            ],
             totalPay: 70000,
             status: BookingStatus.CONFIRMED
         },
@@ -125,7 +140,7 @@ const AfterScanner = () => {
                 setLoading(false);
             }
         }
-        
+    
         if (bookingId) {
             // fetchData();
             setBookingData(sampleBookingData); 
@@ -330,14 +345,6 @@ const AfterScanner = () => {
                 <Text style={styles.totalAmount}>{formatCurrency(bookingData.booking.totalPay)}</Text>
             </View>
 
-            {/* QR Code */}
-            <View style={styles.qrCard}>
-                <Text style={styles.sectionTitle}>📱 Mã QR xác thực</Text>
-                <View style={styles.qrContainer}>
-                    <Image source={{ uri: bookingData.qrcode }} style={styles.qrCode} />
-                    <Text style={styles.qrNote}>Vui lòng xuất trình mã này khi vào rạp</Text>
-                </View>
-            </View>
         </ScrollView>
     );
 };
