@@ -7,10 +7,19 @@ Một hệ thống quản lý rạp chiếu phim dành cho **Admin**, hỗ trợ
 
 ---
 
-## 🎥 Video demo
+
 
 ## 📽️ Hướng Dẫn Sử Dụng
+## ⚙️ Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
+### 📁 Bước 1: Clone repository
+```bash
+git clone <link-repository-của-bạn>
+cd <tên-thư-mục>
+### Bước 2: npm install
+### Bước 3: npx expo start
+
+## 🎥 Video demo
 > 🔗 **Xem video hướng dẫn trên Google Drive:**  
 > 🎬 [Click để xem video](https://drive.google.com/file/d/1M5pTXz8AxHqGy1ziXvQ4TCTzMGCvjFLx/view)
 
@@ -26,6 +35,9 @@ Một hệ thống quản lý rạp chiếu phim dành cho **Admin**, hỗ trợ
 
 ### 🏢 Thông Tin Rạp Chiếu
 ![Cinema](https://drive.google.com/uc?export=view&id=1MPZIK8dF4V1YgqGjKYb7Uc-5gz4DsOC9)
+
+### 🗓️ Tạo Lịch Chiếu
+![Tạo lịch chiếu](https://drive.google.com/uc?export=view&id=1r1xheQOAZFmvNFrHNrFE6mC4D_6mSH7L)
 
 ---
 
