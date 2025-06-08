@@ -55,7 +55,14 @@ export default function Other() {
                         onPress={() => router.push('/createAccountAdmin')}
                     >
                         <Ionicons name="add-circle-outline" size={32} color="#333" />
-                        <Text style={styles.cardText}>Tạo tài khoản admin</Text>
+                        <Text style={styles.cardText}>Tạo tài khoản</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.card, { backgroundColor: '#ffe7d9' }]}
+                        onPress={() => router.push('/manageSeat')}
+                    >
+                        <Ionicons name="grid-outline" size={32} color="#333" />
+                        <Text style={styles.cardText}>Quản lý ghế</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -74,8 +74,8 @@ export default function CinemaScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              { item.avatar ? (
-                <Image source={{ uri: item.avatar }} style={styles.avatar} /> ) :
+              { 
+                // <Image source={{ uri: item.avatar }} style={styles.avatar} /> ) 
                 <Image source={{ uri: imagesUrl.rap }} style={styles.avatar} />
               }
               <View style={{ flex: 1 }}>

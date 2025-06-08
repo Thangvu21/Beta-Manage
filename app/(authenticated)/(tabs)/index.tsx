@@ -1,12 +1,12 @@
 
 import { Text, View, Image, TouchableOpacity, ScrollView } from "react-native";
 // import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FONT_FAMILY } from "@/constants/font";
 import { ColorAgeRating, FilmData, MovieData } from "@/constants/film";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import HomeHeader from "@/Components/Headers/HomeHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -52,22 +52,19 @@ export default function Index() {
     return ColorAgeRating[ageRating as keyof typeof ColorAgeRating];
   }
 
-  useEffect(() => {
-
-    const fetchMovies = async () => {
-      try {
-        const response = await axiosClient.get(API.getAllFilm);
-
-        // console.log('thành công', response.data);
-        setListMovie(response.data);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-      }
-    };
-
-    // setListMovie(FilmData);
-    fetchMovies();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchMovies = async () => {
+        try {
+          const response = await axiosClient.get(API.getAllFilm);
+          setListMovie(response.data);
+        } catch (error) {
+          console.error('Failed to fetch movies:', error);
+        }
+      };
+      fetchMovies();
+    }, [setListMovie])
+  );
 
 
 
@@ -170,9 +167,9 @@ export default function Index() {
             setListMovie={setListMovie}
             listMovie={listMovie}
           />
-          <TouchableOpacity onPress={() => setModalCreateVisible(true)}>
+          <TouchableOpacity onPress={() => {setModalCreateVisible(true), console.log('open modal create movie')}}>
             <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-              <Ionicons name="add" size={28} color="#fff" />
+              <Ionicons name="add" size={28} color="black" />
             </LinearGradient>
           </TouchableOpacity>
 
@@ -221,6 +218,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+    zIndex: 10,
   },
   menuButtonOverlay: {
     position: 'absolute',

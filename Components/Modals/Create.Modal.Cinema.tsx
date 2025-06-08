@@ -8,6 +8,7 @@ import * as FileSystem from 'expo-file-system';
 import axiosClient from "@/constants/axiosClient";
 import { API } from "@/constants/api";
 import { Cinema, LocationType } from "@/constants/cinema";
+import { imagesUrl } from "@/constants/image";
 
 interface Props {
     modalCinemaVisible: boolean,
@@ -99,7 +100,7 @@ const CreateModalCinema = ({ modalCinemaVisible, setModalCinemaVisible, cinemaLi
                         type: LocationType.Point,
                         coordinates: [parseFloat(longitude), parseFloat(latitude)],
                     },
-                    avatar: cinemaAvatar,
+                    avatar: imagesUrl.rap,
                 };
                 setCinemaList([
                     ...cinemaList,

@@ -27,6 +27,10 @@ const Details = () => {
     // id film
     const { id, title, posterUrl } = useLocalSearchParams<{ id: string, title: string, posterUrl: string }>();
 
+    const [filmId, setFilmId] = useState<string>(id || '');
+    const [filmTitle, setFilmTitle] = useState<string>(title || '');
+    const [filmPosterUrl, setFilmPosterUrl] = useState<string>(posterUrl || '');
+
     const [listShowDate, setListShowDate] = useState<Date[]>([]);
     const [listShowTime, setListShowTime] = useState<ShowTimes[]>([]);
 
@@ -206,9 +210,9 @@ const Details = () => {
         setListShowDate(createListDate());
         setDateSelected(new Date());
 
-        if (title) {
+        if (filmTitle) {
             navigation.setOptions({
-                headerTitle: `${title} Showtime`,
+                headerTitle: `${filmTitle} Showtime`,
             });
         }
     }, [id, navigation]);
@@ -218,7 +222,7 @@ const Details = () => {
         <ScrollView style={{ paddingBottom: 20, marginBottom: 20 }} showsVerticalScrollIndicator={true}>
             <View>
                 <ImageBackground
-                    source={{ uri: posterUrl }}
+                    source={{ uri: filmPosterUrl }}
                     style={{ width: '100%', height: 200 }}
 
                 >
@@ -227,13 +231,13 @@ const Details = () => {
                         style={{ flex: 1 }}
                     >
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: '#fff', fontSize: 24, marginBottom: 5 }}>{title}</Text>
+                            <Text style={{ color: '#fff', fontSize: 24, marginBottom: 5 }}>{filmTitle}</Text>
                             <TouchableOpacity style={styles.buttonDetail}
                                 onPress={() => router.push({
                                     pathname: '/movie/detail',
                                     params: {
-                                        id: id,
-                                        title: title,
+                                        id: filmId,
+                                        title: filmTitle,
                                     }
                                 })}>
                                 <Text style={styles.textDetail}>Film Details</Text>

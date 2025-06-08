@@ -65,7 +65,17 @@ const Layout = () => {
                 headerBackVisible: true,
             }} />
             <Stack.Screen name="createAccountAdmin" options={{
-                title: "Tạo tài khoản admin",
+                title: "Tạo tài khoản",
+                headerBackground: () => (
+                    <LinearGradient
+                        colors={["#1e6fa8", "#70c6e5"]}
+                        style={{ flex: 1 }}
+                    />
+                ),
+                headerTintColor: '#fff',
+            }} />
+            <Stack.Screen name='manageSeat' options={{
+                title: "Quản lý ghế",
                 headerBackground: () => (
                     <LinearGradient
                         colors={["#1e6fa8", "#70c6e5"]}

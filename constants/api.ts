@@ -51,7 +51,7 @@ export const API = {
     deleteShowtime: `${API_URL}/showtime/admin/`,
 
     // scan booking
-    scanBooking: `${API_URL}/booking/admin`,
+    scanBooking: `${API_URL}/booking/admin/booking`,
     
     // conversation
     getAllConver: `${API_URL}/chat/conversation/admin`,

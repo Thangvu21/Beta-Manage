@@ -174,33 +174,33 @@ const Revenue = () => {
         {
             year: 2025,
             totalRevenue: 131360,
-            totalBookings: 4885,
+            totalBookings: 420035,
             months: {
-                "Tháng 1": { "revenue": 20080, "bookings": 764 },
-                "Tháng 2": { "revenue": 21140, "bookings": 790 },
-                "Tháng 3": { "revenue": 23880, "bookings": 854 },
-                "Tháng 4": { "revenue": 20960, "bookings": 772 },
-                "Tháng 5": { "revenue": 21800, "bookings": 794 },
-                "Tháng 6": { "revenue": 24000, "bookings": 911 }
+                "Tháng 1": { "revenue": 20080, "bookings": 76423 },
+                "Tháng 2": { "revenue": 21140, "bookings": 79001},
+                "Tháng 3": { "revenue": 23880, "bookings": 85435 },
+                "Tháng 4": { "revenue": 20960, "bookings": 77212 },
+                "Tháng 5": { "revenue": 21800, "bookings": 79456 },
+                "Tháng 6": { "revenue": 24000, "bookings": 91114 }
             }
         },
         {
             year: 2024,
             totalRevenue: 266480,
-            totalBookings: 10049,
+            totalBookings: 913564,
             months: {
-                "Tháng 1": { "revenue": 21530, "bookings": 831 },
-                "Tháng 2": { "revenue": 21100, "bookings": 808 },
-                "Tháng 3": { "revenue": 23000, "bookings": 849 },
-                "Tháng 4": { "revenue": 21610, "bookings": 819 },
-                "Tháng 5": { "revenue": 21090, "bookings": 815 },
-                "Tháng 6": { "revenue": 22280, "bookings": 837 },
-                "Tháng 7": { "revenue": 20930, "bookings": 823 },
-                "Tháng 8": { "revenue": 23020, "bookings": 870 },
-                "Tháng 9": { "revenue": 20940, "bookings": 801 },
-                "Tháng 10": { "revenue": 22000, "bookings": 828 },
-                "Tháng 11": { "revenue": 21590, "bookings": 816 },
-                "Tháng 12": { "revenue": 22390, "bookings": 832 }
+                "Tháng 1": { "revenue": 21530, "bookings": 83102 },
+                "Tháng 2": { "revenue": 21100, "bookings": 80804 },
+                "Tháng 3": { "revenue": 23000, "bookings": 84985 },
+                "Tháng 4": { "revenue": 21610, "bookings": 81986 },
+                "Tháng 5": { "revenue": 21090, "bookings": 81555 },
+                "Tháng 6": { "revenue": 22280, "bookings": 83741 },
+                "Tháng 7": { "revenue": 20930, "bookings": 82345 },
+                "Tháng 8": { "revenue": 23020, "bookings": 87036 },
+                "Tháng 9": { "revenue": 20940, "bookings": 80121 },
+                "Tháng 10": { "revenue": 22000, "bookings": 82835 },
+                "Tháng 11": { "revenue": 21590, "bookings": 81684 },
+                "Tháng 12": { "revenue": 22390, "bookings": 83292 }
             }
         }
     ];

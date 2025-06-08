@@ -1,9 +1,9 @@
 import { MovieDetailData, TextAgeRating } from "@/constants/film";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import { View, Text, Image, ImageBackground, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Button, Linking } from "react-native";
 import { FONT_FAMILY } from "@/constants/font";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateModalMovie from "@/Components/Modals/Update.Modal.Movie";
 import { useMovieContext } from "@/Components/Context/MoiveProvider";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,6 +17,7 @@ const Details = () => {
     const navigation = useNavigation();
     const { id, title } = useLocalSearchParams<{ id: string, title: string }>();
     // nhận vào id film để fetch film details
+    const [filmId, setFilmId] = useState<string>(id);
     const [filmDetail, setFilmDetail] = useState<MovieDetailData>();
     const [editModalVisible, setEditModalVisible] = useState(false);
 
@@ -38,129 +39,140 @@ const Details = () => {
         return TextAgeRating[ageRating as keyof typeof TextAgeRating] || 'Unknown';
     }
 
-    useEffect(() => {
-        const fetchFilmDetails = async () => {
-            try {
-                const response = await axiosClient.get(`${API.getFilmDetail}/${id}`)
-                const data = response.data;
-                setFilmDetail(data);
-                // Từ film data nhận được thì set lại title các thứ
-            } catch (error) {
-                console.error("Error fetching film details:", error);
+    useFocusEffect(
+        React.useCallback(() => {
+            if (!id) {
+                console.error("No film ID provided");
+                return;
             }
-        }
+            const fetchFilmDetails = async () => {
+                try {
+                    const response = await axiosClient.get(`${API.getFilmDetail}/${filmId}`)
+                    const data = response.data;
+                    console.log("Response from API:", filmId);
+                    console.log("Fetched film details:", response.data);
+                    setFilmDetail(data);
+                    // Từ film data nhận được thì set lại title các thứ
+                    console.log("Film details fetched:", data);
+                } catch (error) {
+                    console.error("Error fetching film details:", error);
+                }
+            }
 
-        fetchFilmDetails();
-        // setFilmDetail(MovieDetailData);
+            fetchFilmDetails();
+            // setFilmDetail(MovieDetailData);
 
-        if (title) {
-            navigation.setOptions({
-                headerTitle: `${title} Details`,
-            });
-        }
-    }, [id, navigation]);
+            if (title) {
+                navigation.setOptions({
+                    headerTitle: `${title} Details`,
+                });
+            }
+            console.log("Film ID:", filmDetail);
+        }, [filmId, navigation]))
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            {filmDetail && (
-                <>
-                    <ScrollView
-                        style={{ flex: 1 }}
-                        contentContainerStyle={{ paddingBottom: 100 }}
-                        showsVerticalScrollIndicator={false}
-                    >
-                        <View>
-                            <ImageBackground
-                                source={{ uri: filmDetail.posterUrl }}
-                                style={{ width: '100%', height: 250 }}
-                            >
-                                <LinearGradient
-                                    colors={['rgba(0, 0, 0, 0.8)', 'rgba(0, 0, 0, 0.1)']}
-                                    style={{ flex: 1 }}
+        <>
+            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+                {filmDetail && (
+                    <>
+                        <ScrollView
+                            style={{ flex: 1 }}
+                            contentContainerStyle={{ paddingBottom: 100 }}
+                            showsVerticalScrollIndicator={false}
+                        >
+                            <View>
+                                <ImageBackground
+                                    source={{ uri: filmDetail.posterUrl }}
+                                    style={{ width: '100%', height: 250 }}
                                 >
-                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                        <TouchableOpacity style={styles.videoContainer} onPress={handleOpenYouTube}>
-                                            <Ionicons
-                                                name="play-circle"
-                                                size={70}
-                                                color="#fff"
-                                                style={styles.playIcon}
-                                            />
-                                        </TouchableOpacity>
-                                    </View>
-                                </LinearGradient>
-                            </ImageBackground>
-                        </View>
+                                    <LinearGradient
+                                        colors={['rgba(0, 0, 0, 0.8)', 'rgba(0, 0, 0, 0.1)']}
+                                        style={{ flex: 1 }}
+                                    >
+                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <TouchableOpacity style={styles.videoContainer} onPress={handleOpenYouTube}>
+                                                <Ionicons
+                                                    name="play-circle"
+                                                    size={70}
+                                                    color="#fff"
+                                                    style={styles.playIcon}
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
+                                    </LinearGradient>
+                                </ImageBackground>
+                            </View>
 
-                        <View style={{ marginTop: 20, paddingHorizontal: 16 }}>
-                            <View style={[styles.infoBlock, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
-                                <Image source={{ uri: filmDetail.posterUrl }} style={styles.posterImage} />
-                                <View style={{ alignItems: 'flex-start', flex: 1, marginLeft: 10 }}>
-                                    <Text style={styles.title}>{filmDetail.title}</Text>
-                                    <Text style={{ fontSize: 18, fontWeight: '600', color: colors.primary, borderColor: '#337ab7', borderWidth: 1, borderRadius: 10 , fontFamily: FONT_FAMILY, padding: 4}}>
-                                        {getTextAgeRating(filmDetail.ageRating)}
-                                    </Text>
+                            <View style={{ marginTop: 20, paddingHorizontal: 16 }}>
+                                <View style={[styles.infoBlock, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+                                    <Image source={{ uri: filmDetail.posterUrl }} style={styles.posterImage} />
+                                    <View style={{ alignItems: 'flex-start', flex: 1, marginLeft: 10 }}>
+                                        <Text style={styles.title}>{filmDetail.title}</Text>
+                                        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.primary, borderColor: '#337ab7', borderWidth: 1, borderRadius: 10, fontFamily: FONT_FAMILY, padding: 4 }}>
+                                            {getTextAgeRating(filmDetail.ageRating)}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>DIRECTOR:</Text>
+                                    <Text numberOfLines={2} style={styles.value}>{filmDetail.director}</Text>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>CAST:</Text>
+                                    <Text numberOfLines={3} style={styles.value}>{filmDetail.actors.join(', ')}</Text>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>GENRE:</Text>
+                                    <Text numberOfLines={3} style={styles.value}>{filmDetail.genres.join(', ')}</Text>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>RUN TIME:</Text>
+                                    <Text style={styles.value}>{filmDetail.duration.toString()} Minutes</Text>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>LANGUAGE:</Text>
+                                    <Text style={styles.value}>{filmDetail.language}</Text>
+                                </View>
+
+                                <View style={styles.infoBlock}>
+                                    <Text style={styles.label}>RELEASE DATE:</Text>
+                                    {filmDetail?.releaseDate && (
+                                        <Text style={styles.value}>{new Date(filmDetail.releaseDate).toLocaleDateString()}</Text>
+                                    )}
                                 </View>
                             </View>
 
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>DIRECTOR:</Text>
-                                <Text numberOfLines={2} style={styles.value}>{filmDetail.director}</Text>
+                            <View style={{ borderColor: '#ccc', borderTopWidth: 1, marginTop: 10, padding: 16 }}>
+                                <Text style={[styles.value, { textAlign: 'justify', lineHeight: 24 }]} numberOfLines={10}>
+                                    {filmDetail.description}
+                                </Text>
                             </View>
+                        </ScrollView>
 
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>CAST:</Text>
-                                <Text numberOfLines={3} style={styles.value}>{filmDetail.actors.join(', ')}</Text>
-                            </View>
+                        {filmDetail && (
+                            <UpdateModalMovie
+                                modalUpdateVisible={editModalVisible}
+                                setModalUpdateVisible={setEditModalVisible}
+                                movie={filmDetail}
+                                listMovie={listMovie}
+                                setListMovie={setListMovie}
+                            />
+                        )}
 
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>GENRE:</Text>
-                                <Text numberOfLines={3} style={styles.value}>{filmDetail.genres.join(', ')}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>RUN TIME:</Text>
-                                <Text style={styles.value}>{filmDetail.duration.toString()} Minutes</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>LANGUAGE:</Text>
-                                <Text style={styles.value}>{filmDetail.language}</Text>
-                            </View>
-
-                            <View style={styles.infoBlock}>
-                                <Text style={styles.label}>RELEASE DATE:</Text>
-                                {filmDetail?.releaseDate && (
-                                    <Text style={styles.value}>{new Date(filmDetail.releaseDate).toLocaleDateString()}</Text>
-                                )}
-                            </View>
-                        </View>
-
-                        <View style={{ borderColor: '#ccc', borderTopWidth: 1, marginTop: 10, padding: 16 }}>
-                            <Text style={[styles.value, { textAlign: 'justify', lineHeight: 24 }]} numberOfLines={10}>
-                                {filmDetail.description}
-                            </Text>
-                        </View>
-                    </ScrollView>
-
-                    {filmDetail && (
-                        <UpdateModalMovie
-                            modalUpdateVisible={editModalVisible}
-                            setModalUpdateVisible={setEditModalVisible}
-                            movie={filmDetail}
-                            listMovie={listMovie}
-                            setListMovie={setListMovie}
-                        />
-                    )}
-
-                    <TouchableOpacity onPress={() => setEditModalVisible(true)}>
-                        <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
-                            <Ionicons name="add" size={28} color="#fff" />
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </>
-            )}
-        </SafeAreaView>
+                        <TouchableOpacity onPress={() => setEditModalVisible(true)}>
+                            <LinearGradient colors={['#36D1DC', '#5B86E5']} style={styles.fabButton}>
+                                <Ionicons name="add" size={28} color="#fff" />
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </>
+                )}
+            </SafeAreaView>
+        </>
 
     )
 }

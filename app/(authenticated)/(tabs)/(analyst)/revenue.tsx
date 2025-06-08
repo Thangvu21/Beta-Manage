@@ -43,7 +43,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ data, width, height }
     const barGroupWidth = chartWidth / data.length;
     const barWidth = Math.max((barGroupWidth - 30) / 3, 15); // 3 bars per group, minimum 15px width
     const colors = ['#22c55e', '#3b82f6', '#ea580c']; // Green, Blue, Orange
-    const labels = ['Doanh thu đơn vị chục triệu đồng', 'Số ghế', 'Lượt đặt'];
+    const labels = ['Doanh thu đơn vị triệu đồng', 'Số ghế', 'Lượt đặt'];
     
     // Tạo grid lines
     const gridLines = [];
@@ -116,7 +116,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ data, width, height }
                     x2={padding + chartWidth}
                     y2={padding + chartHeight}
                     stroke="#374151"
-                    strokeWidth="2"
+                    strokeWidth="3"
                 />
                 
                 {/* Y-axis labels */}
@@ -173,7 +173,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({ data, width, height }
                                 fill="#333"
                                 textAnchor="middle"
                                 fontWeight="600"
-                                transform={`rotate(-15, ${groupCenterX}, ${height - 15})`}
+                                transform={`rotate(-10, ${groupCenterX}, ${height - 15})`}
                             >
                                 {item.filmName}
                             </SvgText>

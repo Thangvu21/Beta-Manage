@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
-import { foodData, FoodItem } from "@/constants/food";
+import { FoodItem } from "@/constants/food";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import CreateModalFood from "@/Components/Modals/Create.Modal.Food";
@@ -11,15 +11,20 @@ import { API } from "@/constants/api";
 import UpdateImageModalFood from "@/Components/Modals/Update.Modal.Image.Food";
 import SelectActionItemModal from "@/Components/Modals/Select.Action.Item.Modal";
 import { colors } from "@/constants/color";
+import { imagesUrl } from "@/constants/image";
 
 function convertLocalhost(url: string) {
     if (!url) return '';
+    if (!url.endsWith('.png') && !url.endsWith('.jpg') && !url.endsWith('.jpeg')) {
+        return imagesUrl.imageFood
+    }
+    
 
     // Kiểm tra nếu URL bắt đầu bằng http://localhost
-    const localhostPrefix = 'http://localhost';
-    if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
-        return API.hostImage + url.substring(localhostPrefix.length);
-    }
+    const localhostPrefix = ':9000/booking/';
+    // if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+        return API.hostImage + localhostPrefix + url;
+    // }
 
     return url;
 }
@@ -73,15 +78,22 @@ const Food = () => {
             try {
                 const response = await axiosClient.get(API.getAllFood);
 
-                console.log("response", response.data[1].imageUrl);
-                if (response.status === 200) {
-                    setFoodList(response.data);
-                }
+                // console.log("response", response.data[1].imageUrl);
+                // if (response.status === 200|| response.status === 201) {
+                //     setFoodList(response.data);
+                // }
+                response.data.forEach((item: FoodItem) => {
+                    console.log("item First", item.image);
+                });
                 const foodUpdateUrl = response.data.map((item: FoodItem) => ({
                     ...item,
-                    imageUrl: convertLocalhost(item.imageUrl) // Chuyển đổi localhost nếu cần
+                    image: convertLocalhost(item.image) // Chuyển đổi localhost nếu cần
                 }));
+                // console.log("foodList", response.data);
                 setFoodList(foodUpdateUrl);
+                foodUpdateUrl.forEach((item: FoodItem) => {
+                    console.log("item Last", item.image);
+                });
             } catch (error) {
                 Alert.alert("Error", "Không thể lấy danh sách món ăn");
             }
@@ -96,7 +108,7 @@ const Food = () => {
     return (
 
         <>
-            <View className="flex-1 bg-gray-100 px-4 pt-5">
+            <View className="flex-1 bg-gray-100 px-4 pt-5 pb-20">
                 {/* Header */}
 
 
@@ -109,7 +121,7 @@ const Food = () => {
                         columnWrapperStyle={{ justifyContent: 'space-between' }}
                         renderItem={({ item }) => (
                             <View className="bg-white rounded-xl shadow p-3 mb-4 w-[48%]">
-                                <Image source={{ uri: item.imageUrl }} className="w-28 h-28 rounded-lg mb-2" resizeMode="cover" />
+                                {<Image source={{uri: item.image}} className="w-28 h-28 rounded-lg mb-2" resizeMode="cover" />}
                                 <Text className="font-semibold text-base text-gray-800">{item.name}</Text>
                                 <Text className="text-sm text-gray-500 mb-2">{item.price}</Text>
                                 <View className="flex-row justify-between">
