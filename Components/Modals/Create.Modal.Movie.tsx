@@ -89,9 +89,9 @@ const CreateModalMovie = ({
         setStatus(Status.NowShowing);
     };
 
-    const updateListMovie = () => {
+    const updateListMovie = (idMovie: string) => {
         const newMovie: MovieData = {
-            id: id,
+            id: idMovie,
             title: title,
             ageRating: ageRating,
             posterUrl: posterUrl,
@@ -126,6 +126,7 @@ const CreateModalMovie = ({
 
             console.log('Movie created successfully:',response.data);
             setId(response.data.id);
+            updateListMovie(response.data.id);
             Alert.alert("Movie created successfully");
         } catch (error) {
             console.error('Error creating movie:', error);
@@ -135,7 +136,7 @@ const CreateModalMovie = ({
 
 
         // setListMovie
-        updateListMovie();
+        
         // setImage('');
         resetForm();
 
@@ -162,11 +163,7 @@ const CreateModalMovie = ({
                         }}>
                             <AntDesign name="closecircleo" size={24} color="#555" />
                         </Pressable>
-                        <TouchableOpacity
-                            style={{ padding: 10 }}
-                            onPress={() => setModalCreateVisible(false)}>
-                            <AntDesign name="close" size={24} color="black" />
-                        </TouchableOpacity>
+                        
                     </View>
 
                     <ScrollView contentContainerStyle={styles.body}>

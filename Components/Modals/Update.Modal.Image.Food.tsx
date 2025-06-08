@@ -10,12 +10,16 @@ import * as FileSystem from 'expo-file-system';
 
 function convertLocalhost(url: string) {
     if (!url) return '';
+    if (!url.endsWith('.png') && !url.endsWith('.jpg') && !url.endsWith('.jpeg')) {
+        return imagesUrl.imageFood
+    }
+    
 
     // Kiểm tra nếu URL bắt đầu bằng http://localhost
-    const localhostPrefix = 'http://localhost';
-    if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
-        return API.hostImage + url.substring(localhostPrefix.length);
-    }
+    // const localhostPrefix = ':9000/booking/';
+    // if (url.substring(0, localhostPrefix.length) === localhostPrefix) {
+        return API.hostImage + url.replace('http://localhost', '');
+    // }
 
     return url;
 }
@@ -36,10 +40,10 @@ const UpdateImageModalFood = ({
     setFoodList
 }: props) => {
 
-    const [image, setImage] = useState<string>(food.imageUrl || imagesUrl.default);
+    const [image, setImage] = useState<string>(food.image || imagesUrl.default);
 
     useEffect(() => {
-        setImage(food.imageUrl || imagesUrl.default);
+        setImage(food.image || imagesUrl.default);
     }, [food.id]);
 
     const handleUpdateImageItem = async () => {
@@ -69,9 +73,11 @@ const UpdateImageModalFood = ({
                 },
             });
 
+            console.log("Response from update image:", response.data.imageUrl);
             const imageResponseUrl = convertLocalhost(response.data.imageUrl);
+            console.log("Image updated successfully:", imageResponseUrl);
             Alert.alert("Success", "Cập nhật ảnh món ăn thành công");
-            setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: imageResponseUrl } : item));
+            setFoodList(foodList.map(item => item.id === food?.id ? { ...item, image: imageResponseUrl, imageUrl:imageResponseUrl } : item));
             setModalUpdateVisible(false);
             setImage(imageResponseUrl);
 

@@ -190,11 +190,6 @@ const UpdateModalMovie = ({
                         <Pressable onPress={() => setModalUpdateVisible(false)}>
                             <AntDesign name="close" size={24} color="black" />
                         </Pressable>
-                        <TouchableOpacity
-                            style={{ padding: 10 }}
-                            onPress={() => setModalUpdateVisible(false)}>
-                            <AntDesign name="close" size={24} color="black" />
-                        </TouchableOpacity>
                     </View>
 
                     {/* Body */}

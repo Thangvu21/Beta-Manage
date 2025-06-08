@@ -1,50 +1,18 @@
 # Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
 ## Get started
+# 🎬 Cinema Management System
 
-1. Install dependencies
+Một hệ thống quản lý rạp chiếu phim dành cho **Admin**, hỗ trợ quản lý phim, lịch chiếu, kiểm tra vé qua QR và chăm sóc người dùng dễ dàng, trực quan.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 🎥 Video demo
 
-   ```bash
-    npx expo start
-   ```
+> 🔗 **Xem video hướng dẫn trên Google Drive:**  
+> [📽️ Click để xem video](https://drive.google.com/file/d/1M5pTXz8AxHqGy1ziXvQ4TCTzMGCvjFLx/view)
 
-In the output, you'll find options to open the app in a
+👉 Nếu bạn muốn chèn video trực tiếp như YouTube thì Markdown không hỗ trợ Google Drive embed. Tuy nhiên, bạn có thể dùng thẻ HTML (nếu GitHub hỗ trợ):
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```html
+<iframe src="https://drive.google.com/file/d/1M5pTXz8AxHqGy1ziXvQ4TCTzMGCvjFLx/preview" width="640" height="360" allow="autoplay"></iframe>

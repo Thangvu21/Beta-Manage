@@ -64,7 +64,7 @@ const UpdateModalCinema = ({
   };
 
   const handleUpdateCinema = async () => {
-    if (!cinemaName || !cinemaPhone || !cinemaAvatar
+    if (!cinemaName || !cinemaPhone
       || !street || !ward || !district || !city
       || !longitude || !latitude
     ) {
@@ -191,6 +191,11 @@ const UpdateModalCinema = ({
               setValue: setLatitude,
               placeholder: "21.002",
               keyboardType: "numeric"
+            }, {
+              label: "🖼️ Cinema Avatar URL",
+              value: cinemaAvatar,
+              setValue: setCinemaAvatar,
+              placeholder: "Enter cinema avatar URL"
             }].map((input, i) => (
               <View style={styles.inputGroup} key={i}>
                 <Text style={styles.label}>{input.label}</Text>
@@ -205,7 +210,7 @@ const UpdateModalCinema = ({
               </View>
             ))}
 
-            <ImagePickerScreen imageUri={cinemaAvatar} setImageUri={setCinemaAvatar} />
+            
           </ScrollView>
 
           {/* Footer */}

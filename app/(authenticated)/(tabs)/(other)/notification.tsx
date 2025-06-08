@@ -57,7 +57,7 @@ export default function NotificationScreen() {
       try {
         // Replace with actual API call
         const response = await axiosClient.get(API.getAllNotification);
-        console.log('Fetched notifications:', response.data);
+        // console.log('Fetched notifications:', response.data);
         setNotifications(response.data);
       } catch (error) {
         console.error('Error fetching notifications:', error);

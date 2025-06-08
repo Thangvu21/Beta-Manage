@@ -118,7 +118,7 @@ const AfterScanner = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await axiosClient.get(`${API.scanBooking}/${bookingId}`)
+                const response = await axiosClient.get(`${API.scanBooking}=${bookingId}`)
                 console.log("Response from AfterScanner:", response.data);
                 
                 if (!response.data || !response.data.booking) {
@@ -142,8 +142,9 @@ const AfterScanner = () => {
         }
     
         if (bookingId) {
-            // fetchData();
-            setBookingData(sampleBookingData); 
+            fetchData();
+            console.log("Fetching booking data for ID:", bookingData);
+            // setBookingData(sampleBookingData); 
             setLoading(false)// For testing, remove this line when using real API
         } else {
             setError("Mã vé không hợp lệ");
@@ -242,7 +243,7 @@ const AfterScanner = () => {
     const { timeString, dateString } = formatDateTime(bookingData.showtime.time);
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
             {/* Header Success */}
             <View style={styles.headerContainer}>
                 <View style={styles.successIcon}>
@@ -353,6 +354,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f5f7fa',
+        paddingBottom: 220,
+        paddingBlockEnd: 100
     },
     centerContainer: {
         flex: 1,
@@ -360,6 +363,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f5f7fa',
         padding: 20,
+        paddingBottom: 80
     },
     loadingCard: {
         backgroundColor: '#fff',
@@ -725,7 +729,7 @@ const styles = StyleSheet.create({
     totalCard: {
         backgroundColor: '#fff',
         marginHorizontal: 16,
-        marginBottom: 16,
+        marginBottom: 60,
         borderRadius: 16,
         padding: 20,
         shadowColor: '#000',
@@ -735,6 +739,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         borderWidth: 2,
         borderColor: '#e91e63',
+        
     },
     totalAmount: {
         fontSize: 24,
