@@ -5,19 +5,20 @@
 
 Một hệ thống quản lý rạp chiếu phim dành cho **Admin**, hỗ trợ quản lý phim, lịch chiếu, kiểm tra vé qua QR và chăm sóc người dùng dễ dàng, trực quan.
 
+## 📽️ Hướng Dẫn Sử Dụng
+## ⚙️ Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
+
+## 📁 Bước 1: Clone repository
+git clone <link-repository-của-bạn>
+cd <tên-thư-mục>
+## Bước 2: npm install
+## Bước 3: npx expo start
 ---
 
 
 
-## 📽️ Hướng Dẫn Sử Dụng
-## ⚙️ Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-### 📁 Bước 1: Clone repository
-```bash
-git clone <link-repository-của-bạn>
-cd <tên-thư-mục>
-### Bước 2: npm install
-### Bước 3: npx expo start
+
 
 ## 🎥 Video demo
 > 🔗 **Xem video hướng dẫn trên Google Drive:**  
